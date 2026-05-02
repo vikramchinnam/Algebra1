@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Base-10 Blocks — 2-Digit Addition | Kumon Math</title>
+<style>
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Tokens ── */
+:root {
+  --rod-w:   22px;
+  --rod-h:   110px;
+  --unit-sz: 20px;
+
+  --rod-blue:   #1e88e5;
+  --rod-hl:     #ef6c00;
+  --rod-new:    #d81b60;
+  --rod-carry:  #8e24aa;
+  --unit-org:   #fb8c00;
+  --unit-hl:    #e65100;
+  --unit-bund:  #d81b60;
+  --unit-left:  #8e24aa;
+
+  --bg:       linear-gradient(150deg, #e3f2fd 0%, #f3e5f5 100%);
+  --card:     #ffffff;
+  --border:   #cfd8dc;
+  --text:     #263238;
+  --muted:    #78909c;
+  --indigo:   #1a237e;
+  --green:    #2e7d32;
+  --yellow:   #f9a825;
+  --purple:   #6a1b9a;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--text);
+  font-size: 16px;
+}
+
+/* ════════════════════════════════
+   HUD
+════════════════════════════════ */
+#hud {
+  position: sticky; top: 0; z-index: 200;
+  background: var(--indigo);
+  color: #fff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 9px 12px;
+  gap: 6px;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+.hud-pill {
+  background: rgba(255,255,255,.14);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: .01em;
+  transition: transform .15s;
+}
+.hud-pill.bump { animation: pill-bump .3s; }
+@keyframes pill-bump {
+  0%,100% { transform: scale(1); }
+  50%      { transform: scale(1.3); }
+}
+
+/* ════════════════════════════════
+   SFX toast
+════════════════════════════════ */
+#sfx-toast {
+  position: fixed; top: 60px; right: 12px; z-index: 300;
+  background: var(--purple);
+  color: #fff;
+  padding: 7px 16px;
+  border-radius: 12px;
+  font-size: 12px; font-weight: 800;
+  font-family: 'Courier New', monospace;
+  letter-spacing: .03em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+  box-shadow: 0 4px 12px rgba(106,27,154,.45);
+}
+#sfx-toast.show { opacity: 1; }
+
+/* ════════════════════════════════
+   Main
+════════════════════════════════ */
+main {
+  max-width: 660px;
+  margin: 0 auto;
+  padding: 14px 12px 56px;
+}
+
+/* ── Utility ── */
+.card {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 18px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 18px rgba(0,0,0,.1);
+}
+
+/* ════════════════════════════════
+   Problem selector chips
+════════════════════════════════ */
+#prob-chips {
+  display: flex; gap: 7px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.p-chip {
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  background: var(--card);
+  font-size: .84rem; font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+}
+.p-chip:hover { border-color: var(--rod-blue); color: var(--rod-blue); }
+.p-chip.active { background: var(--indigo); color: #fff; border-color: var(--indigo); }
+#chip-regroup-add.active { background: #d81b60; border-color: #d81b60; color: #fff; }
+
+/* ════════════════════════════════
+   Problem header
+════════════════════════════════ */
+#prob-header {
+  text-align: center;
+  padding: 14px 20px;
+}
+#prob-eq {
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: var(--indigo);
+  letter-spacing: 6px;
+  line-height: 1.2;
+}
+#prob-tag {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 14px;
+  border-radius: 999px;
+  font-size: .8rem; font-weight: 700;
+}
+.tag-no   { background: #e8f5e9; color: #2e7d32; }
+.tag-yes  { background: #fce4ec; color: #c62828; }
+
+/* ════════════════════════════════
+   Carry badge
+════════════════════════════════ */
+#carry-badge {
+  text-align: center;
+  margin-bottom: 6px;
+  min-height: 34px;
+}
+.carry-pill {
+  display: inline-block;
+  background: var(--rod-carry);
+  color: #fff;
+  padding: 5px 18px;
+  border-radius: 999px;
+  font-size: .88rem; font-weight: 800;
+  animation: carry-pop .45s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes carry-pop {
+  from { transform: scale(0) translateY(-10px); opacity: 0; }
+  to   { transform: scale(1) translateY(0);     opacity: 1; }
+}
+
+/* ════════════════════════════════
+   Blocks stage
+════════════════════════════════ */
+#blocks-stage {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.blocks-wrap {
+  min-width: 320px;
+}
+
+/* ── Block rows ── */
+.brow {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+.brow-header { align-items: center; padding-bottom: 4px; }
+.brow-op     { align-items: center; }
+
+.br-label {
+  width: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #455a64;
+}
+.br-label.op-sign {
+  font-size: 1.7rem;
+  color: var(--indigo);
+}
+.br-label.result-eq {
+  font-size: 1.7rem;
+  color: var(--indigo);
+}
+
+/* Column divider */
+.br-div {
+  width: 3px;
+  flex-shrink: 0;
+  background: var(--border);
+  margin: 0 6px;
+  border-radius: 2px;
+}
+.brow-header .br-div { background: transparent; }
+
+/* Column header labels */
+.col-head {
+  flex: 1;
+  text-align: center;
+  font-size: .72rem; font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  padding: 2px 0;
+}
+.col-head.tens { color: var(--rod-blue); }
+.col-head.ones { color: var(--unit-org); }
+
+/* Tens zone */
+.tens-zone {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  align-items: flex-end;
+  justify-content: flex-end;
+  min-height: 120px;
+  padding: 6px 6px 6px 4px;
+}
+
+/* Ones zone */
+.ones-zone {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-items: flex-start;
+  align-content: flex-start;
+  min-height: 120px;
+  padding: 6px 4px 6px 6px;
+}
+
+/* Equals separator */
+.eq-sep-row {
+  display: flex;
+  align-items: center;
+  padding: 2px 0;
+}
+.eq-sep-label {
+  width: 48px;
+  flex-shrink: 0;
+  text-align: right;
+  padding-right: 8px;
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--indigo);
+}
+.eq-sep-line {
+  flex: 1;
+  height: 3px;
+  background: var(--indigo);
+  border-radius: 2px;
+}
+
+/* ════════════════════════════════
+   Ten Rod
+════════════════════════════════ */
+.ten-rod {
+  width: var(--rod-w);
+  height: var(--rod-h);
+  flex-shrink: 0;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 1px;
+  background: var(--rod-blue);
+  transition: background .3s, box-shadow .3s, opacity .3s;
+  position: relative;
+}
+.ten-rod .seg {
+  flex: 1;
+  background: rgba(255,255,255,.28);
+  border-radius: 2px;
+}
+
+/* Rod states */
+.ten-rod.hl {
+  background: var(--rod-hl) !important;
+  animation: rod-pulse .55s ease infinite alternate;
+}
+.ten-rod.dim { opacity: .22; }
+.ten-rod.new-rod {
+  background: var(--rod-new) !important;
+  animation: rod-pop-in .5s cubic-bezier(.34,1.56,.64,1);
+}
+.ten-rod.carry-rod {
+  background: var(--rod-carry) !important;
+  animation: rod-carry-in .6s ease;
+}
+.ten-rod.celebrate {
+  animation: celebrate-bob .45s ease infinite alternate !important;
+}
+
+@keyframes rod-pulse {
+  from { box-shadow: 0 0 3px 1px rgba(239,108,0,.35); }
+  to   { box-shadow: 0 0 14px 4px rgba(239,108,0,.85); }
+}
+@keyframes rod-pop-in {
+  0%   { transform: scale(0) rotate(-8deg); opacity: 0; }
+  60%  { transform: scale(1.1) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); }
+}
+@keyframes rod-carry-in {
+  0%   { transform: translateX(60px) scale(.6); opacity: 0; }
+  70%  { transform: translateX(-4px) scale(1.05); opacity: 1; }
+  100% { transform: translateX(0) scale(1); }
+}
+@keyframes celebrate-bob {
+  from { transform: translateY(0) scale(1); }
+  to   { transform: translateY(-5px) scale(1.06); }
+}
+
+/* ════════════════════════════════
+   One Unit
+════════════════════════════════ */
+.one-unit {
+  width: var(--unit-sz);
+  height: var(--unit-sz);
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: var(--unit-org);
+  transition: background .3s, box-shadow .3s, opacity .3s;
+}
+
+/* Unit states */
+.one-unit.hl {
+  background: var(--unit-hl) !important;
+  animation: unit-pulse .5s ease infinite alternate;
+}
+.one-unit.dim { opacity: .22; }
+.one-unit.bundle {
+  background: var(--unit-bund) !important;
+  animation: bundle-pulse .35s ease infinite alternate;
+}
+.one-unit.leftover {
+  background: var(--unit-left) !important;
+  animation: unit-pop-in .35s cubic-bezier(.34,1.56,.64,1) both;
+}
+.one-unit.unit-new {
+  animation: unit-pop-in .3s cubic-bezier(.34,1.56,.64,1) both;
+}
+.one-unit.celebrate {
+  animation: celebrate-bob .45s ease infinite alternate !important;
+}
+
+@keyframes unit-pulse {
+  from { box-shadow: 0 0 2px 1px rgba(230,81,0,.3); }
+  to   { box-shadow: 0 0 10px 3px rgba(230,81,0,.85); }
+}
+@keyframes bundle-pulse {
+  from { transform: scale(1); box-shadow: 0 0 4px rgba(216,27,96,.4); }
+  to   { transform: scale(1.14); box-shadow: 0 0 10px rgba(216,27,96,.9); }
+}
+@keyframes unit-pop-in {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+/* ════════════════════════════════
+   Legend
+════════════════════════════════ */
+.legend {
+  display: flex; gap: 14px;
+  flex-wrap: wrap;
+  padding: 8px 4px 2px;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: .78rem; font-weight: 700; color: var(--muted);
+}
+.legend-rod {
+  width: 12px; height: 30px;
+  border-radius: 2px;
+  background: var(--rod-blue);
+}
+.legend-unit {
+  width: 14px; height: 14px;
+  border-radius: 3px;
+  background: var(--unit-org);
+}
+.legend-new-rod  { background: var(--rod-new); }
+.legend-carry-rod { background: var(--rod-carry); }
+.legend-bund-unit { background: var(--unit-bund); }
+.legend-left-unit { background: var(--unit-left); }
+
+/* ════════════════════════════════
+   Step dots
+════════════════════════════════ */
+#step-dots {
+  display: flex; justify-content: center;
+  gap: 7px; padding: 6px 0 2px;
+}
+.sdot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background .25s, transform .25s;
+}
+.sdot.done    { background: var(--rod-blue); }
+.sdot.current { background: var(--yellow); transform: scale(1.3); }
+
+/* ════════════════════════════════
+   Speech bubble
+════════════════════════════════ */
+#speech-wrap {
+  position: relative;
+  padding: 14px 16px 14px 22px;
+  min-height: 72px;
+}
+.mascot-icon {
+  position: absolute;
+  left: 14px; top: -20px;
+  font-size: 2rem;
+  animation: mascot-bounce 1.8s ease-in-out infinite;
+}
+@keyframes mascot-bounce {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+#speech-text {
+  font-size: 1rem; line-height: 1.6;
+  color: var(--text);
+  padding-left: 4px;
+}
+#speech-text b { color: var(--indigo); }
+
+/* ════════════════════════════════
+   Controls
+════════════════════════════════ */
+#controls {
+  display: flex; gap: 10px;
+  flex-wrap: wrap;
+}
+.ctrl-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 15px 8px;
+  border-radius: 14px;
+  border: none;
+  font-size: .95rem; font-weight: 800;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s, background .15s;
+}
+.ctrl-btn:hover { transform: translateY(-2px); }
+.ctrl-btn:active { transform: translateY(0); }
+
+#btn-next {
+  background: linear-gradient(135deg, #1565c0, #283593);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(21,101,192,.4);
+}
+#btn-next:disabled {
+  background: #90a4ae;
+  box-shadow: none;
+  cursor: default;
+  transform: none;
+}
+#btn-retry {
+  background: var(--card);
+  color: var(--indigo);
+  border: 2.5px solid var(--indigo);
+}
+#btn-new {
+  background: linear-gradient(135deg, #2e7d32, #1b5e20);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(46,125,50,.35);
+}
+
+/* ════════════════════════════════
+   Responsive
+════════════════════════════════ */
+@media (max-width: 480px) {
+  #prob-eq { font-size: 1.9rem; letter-spacing: 3px; }
+  .ctrl-btn { font-size: .85rem; padding: 12px 6px; }
+  :root { --rod-w: 18px; --rod-h: 90px; --unit-sz: 17px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HUD ═══════════════ -->
+<div id="hud" role="banner">
+  <div class="hud-pill" id="hud-level">🐯 Tiny Tiger</div>
+  <div class="hud-pill" id="hud-pts">⭐ 0 pts</div>
+  <div class="hud-pill" id="hud-streak">🔥 0 streak</div>
+</div>
+
+<!-- ═══════════════ SFX ═══════════════ -->
+<div id="sfx-toast" role="status" aria-live="polite"></div>
+
+<main>
+
+<!-- Problem chips -->
+<div id="prob-chips" role="group" aria-label="Choose a problem">
+  <button class="p-chip active" onclick="loadPreset(0)">23 + 14</button>
+  <button class="p-chip"        onclick="loadPreset(1)">27 + 15</button>
+  <button class="p-chip"        onclick="loadPreset(2)">38 + 26</button>
+  <button class="p-chip"        onclick="loadPreset(3)">46 + 37</button>
+  <button class="p-chip"        onclick="newRandom()">🎲 Random</button>
+  <button class="p-chip" id="chip-regroup-add" onclick="loadRegrouping()" style="border-color:#d81b60;color:#d81b60;">🔄 Regrouping</button>
+</div>
+
+<!-- Problem header -->
+<div class="card" id="prob-header" role="heading" aria-level="1">
+  <div id="prob-eq" aria-label="problem equation">23 + 14 = ?</div>
+  <div id="prob-tag" class="tag-no">✅ No Regrouping</div>
+</div>
+
+<!-- Carry badge -->
+<div id="carry-badge" aria-live="polite"></div>
+
+<!-- Blocks stage -->
+<div class="card" id="blocks-stage" role="region" aria-label="Base-10 blocks">
+  <div class="blocks-wrap">
+
+    <!-- Column headers -->
+    <div class="brow brow-header">
+      <div class="br-label"></div>
+      <div class="col-head tens">📘 Tens</div>
+      <div class="br-div" style="background:transparent"></div>
+      <div class="col-head ones">🟠 Ones</div>
+    </div>
+
+    <!-- Row A -->
+    <div class="brow">
+      <div class="br-label" id="label-a">23</div>
+      <div class="tens-zone" id="a-tens" role="img" aria-label="tens for first number"></div>
+      <div class="br-div"></div>
+      <div class="ones-zone" id="a-ones" role="img" aria-label="ones for first number"></div>
+    </div>
+
+    <!-- Plus operator -->
+    <div class="brow brow-op">
+      <div class="br-label op-sign">+</div>
+      <div style="flex:1"></div>
+      <div class="br-div" style="background:transparent"></div>
+      <div style="flex:1"></div>
+    </div>
+
+    <!-- Row B -->
+    <div class="brow">
+      <div class="br-label" id="label-b">14</div>
+      <div class="tens-zone" id="b-tens" role="img" aria-label="tens for second number"></div>
+      <div class="br-div"></div>
+      <div class="ones-zone" id="b-ones" role="img" aria-label="ones for second number"></div>
+    </div>
+
+    <!-- Equals line -->
+    <div class="eq-sep-row">
+      <div class="eq-sep-label">=</div>
+      <div class="eq-sep-line"></div>
+    </div>
+
+    <!-- Result row -->
+    <div class="brow">
+      <div class="br-label result-eq" id="label-r">?</div>
+      <div class="tens-zone" id="r-tens" role="img" aria-label="tens in result"></div>
+      <div class="br-div"></div>
+      <div class="ones-zone" id="r-ones" role="img" aria-label="ones in result"></div>
+    </div>
+
+  </div><!-- blocks-wrap -->
+
+  <!-- Legend -->
+  <div class="legend" aria-label="Block color legend">
+    <div class="legend-item">
+      <div class="legend-rod"></div> Ten
+    </div>
+    <div class="legend-item">
+      <div class="legend-unit"></div> One
+    </div>
+    <div class="legend-item">
+      <div class="legend-rod legend-new-rod"></div> New ten (bundled!)
+    </div>
+    <div class="legend-item">
+      <div class="legend-rod legend-carry-rod"></div> Carried ten
+    </div>
+    <div class="legend-item">
+      <div class="legend-unit legend-bund-unit"></div> About to bundle
+    </div>
+    <div class="legend-item">
+      <div class="legend-unit legend-left-unit"></div> Leftover ones
+    </div>
+  </div>
+</div>
+
+<!-- Step dots -->
+<div id="step-dots" role="progressbar" aria-label="Step progress"></div>
+
+<!-- Speech bubble -->
+<div class="card" id="speech-wrap">
+  <div class="mascot-icon" aria-hidden="true">🐯</div>
+  <div id="speech-text" aria-live="polite">Loading…</div>
+</div>
+
+<!-- Controls -->
+<div id="controls" role="group" aria-label="Lesson controls">
+  <button class="ctrl-btn" id="btn-next"  onclick="nextStep()"    aria-label="Go to next step">Next Step →</button>
+  <button class="ctrl-btn" id="btn-retry" onclick="retryProblem()" aria-label="Try this problem again">Try Again 🔄</button>
+  <button class="ctrl-btn" id="btn-new"   onclick="newRandom()"    aria-label="Get a new problem">New Problem ✨</button>
+</div>
+
+</main>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════════ */
+let pts = 0, streak = 0;
+let currentPresetIdx = 0;
+let steps = [];
+let stepIdx = 0;
+let currentA = 23, currentB = 14;
+
+const PRESETS = [
+  { a: 23, b: 14 },
+  { a: 27, b: 15 },
+  { a: 38, b: 26 },
+  { a: 46, b: 37 },
+];
+
+/* ══════════════════════════════════════════════════════════
+   HUD
+══════════════════════════════════════════════════════════ */
+function getLevel(p) {
+  if (p < 20)  return '🐯 Tiny Tiger';
+  if (p < 60)  return '🐰 Busy Bunny';
+  if (p < 120) return '🦊 Clever Fox';
+  if (p < 200) return '🦁 Math Lion';
+  return               '🐉 Number Dragon';
+}
+function updateHUD() {
+  document.getElementById('hud-level').textContent  = getLevel(pts);
+  document.getElementById('hud-pts').textContent    = `⭐ ${pts} pts`;
+  document.getElementById('hud-streak').textContent = `🔥 ${streak} streak`;
+}
+function bumpPill(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('bump');
+  void el.offsetWidth;
+  el.classList.add('bump');
+}
+
+/* ══════════════════════════════════════════════════════════
+   SFX
+══════════════════════════════════════════════════════════ */
+function playSFX(tag) {
+  const t = document.getElementById('sfx-toast');
+  t.textContent = `[SFX: ${tag}]`;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+/* ══════════════════════════════════════════════════════════
+   DOM HELPERS
+══════════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+const qsa = s => [...document.querySelectorAll(s)];
+
+function clearZone(id) { $(id).innerHTML = ''; }
+
+function makeTenRod(...cls) {
+  const rod = document.createElement('div');
+  rod.className = 'ten-rod ' + cls.join(' ');
+  for (let i = 0; i < 10; i++) {
+    const s = document.createElement('div');
+    s.className = 'seg';
+    rod.appendChild(s);
+  }
+  return rod;
+}
+
+function makeOneUnit(...cls) {
+  const u = document.createElement('div');
+  u.className = 'one-unit ' + cls.join(' ');
+  return u;
+}
+
+function fillTens(zoneId, count, ...cls) {
+  const z = $(zoneId);
+  z.innerHTML = '';
+  for (let i = 0; i < count; i++) z.appendChild(makeTenRod(...cls));
+}
+
+function fillOnes(zoneId, count, ...cls) {
+  const z = $(zoneId);
+  z.innerHTML = '';
+  for (let i = 0; i < count; i++) z.appendChild(makeOneUnit(...cls));
+}
+
+function addClassToAll(selector, cls) {
+  qsa(selector).forEach(el => el.classList.add(cls));
+}
+
+function showCarry(text = '✊ Carrying 1 new ten!') {
+  $('carry-badge').innerHTML = `<span class="carry-pill" role="status">${text}</span>`;
+}
+function hideCarry() { $('carry-badge').innerHTML = ''; }
+
+/* ══════════════════════════════════════════════════════════
+   STEP BUILDER
+══════════════════════════════════════════════════════════ */
+function buildSteps(a, b) {
+  const at = Math.floor(a / 10),  ao = a % 10;
+  const bt = Math.floor(b / 10),  bo = b % 10;
+  const oSum = ao + bo;
+  const needsRegroup = oSum >= 10;
+  const carry  = needsRegroup ? 1 : 0;
+  const ro     = oSum % 10;
+  const rt     = at + bt + carry;
+  const ans    = a + b;
+
+  /* ── SHARED step: initial view ── */
+  const stepStart = {
+    speech: `Let's add <b>${a}</b> and <b>${b}</b>! 🧱<br>Blue rods are <b>tens</b>. Orange squares are <b>ones</b>.`,
+    render() {
+      fillTens('a-tens', at); fillOnes('a-ones', ao);
+      fillTens('b-tens', bt); fillOnes('b-ones', bo);
+      clearZone('r-tens');    clearZone('r-ones');
+      $('label-r').textContent = '?';
+      hideCarry();
+    }
+  };
+
+  /* ══════════════════════════
+     NO-REGROUP PATH
+  ══════════════════════════ */
+  if (!needsRegroup) {
+    return [
+      stepStart,
+      {
+        speech: `First, look at the <b>ONES</b> (orange squares)!<br>${a} has <b>${ao}</b> ones. ${b} has <b>${bo}</b> ones.`,
+        render() {
+          fillTens('a-tens', at);  fillOnes('a-ones', ao);
+          fillTens('b-tens', bt);  fillOnes('b-ones', bo);
+          clearZone('r-tens'); clearZone('r-ones');
+          addClassToAll('#a-tens .ten-rod', 'dim');
+          addClassToAll('#b-tens .ten-rod', 'dim');
+          addClassToAll('#a-ones .one-unit', 'hl');
+          addClassToAll('#b-ones .one-unit', 'hl');
+          hideCarry();
+        }
+      },
+      {
+        speech: `<b>${ao} + ${bo} = ${oSum}</b>. Less than 10 — no bundling needed! ✅<br>Write <b>${oSum}</b> ones in the answer.`,
+        render() {
+          fillTens('a-tens', at);  fillOnes('a-ones', ao);
+          fillTens('b-tens', bt);  fillOnes('b-ones', bo);
+          addClassToAll('#a-ones .one-unit', 'dim');
+          addClassToAll('#b-ones .one-unit', 'dim');
+          clearZone('r-tens');
+          fillOnes('r-ones', oSum, 'unit-new');
+          hideCarry();
+        }
+      },
+      {
+        speech: `Now the <b>TENS</b> (blue rods)!<br>${a} has <b>${at}</b> rod${at!==1?'s':''}. ${b} has <b>${bt}</b> rod${bt!==1?'s':''}.`,
+        render() {
+          fillTens('a-tens', at);  fillOnes('a-ones', ao);
+          fillTens('b-tens', bt);  fillOnes('b-ones', bo);
+          addClassToAll('#a-ones .one-unit', 'dim');
+          addClassToAll('#b-ones .one-unit', 'dim');
+          addClassToAll('#a-tens .ten-rod', 'hl');
+          addClassToAll('#b-tens .ten-rod', 'hl');
+          clearZone('r-tens');
+          fillOnes('r-ones', oSum);
+          hideCarry();
+        }
+      },
+      {
+        speech: `<b>${at} + ${bt} = ${rt}</b> tens! Writing them in the answer… 💪`,
+        render() {
+          fillTens('a-tens', at);  fillOnes('a-ones', ao);
+          fillTens('b-tens', bt);  fillOnes('b-ones', bo);
+          fillTens('r-tens', rt, 'unit-new');
+          fillOnes('r-ones', oSum);
+          hideCarry();
+        }
+      },
+      {
+        speech: `🌟 <b>${a} + ${b} = ${ans}!</b><br>You did it — no regrouping needed this time! Amazing! <span style="font-family:monospace;background:#e8eaf6;color:#3949ab;border-radius:4px;padding:1px 6px;font-size:.8em">[SFX: correct-ding]</span>`,
+        render() {
+          fillTens('a-tens', at);  fillOnes('a-ones', ao);
+          fillTens('b-tens', bt);  fillOnes('b-ones', bo);
+          fillTens('r-tens', rt);  fillOnes('r-ones', oSum);
+          addClassToAll('#r-tens .ten-rod',  'celebrate');
+          addClassToAll('#r-ones .one-unit', 'celebrate');
+          $('prob-eq').textContent    = `${a} + ${b} = ${ans}`;
+          $('label-r').textContent    = ans;
+          hideCarry();
+        },
+        sfx: 'correct-ding',
+        isAnswer: true,
+        pts: 15,
+      }
+    ];
+  }
+
+  /* ══════════════════════════
+     REGROUP PATH
+  ══════════════════════════ */
+  return [
+    stepStart,
+    {
+      speech: `First, let's count the <b>ONES</b>!<br>${a} has <b>${ao}</b> ones. ${b} has <b>${bo}</b> ones.`,
+      render() {
+        fillTens('a-tens', at);  fillOnes('a-ones', ao);
+        fillTens('b-tens', bt);  fillOnes('b-ones', bo);
+        addClassToAll('#a-tens .ten-rod', 'dim');
+        addClassToAll('#b-tens .ten-rod', 'dim');
+        addClassToAll('#a-ones .one-unit', 'hl');
+        addClassToAll('#b-ones .one-unit', 'hl');
+        clearZone('r-tens'); clearZone('r-ones');
+        hideCarry();
+      }
+    },
+    {
+      speech: `<b>${ao} + ${bo} = ${oSum}</b> ones.<br>That's <b>10 or more</b> — we have to <b>REGROUP</b>! 🎁<br>Watch the pink ones — they're ready to bundle!`,
+      render() {
+        fillTens('a-tens', at);  fillOnes('a-ones', ao);
+        fillTens('b-tens', bt);  fillOnes('b-ones', bo);
+        addClassToAll('#a-ones .one-unit', 'dim');
+        addClassToAll('#b-ones .one-unit', 'dim');
+        clearZone('r-tens');
+        // Show all oSum ones, first 10 as "bundle" (pink/pulsing)
+        const rOnes = $('r-ones');
+        rOnes.innerHTML = '';
+        for (let i = 0; i < oSum; i++) {
+          rOnes.appendChild(makeOneUnit(i < 10 ? 'bundle' : 'unit-new'));
+        }
+        hideCarry();
+      }
+    },
+    {
+      speech: `<b>Bundle 10 ones → 1 new TEN!</b> ✨<br>We have <b>${ro}</b> leftover one${ro!==1?'s':''} left over. Watch the pink rod appear! <span style="font-family:monospace;background:#fce4ec;color:#c62828;border-radius:4px;padding:1px 6px;font-size:.8em">[SFX: combo-boost]</span>`,
+      render() {
+        fillTens('a-tens', at);  fillOnes('a-ones', ao);
+        fillTens('b-tens', bt);  fillOnes('b-ones', bo);
+        addClassToAll('#a-ones .one-unit', 'dim');
+        addClassToAll('#b-ones .one-unit', 'dim');
+        // New ten rod appears in result tens
+        const rTens = $('r-tens');
+        rTens.innerHTML = '';
+        rTens.appendChild(makeTenRod('new-rod'));
+        // Leftover ones
+        const rOnes = $('r-ones');
+        rOnes.innerHTML = '';
+        for (let i = 0; i < ro; i++) rOnes.appendChild(makeOneUnit('leftover'));
+        hideCarry();
+      },
+      sfx: 'combo-boost',
+    },
+    {
+      speech: `Now <b>carry</b> that new ten to the TENS column! 🚀<br>We write a tiny <b>¹</b> to remind us. See the purple rod slide in!`,
+      render() {
+        fillTens('a-tens', at);  fillOnes('a-ones', ao);
+        fillTens('b-tens', bt);  fillOnes('b-ones', bo);
+        // Carried ten (purple, animated slide)
+        const rTens = $('r-tens');
+        rTens.innerHTML = '';
+        rTens.appendChild(makeTenRod('carry-rod'));
+        const rOnes = $('r-ones');
+        rOnes.innerHTML = '';
+        for (let i = 0; i < ro; i++) rOnes.appendChild(makeOneUnit('leftover'));
+        showCarry(`¹ Carried ten is over here!`);
+      }
+    },
+    {
+      speech: `Now add ALL the tens: <b>${at}</b> + <b>${bt}</b> + <b>1 carried</b> = ?<br>The glowing orange rods are all being added together!`,
+      render() {
+        fillTens('a-tens', at);  fillOnes('a-ones', ao);
+        fillTens('b-tens', bt);  fillOnes('b-ones', bo);
+        addClassToAll('#a-ones .one-unit', 'dim');
+        addClassToAll('#b-ones .one-unit', 'dim');
+        addClassToAll('#a-tens .ten-rod', 'hl');
+        addClassToAll('#b-tens .ten-rod', 'hl');
+        // Carried ten also highlighted
+        const rTens = $('r-tens');
+        rTens.innerHTML = '';
+        rTens.appendChild(makeTenRod('hl'));
+        const rOnes = $('r-ones');
+        rOnes.innerHTML = '';
+        for (let i = 0; i < ro; i++) rOnes.appendChild(makeOneUnit('leftover'));
+        showCarry(`¹ This one counts too!`);
+      }
+    },
+    {
+      speech: `<b>${at} + ${bt} + 1 = ${rt} tens!</b> 💪<br>Moving all ${rt} ten${rt!==1?'s':''} into the answer row…`,
+      render() {
+        fillTens('a-tens', at);  fillOnes('a-ones', ao);
+        fillTens('b-tens', bt);  fillOnes('b-ones', bo);
+        // All result tens — last one is newly arrived
+        const rTens = $('r-tens');
+        rTens.innerHTML = '';
+        for (let i = 0; i < rt; i++) {
+          rTens.appendChild(makeTenRod(i === rt - 1 ? 'new-rod' : ''));
+        }
+        const rOnes = $('r-ones');
+        rOnes.innerHTML = '';
+        for (let i = 0; i < ro; i++) rOnes.appendChild(makeOneUnit('leftover'));
+        hideCarry();
+      }
+    },
+    {
+      speech: `🌟 <b>${a} + ${b} = ${ans}!</b><br>You bundled tens like a <b>Regrouping Hero</b>! 🦸 <span style="font-family:monospace;background:#f3e5f5;color:#6a1b9a;border-radius:4px;padding:1px 6px;font-size:.8em">[SFX: level-up-chime]</span>`,
+      render() {
+        fillTens('a-tens', at);  fillOnes('a-ones', ao);
+        fillTens('b-tens', bt);  fillOnes('b-ones', bo);
+        fillTens('r-tens', rt);  fillOnes('r-ones', ro);
+        addClassToAll('#r-tens .ten-rod',  'celebrate');
+        addClassToAll('#r-ones .one-unit', 'celebrate');
+        $('prob-eq').textContent = `${a} + ${b} = ${ans}`;
+        $('label-r').textContent = ans;
+        hideCarry();
+      },
+      sfx: 'level-up-chime',
+      isAnswer: true,
+      pts: 20,
+    }
+  ];
+}
+
+/* ══════════════════════════════════════════════════════════
+   STEP DOTS
+══════════════════════════════════════════════════════════ */
+function renderDots() {
+  const wrap = $('step-dots');
+  wrap.innerHTML = '';
+  steps.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'sdot' + (i < stepIdx ? ' done' : i === stepIdx ? ' current' : '');
+    d.setAttribute('aria-label', i < stepIdx ? `Step ${i+1} done` : i === stepIdx ? `Step ${i+1} current` : `Step ${i+1}`);
+    wrap.appendChild(d);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
+   RENDER STEP
+══════════════════════════════════════════════════════════ */
+function renderStep() {
+  const s = steps[stepIdx];
+
+  $('speech-text').innerHTML = s.speech;
+  s.render();
+  renderDots();
+
+  const isLast = stepIdx >= steps.length - 1;
+  $('btn-next').disabled    = isLast;
+  $('btn-next').textContent = isLast ? 'Done! 🎉' : 'Next Step →';
+
+  if (s.sfx) playSFX(s.sfx);
+
+  if (s.isAnswer) {
+    pts += s.pts || 10;
+    streak++;
+    bumpPill('hud-pts');
+    bumpPill('hud-streak');
+    updateHUD();
+    // Streak bonus
+    if (streak === 3) { setTimeout(() => playSFX('combo-boost'), 1800); }
+    if (streak === 5) { setTimeout(() => playSFX('badge-unlock-fanfare'), 1800); }
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════════════ */
+function nextStep() {
+  if (stepIdx < steps.length - 1) {
+    stepIdx++;
+    renderStep();
+  }
+}
+
+function startProblem(a, b) {
+  currentA = a;
+  currentB = b;
+  const oSum = (a % 10) + (b % 10);
+  const regroup = oSum >= 10;
+
+  steps   = buildSteps(a, b);
+  stepIdx = 0;
+
+  $('prob-eq').textContent   = `${a} + ${b} = ?`;
+  $('label-a').textContent   = a;
+  $('label-b').textContent   = b;
+  $('label-r').textContent   = '?';
+  $('prob-tag').textContent  = regroup ? '✨ Includes Regrouping' : '✅ No Regrouping';
+  $('prob-tag').className    = regroup ? 'tag-yes' : 'tag-no';
+
+  renderStep();
+}
+
+function loadPreset(idx) {
+  currentPresetIdx = idx;
+  document.querySelectorAll('.p-chip').forEach((c, i) => c.classList.toggle('active', i === idx));
+  const { a, b } = PRESETS[idx];
+  startProblem(a, b);
+}
+
+function retryProblem() {
+  startProblem(currentA, currentB);
+}
+
+function newRandom() {
+  currentPresetIdx = -1;
+  document.querySelectorAll('.p-chip').forEach(c => c.classList.remove('active'));
+
+  const doRegroup = Math.random() < 0.6;
+  let a = 23, b = 14;  // safe fallback
+
+  for (let attempts = 0; attempts < 100; attempts++) {
+    const at = 1 + Math.floor(Math.random() * 7);
+    const bt = 1 + Math.floor(Math.random() * 7);
+    const ao = 1 + Math.floor(Math.random() * 8);
+    const bo = 1 + Math.floor(Math.random() * 8);
+    const ca = at * 10 + ao;
+    const cb = bt * 10 + bo;
+    const onesOk = doRegroup ? (ao + bo) >= 10 : (ao + bo) < 10;
+    if (ca + cb <= 99 && onesOk) { a = ca; b = cb; break; }
+  }
+
+  startProblem(a, b);
+}
+
+function loadRegrouping() {
+  currentPresetIdx = -2;
+  document.querySelectorAll('.p-chip').forEach(c => c.classList.remove('active'));
+  $('chip-regroup-add').classList.add('active');
+
+  const a = 27, b = 15;
+  currentA = a; currentB = b;
+  steps = buildSteps(a, b);
+
+  // Prepend a dedicated "What is Regrouping?" concept intro step
+  steps.unshift({
+    speech: `🔄 <b>Pattern: Regrouping</b><br><br>
+             Sometimes ones add up to <b>10 or more</b> — they don't all fit in the ones place!<br><br>
+             So we <b>bundle 10 ones into 1 new ten</b> and carry it over.<br>
+             That swap is called <b>regrouping</b>.<br><br>
+             The pink squares below show <b>10 ones</b> that are ready to become
+             the pink rod — <b>1 new ten</b>! ✨<br>
+             Hit <b>Next Step</b> to watch it happen with <b>27 + 15</b>.`,
+    render() {
+      // Show the problem numbers in their rows
+      fillTens('a-tens', 2); fillOnes('a-ones', 7);
+      fillTens('b-tens', 1); fillOnes('b-ones', 5);
+      $('label-a').textContent = 27;
+      $('label-b').textContent = 15;
+      $('label-r').textContent = '?';
+      // Result ones zone: 10 pulsing "bundle" units + 2 normal, showing onesSum=12
+      const rOnes = $('r-ones');
+      rOnes.innerHTML = '';
+      for (let i = 0; i < 12; i++) {
+        const u = makeOneUnit(i < 10 ? 'bundle' : 'unit-new');
+        u.style.animationDelay = (i * 25) + 'ms';
+        rOnes.appendChild(u);
+      }
+      // Result tens zone: the new rod they'll become
+      const rTens = $('r-tens');
+      rTens.innerHTML = '';
+      rTens.appendChild(makeTenRod('new-rod'));
+      hideCarry();
+    }
+  });
+
+  stepIdx = 0;
+  $('prob-eq').textContent  = `27 + 15 = ?`;
+  $('prob-tag').textContent = '🔄 Regrouping Pattern';
+  $('prob-tag').className   = 'tag-yes';
+  renderStep();
+}
+
+/* ══════════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════════ */
+loadPreset(0);
+updateHUD();
+</script>
+</body>
+</html>

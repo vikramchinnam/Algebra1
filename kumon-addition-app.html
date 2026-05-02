@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Addition Adventure — Kumon-Style Learning</title>
+<style>
+:root{
+  --red:#e74c3c;--orange:#f39c12;--yellow:#f1c40f;--green:#2ecc71;--blue:#3498db;
+  --purple:#9b59b6;--pink:#e91e8f;--dark:#2c3e50;--light:#ecf0f1;--white:#fff;
+  --shadow:0 4px 12px rgba(0,0,0,.12);--radius:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f4f6fb;min-height:100vh;color:var(--dark);overflow-x:hidden}
+button{cursor:pointer;font-family:inherit;border:none;outline:none;-webkit-tap-highlight-color:transparent}
+input{font-family:inherit}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex;flex-direction:column;animation:fadeIn .3s}
+
+/* ── TOP BAR ── */
+.top-bar{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,#667eea,#764ba2);padding:12px 18px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+.top-bar *{color:var(--white)}
+.top-bar .stars-display{font-size:1.1rem;font-weight:700}
+.top-bar .progress-btn{background:rgba(255,255,255,.2);font-size:1.1rem;padding:8px 12px;border-radius:10px;color:var(--white)}
+.top-bar .progress-btn:hover{background:rgba(255,255,255,.35)}
+.top-bar .back-btn{background:rgba(255,255,255,.2);font-size:1.2rem;padding:6px 12px;border-radius:10px;color:var(--white)}
+.top-bar .back-btn:hover{background:rgba(255,255,255,.35)}
+.top-bar .title{font-weight:700;font-size:1rem}
+
+/* ── MASCOT ── */
+.mascot{position:fixed;bottom:16px;right:16px;z-index:60;width:64px;height:64px;transition:transform .3s}
+.mascot.happy{animation:bounce .5s}
+.mascot.sad{animation:shake .4s}
+.mascot svg{width:100%;height:100%;filter:drop-shadow(0 2px 6px rgba(0,0,0,.2))}
+
+/* ── MAP SCREEN ── */
+.map-scroll{flex:1;overflow-y:auto;padding:0 12px 120px}
+.map-hero{text-align:center;padding:28px 16px 12px;background:linear-gradient(135deg,#667eea,#764ba2);color:var(--white);margin:-1px -12px 0;border-radius:0 0 24px 24px;box-shadow:0 4px 16px rgba(102,126,234,.3)}
+.map-hero h1{font-size:1.7rem;margin-bottom:2px;letter-spacing:-.5px}
+.map-hero .star-count{font-size:1.15rem;font-weight:600;opacity:.9}
+.map-hero .msg{font-size:.9rem;opacity:.75;margin-top:6px}
+
+/* ── LEVEL CARDS ── */
+.band-section{margin:20px 0 0}
+.band-header{display:flex;align-items:center;gap:10px;padding:0 4px;margin-bottom:10px}
+.band-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.band-name{font-weight:700;font-size:1rem;color:var(--dark)}
+.band-progress{font-size:.8rem;color:#888;margin-left:auto}
+.level-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:0 4px}
+.level-card{
+  background:var(--white);border-radius:14px;padding:10px 6px 8px;text-align:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);cursor:pointer;transition:transform .15s,box-shadow .15s;
+  border:2px solid transparent;position:relative;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center
+}
+.level-card:hover:not(.locked){transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,.12)}
+.level-card:active:not(.locked){transform:scale(.96)}
+.level-card.locked{opacity:.4;cursor:not-allowed;filter:grayscale(.4)}
+.level-card .lv-num{font-size:1.4rem;font-weight:800;line-height:1}
+.level-card .lv-stars{font-size:.7rem;margin-top:4px;letter-spacing:1px;color:var(--orange)}
+.level-card .lv-lock{font-size:1.4rem}
+.level-card.current{border-color:var(--blue);animation:pulse 2s infinite}
+.level-card.complete{border-color:var(--green);background:linear-gradient(to bottom,#f0fff4,var(--white))}
+
+/* ── SESSION SCREEN ── */
+.session-scroll{flex:1;overflow-y:auto;padding:16px 12px 120px}
+.session-inner{max-width:500px;margin:0 auto;width:100%}
+
+/* ── UNDERSTAND PHASE ── */
+.understand-card{background:var(--white);border-radius:var(--radius);padding:24px 20px;margin-bottom:16px;box-shadow:var(--shadow);text-align:center}
+.understand-card h2{font-size:1.3rem;color:var(--dark);margin-bottom:12px}
+.visual-area{min-height:140px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin:16px 0;font-size:2.5rem;line-height:1}
+.visual-area .obj{display:inline-block;animation:popIn .3s both}
+.visual-area .obj.new{animation:slideInRight .4s both}
+.visual-area .plus-sign,.visual-area .equals-sign{font-size:2rem;font-weight:700;color:var(--dark);margin:0 6px}
+.number-label{font-size:2.8rem;font-weight:700;margin:4px 0;animation:popIn .4s}
+.number-label.c-a{color:var(--blue)}
+.number-label.c-b{color:var(--red)}
+.number-label.c-ans{color:var(--green)}
+.explain-text{font-size:1.1rem;color:var(--dark);line-height:1.6;margin:12px 0;font-weight:500}
+.big-btn{display:block;width:100%;padding:16px;border-radius:12px;font-size:1.1rem;font-weight:700;color:var(--white);min-height:52px;transition:transform .1s,filter .1s}
+.big-btn:active{transform:scale(.97)}
+.big-btn.primary{background:linear-gradient(135deg,var(--blue),#2980b9)}
+.big-btn.success{background:linear-gradient(135deg,var(--green),#27ae60)}
+.big-btn.orange{background:linear-gradient(135deg,var(--orange),#e67e22)}
+
+/* ── PRACTICE PHASE ── */
+.practice-card{background:var(--white);border-radius:var(--radius);padding:24px 20px;box-shadow:var(--shadow);text-align:center;position:relative}
+.practice-progress{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:.85rem;color:#7f8c8d}
+.practice-bar{height:8px;background:var(--light);border-radius:4px;overflow:hidden;margin-bottom:16px}
+.practice-bar-fill{height:100%;background:linear-gradient(90deg,var(--green),#27ae60);border-radius:4px;transition:width .3s}
+.dot-strip{display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-bottom:14px;min-height:34px;transition:opacity .4s}
+.dot-strip.faded{opacity:.25}
+.dot-strip.hidden{display:none}
+.dot{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:1rem}
+.dot.a{background:#dbeafe;color:var(--blue)}
+.dot.b{background:#fee2e2;color:var(--red)}
+.dot.sep{background:none;font-size:1.3rem;font-weight:700;width:auto;color:var(--dark)}
+.problem-display{font-size:3.2rem;font-weight:700;color:var(--dark);margin:10px 0;line-height:1.3;min-height:56px}
+.answer-area{display:flex;justify-content:center;align-items:center;gap:12px;margin:16px 0}
+.answer-input{width:100px;height:64px;border:3px solid var(--light);border-radius:12px;text-align:center;font-size:2.4rem;font-weight:700;color:var(--dark);outline:none;transition:border-color .2s}
+.answer-input:focus{border-color:var(--blue)}
+.answer-input.correct{border-color:var(--green);background:#f0fff0}
+.answer-input.wrong{border-color:var(--red);background:#fff0f0;animation:shake .4s}
+.submit-btn{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--green),#27ae60);color:var(--white);font-size:1.8rem;box-shadow:var(--shadow);transition:transform .1s}
+.submit-btn:active{transform:scale(.92)}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed}
+.feedback-area{min-height:44px;padding:10px;font-size:1.05rem;font-weight:600;border-radius:10px;margin-top:12px;transition:all .3s}
+.feedback-area.correct{background:#d4edda;color:#155724}
+.feedback-area.wrong{background:#fff3cd;color:#856404}
+.feedback-area.teaching{background:#cce5ff;color:#004085}
+
+/* ── RESULTS / REVIEW ── */
+.results-card{background:var(--white);border-radius:var(--radius);padding:28px 20px;box-shadow:var(--shadow);text-align:center}
+.results-card h2{font-size:1.5rem;margin-bottom:8px}
+.big-stars{font-size:3rem;margin:12px 0;letter-spacing:8px}
+.results-stat{font-size:1.05rem;margin:6px 0;color:#555}
+.results-stat strong{color:var(--dark)}
+
+/* ── PARENT PANEL ── */
+.parent-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:flex-end;justify-content:center;padding:0}
+.parent-overlay.active{display:flex}
+.parent-panel{background:var(--white);width:100%;max-width:600px;max-height:85vh;overflow-y:auto;border-radius:20px 20px 0 0;padding:24px;animation:slideUp .3s;position:relative}
+.parent-panel h2{font-size:1.2rem;margin-bottom:12px}
+.parent-panel .close-btn{position:absolute;top:12px;right:16px;background:none;font-size:1.4rem;color:#999}
+.parent-table{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
+.parent-table th,.parent-table td{padding:8px;text-align:left;border-bottom:1px solid var(--light)}
+.parent-table th{font-weight:600;color:#555;font-size:.78rem;text-transform:uppercase}
+.addend-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:12px 0}
+.addend-cell{padding:8px;border-radius:8px;text-align:center;font-size:.85rem;font-weight:600}
+.addend-cell.good{background:#d4edda;color:#155724}
+.addend-cell.warn{background:#fff3cd;color:#856404}
+.addend-cell.bad{background:#f8d7da;color:#721c24}
+.addend-cell.na{background:var(--light);color:#999}
+
+/* ── CONFETTI ── */
+.confetti-piece{position:fixed;width:10px;height:10px;z-index:200;border-radius:2px;pointer-events:none;animation:confettiFall 2s ease-out forwards}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{0%{transform:scale(0);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes slideInRight{from{transform:translateX(60px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-16px)}60%{transform:translateY(-8px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes confettiFall{0%{opacity:1;transform:translateY(0) rotate(0deg)}100%{opacity:0;transform:translateY(80vh) rotate(720deg)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(52,152,219,.4)}50%{box-shadow:0 0 0 8px rgba(52,152,219,0)}}
+
+/* ── PRINT ── */
+@media print{
+  body{background:#fff!important}
+  .top-bar,.mascot,.big-btn,.submit-btn,.back-btn,.progress-btn{display:none!important}
+  .parent-panel{position:static;max-height:none;border-radius:0;box-shadow:none}
+  .parent-overlay{position:static;display:block!important;background:none}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:400px){
+  .problem-display{font-size:2.6rem}
+  .answer-input{width:80px;height:56px;font-size:2rem}
+  .level-grid{grid-template-columns:repeat(5,1fr);gap:6px}
+  .level-card{min-height:68px;padding:8px 4px 6px}
+  .level-card .lv-num{font-size:1.2rem}
+}
+@media(min-width:600px){
+  .map-scroll{padding:0 24px 120px}
+  .level-grid{gap:12px}
+  .level-card{min-height:90px;border-radius:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- MAP SCREEN -->
+<div id="screenMap" class="screen active">
+  <div class="top-bar">
+    <div class="stars-display" id="mapStars">0 Stars</div>
+    <div class="title">Addition Adventure</div>
+    <button class="progress-btn" id="openParentBtn" aria-label="Progress report">Progress</button>
+  </div>
+  <div class="map-scroll">
+    <div class="map-hero">
+      <h1>Addition Adventure!</h1>
+      <div class="star-count" id="mapStarCount">You have 0 stars!</div>
+      <div class="msg" id="mapMsg">Tap a level to start learning!</div>
+    </div>
+    <div id="levelTrail"></div>
+  </div>
+</div>
+
+<!-- SESSION SCREEN -->
+<div id="screenSession" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" id="backToMap" aria-label="Back to map">Back</button>
+    <div class="title" id="sessionTitle"></div>
+    <div class="stars-display" id="sessionStars">0</div>
+  </div>
+  <div class="session-scroll">
+    <div class="session-inner" id="sessionContent"></div>
+  </div>
+</div>
+
+<!-- MASCOT -->
+<div class="mascot" id="mascot">
+  <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="32" cy="36" r="24" fill="#f39c12"/>
+    <circle cx="32" cy="36" r="22" fill="#f1c40f"/>
+    <circle cx="24" cy="30" r="4" fill="#2c3e50" id="mascotEyeL"/>
+    <circle cx="40" cy="30" r="4" fill="#2c3e50" id="mascotEyeR"/>
+    <ellipse cx="24" cy="30" rx="1.5" ry="1.5" fill="#fff"/>
+    <ellipse cx="40" cy="30" rx="1.5" ry="1.5" fill="#fff"/>
+    <path d="M24 42 Q32 50 40 42" stroke="#2c3e50" stroke-width="2.5" fill="none" stroke-linecap="round" id="mascotMouth"/>
+    <circle cx="16" cy="38" r="5" fill="#e74c3c" opacity=".3"/>
+    <circle cx="48" cy="38" r="5" fill="#e74c3c" opacity=".3"/>
+    <polygon points="18,12 24,22 12,22" fill="#f1c40f"/>
+    <polygon points="46,12 52,22 40,22" fill="#f1c40f"/>
+  </svg>
+</div>
+
+<!-- PARENT PANEL -->
+<div class="parent-overlay" id="parentOverlay">
+  <div class="parent-panel">
+    <button class="close-btn" id="closeParent">&#10005;</button>
+    <h2>Progress Report</h2>
+    <div id="parentContent"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ═══════════════════════════════════════
+   DATA & STATE
+═══════════════════════════════════════ */
+var BAND_COLORS=["#ff6b6b","#ffa502","#2ed573","#1e90ff","#a55eea","#ff6348"];
+
+var BANDS=[
+  {name:"Adding 1s",       color:BAND_COLORS[0], levels:5, addends:[1]},
+  {name:"Adding 2s & 3s",  color:BAND_COLORS[1], levels:5, addends:[2,3]},
+  {name:"Adding 4s & 5s",  color:BAND_COLORS[2], levels:5, addends:[4,5]},
+  {name:"Adding 6-9",      color:BAND_COLORS[3], levels:5, addends:[6,7,8,9]},
+  {name:"Mixed (sum 10)",  color:BAND_COLORS[4], levels:5, addends:"mix10"},
+  {name:"Mixed (sum 20)",  color:BAND_COLORS[5], levels:5, addends:"mix20"}
+];
+
+var TOTAL_LEVELS=30;
+var OBJECTS=["apple","star","heart","flower","fish","ball","bird","cat","dog","sun"];
+var EMOJI_MAP={apple:"🍎",star:"⭐",heart:"❤️",flower:"🌸",fish:"🐟",ball:"🎾",bird:"🐦",cat:"🐱",dog:"🐶",sun:"☀️"};
+
+var BADGES=[
+  {id:"first",   name:"First Star",        icon:"⭐", desc:"Complete your first level"},
+  {id:"perfect", name:"Perfect Ten",       icon:"🎯", desc:"Get 20/20 on a level"},
+  {id:"roll",    name:"On a Roll",         icon:"🔥", desc:"3 perfect levels in a row"},
+  {id:"explorer",name:"Addition Explorer", icon:"🚀", desc:"Complete Band 1 (Adding 1s)"},
+  {id:"master",  name:"Addition Master",   icon:"🏆", desc:"Complete all 30 levels"}
+];
+
+/* Persistent state (survives page reload via localStorage) */
+var STORAGE_KEY="kumon_addition_v1";
+var state=loadState();
+
+function defaultState(){
+  var levels=[];
+  for(var i=0;i<TOTAL_LEVELS;i++) levels.push({stars:0,completed:false,accuracy:0,date:null});
+  return {
+    levels:levels,
+    totalStars:0,
+    totalCompleted:0,
+    hadPerfect:false,
+    perfectStreak:0,
+    badges:{},
+    addendErrors:{},
+    addendAttempts:{},
+    totalTime:0
+  };
+}
+
+function loadState(){
+  try{
+    var raw=localStorage.getItem(STORAGE_KEY);
+    if(raw){var s=JSON.parse(raw);if(s&&s.levels&&s.levels.length===TOTAL_LEVELS) return s;}
+  }catch(e){}
+  return defaultState();
+}
+
+function saveState(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){}
+}
+
+var currentLevel=-1;
+var sessionPhase="";
+var sessionData={};
+
+/* ═══════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════ */
+function $(id){return document.getElementById(id);}
+function rInt(a,b){return a+Math.floor(Math.random()*(b-a+1));}
+
+function showScreen(id){
+  var screens=document.querySelectorAll(".screen");
+  for(var i=0;i<screens.length;i++) screens[i].classList.remove("active");
+  $(id).classList.add("active");
+}
+
+function getLevelBand(lvl){
+  var idx=0;
+  for(var b=0;b<BANDS.length;b++){
+    if(lvl<idx+BANDS[b].levels) return b;
+    idx+=BANDS[b].levels;
+  }
+  return BANDS.length-1;
+}
+
+function getLevelInBand(lvl){
+  var idx=0;
+  for(var b=0;b<BANDS.length;b++){
+    if(lvl<idx+BANDS[b].levels) return lvl-idx;
+    idx+=BANDS[b].levels;
+  }
+  return 0;
+}
+
+function isUnlocked(lvl){
+  return lvl===0||state.levels[lvl-1].completed;
+}
+
+function bandComplete(bIdx){
+  var start=0;
+  for(var i=0;i<bIdx;i++) start+=BANDS[i].levels;
+  for(var j=0;j<BANDS[bIdx].levels;j++){
+    if(!state.levels[start+j].completed) return false;
+  }
+  return true;
+}
+
+function allComplete(){
+  for(var i=0;i<TOTAL_LEVELS;i++){
+    if(!state.levels[i].completed) return false;
+  }
+  return true;
+}
+
+function getNextLevel(){
+  for(var i=0;i<TOTAL_LEVELS;i++){
+    if(!state.levels[i].completed) return i;
+  }
+  return -1;
+}
+
+function pickEmoji(){
+  var key=OBJECTS[rInt(0,OBJECTS.length-1)];
+  return EMOJI_MAP[key];
+}
+
+function updateStarsDisplay(){
+  var total=0;
+  for(var i=0;i<TOTAL_LEVELS;i++) total+=state.levels[i].stars;
+  state.totalStars=total;
+  $("mapStars").textContent=total+" Stars";
+  $("mapStarCount").textContent="You have "+total+" star"+(total!==1?"s":"")+"!";
+  $("sessionStars").textContent=total;
+
+  var msgs=["Tap a level to start!","Great start! Keep going!","You're doing amazing!","Superstar in the making!","Almost halfway!","Incredible progress!","You're unstoppable!","Math champion!"];
+  $("mapMsg").textContent=msgs[Math.min(Math.floor(total/12),msgs.length-1)];
+}
+
+/* ═══════════════════════════════════════
+   MASCOT
+═══════════════════════════════════════ */
+function mascotHappy(){
+  var m=$("mascot");
+  m.classList.remove("sad");
+  m.classList.add("happy");
+  $("mascotMouth").setAttribute("d","M24 42 Q32 50 40 42");
+  setTimeout(function(){m.classList.remove("happy");},600);
+}
+function mascotSad(){
+  var m=$("mascot");
+  m.classList.remove("happy");
+  m.classList.add("sad");
+  $("mascotMouth").setAttribute("d","M24 46 Q32 40 40 46");
+  setTimeout(function(){
+    m.classList.remove("sad");
+    $("mascotMouth").setAttribute("d","M24 42 Q32 50 40 42");
+  },800);
+}
+
+/* ═══════════════════════════════════════
+   CONFETTI
+═══════════════════════════════════════ */
+function fireConfetti(){
+  var colors=["#ff6b6b","#ffa502","#2ed573","#1e90ff","#f1c40f","#a55eea","#ff6348"];
+  for(var i=0;i<40;i++){
+    (function(idx){
+      var el=document.createElement("div");
+      el.className="confetti-piece";
+      el.style.left=rInt(5,95)+"%";
+      el.style.top="-10px";
+      el.style.background=colors[rInt(0,colors.length-1)];
+      el.style.width=rInt(6,12)+"px";
+      el.style.height=rInt(6,12)+"px";
+      el.style.animationDelay=(idx*40)+"ms";
+      el.style.animationDuration=rInt(1500,2500)+"ms";
+      document.body.appendChild(el);
+      setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},3500);
+    })(i);
+  }
+}
+
+/* ═══════════════════════════════════════
+   BADGES
+═══════════════════════════════════════ */
+function checkBadges(){
+  for(var i=0;i<BADGES.length;i++){
+    var b=BADGES[i];
+    if(state.badges[b.id]) continue;
+    var earned=false;
+    if(b.id==="first")   earned=state.totalCompleted>=1;
+    if(b.id==="perfect") earned=state.hadPerfect;
+    if(b.id==="roll")    earned=state.perfectStreak>=3;
+    if(b.id==="explorer")earned=bandComplete(0);
+    if(b.id==="master")  earned=allComplete();
+    if(earned){
+      state.badges[b.id]=true;
+      showBadgeToast(b);
+    }
+  }
+}
+
+function showBadgeToast(b){
+  var t=document.createElement("div");
+  t.style.cssText="position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff;padding:14px 28px;border-radius:14px;font-weight:700;z-index:200;animation:popIn .4s;box-shadow:0 6px 20px rgba(0,0,0,.25);text-align:center;font-size:1rem;white-space:nowrap";
+  t.textContent=b.icon+" "+b.name+"!";
+  document.body.appendChild(t);
+  setTimeout(function(){
+    t.style.opacity="0";t.style.transition="opacity .5s";
+    setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},500);
+  },2500);
+}
+
+/* ═══════════════════════════════════════
+   LEVEL MAP
+═══════════════════════════════════════ */
+function renderMap(){
+  var html="";
+  var lvlIdx=0;
+  var nextLvl=getNextLevel();
+
+  for(var bi=0;bi<BANDS.length;bi++){
+    var band=BANDS[bi];
+    var bandStart=lvlIdx;
+    var bandDone=0;
+    for(var c=0;c<band.levels;c++){if(state.levels[bandStart+c].completed) bandDone++;}
+
+    html+='<div class="band-section">';
+    html+='<div class="band-header">';
+    html+='<div class="band-dot" style="background:'+band.color+'"></div>';
+    html+='<div class="band-name">'+band.name+'</div>';
+    html+='<div class="band-progress">'+bandDone+'/'+band.levels+'</div>';
+    html+='</div>';
+    html+='<div class="level-grid">';
+
+    for(var i=0;i<band.levels;i++){
+      var lvl=lvlIdx;
+      var ld=state.levels[lvl];
+      var unlock=isUnlocked(lvl);
+      var isCurrent=(lvl===nextLvl);
+      var cls="level-card";
+      if(!unlock) cls+=" locked";
+      else if(ld.completed) cls+=" complete";
+      if(isCurrent) cls+=" current";
+
+      html+='<div class="'+cls+'" data-level="'+lvl+'" tabindex="0" role="button" aria-label="Level '+(lvl+1)+'" style="border-top:3px solid '+band.color+'">';
+      if(unlock){
+        html+='<div class="lv-num" style="color:'+band.color+'">'+(lvl+1)+'</div>';
+        var starStr="";
+        for(var s=0;s<3;s++) starStr+=(s<ld.stars?"★":"☆");
+        html+='<div class="lv-stars">'+starStr+'</div>';
+      }else{
+        html+='<div class="lv-lock">🔒</div>';
+      }
+      html+='</div>';
+      lvlIdx++;
+    }
+
+    html+='</div></div>';
+  }
+
+  $("levelTrail").innerHTML=html;
+
+  /* Attach click handlers */
+  var cards=document.querySelectorAll(".level-card:not(.locked)");
+  for(var k=0;k<cards.length;k++){
+    (function(card){
+      card.addEventListener("click",function(){
+        startLevel(parseInt(card.getAttribute("data-level")));
+      });
+    })(cards[k]);
+  }
+
+  updateStarsDisplay();
+  saveState();
+}
+
+/* ═══════════════════════════════════════
+   START LEVEL
+═══════════════════════════════════════ */
+function startLevel(lvl){
+  currentLevel=lvl;
+  var bi=getLevelBand(lvl);
+  $("sessionTitle").textContent="Level "+(lvl+1)+" - "+BANDS[bi].name;
+  showScreen("screenSession");
+  showUnderstandPhase1();
+}
+
+/* ═══════════════════════════════════════
+   UNDERSTAND PHASE 1 — See It
+═══════════════════════════════════════ */
+function getAddendForLevel(lvl){
+  var bi=getLevelBand(lvl);
+  var band=BANDS[bi];
+  var inBand=getLevelInBand(lvl);
+  if(band.addends==="mix10"||band.addends==="mix20") return rInt(1,9);
+  return band.addends[inBand%band.addends.length];
+}
+
+function showUnderstandPhase1(){
+  sessionPhase="understand1";
+  var addend=getAddendForLevel(currentLevel);
+  var a=rInt(1,Math.min(9,10-addend));
+  if(a<1) a=1;
+  var b=addend;
+  var total=a+b;
+  var emoji=pickEmoji();
+  var step=0;
+
+  var html='<div class="understand-card">';
+  html+='<h2>Let\'s See It!</h2>';
+  html+='<div class="visual-area" id="u1Visual">';
+  for(var i=0;i<a;i++) html+='<span class="obj" style="animation-delay:'+(i*80)+'ms">'+emoji+'</span>';
+  html+='</div>';
+  html+='<div class="explain-text" id="u1Text">Look! We have '+a+' '+emoji+(a>1?'s':'')+'.</div>';
+  html+='<button class="big-btn primary" id="u1Next">Tap to add more!</button>';
+  html+='</div>';
+  $("sessionContent").innerHTML=html;
+
+  $("u1Next").addEventListener("click",function onU1Click(){
+    step++;
+    if(step===1){
+      var vis=$("u1Visual");
+      for(var i=0;i<b;i++){
+        var sp=document.createElement("span");
+        sp.className="obj new";
+        sp.style.animationDelay=(i*100)+"ms";
+        sp.textContent=emoji;
+        vis.appendChild(sp);
+      }
+      $("u1Text").textContent="We added "+b+" more "+emoji+(b>1?"s":"")+"!";
+      $("u1Next").textContent="Count them all!";
+    }else if(step===2){
+      var vis=$("u1Visual");
+      var objs=vis.querySelectorAll(".obj");
+      var count=0;
+      $("u1Next").style.display="none";
+      function countNext(){
+        if(count<objs.length){
+          objs[count].style.transform="scale(1.4)";
+          objs[count].style.transition="transform .2s";
+          count++;
+          $("u1Text").textContent=count+"...";
+          setTimeout(function(){
+            if(count>0 && objs[count-1]) objs[count-1].style.transform="scale(1)";
+            countNext();
+          },350);
+        }else{
+          $("u1Text").textContent=total+" altogether!";
+          $("u1Next").style.display="block";
+          $("u1Next").textContent="Now with numbers!";
+          $("u1Next").className="big-btn success";
+          mascotHappy();
+        }
+      }
+      countNext();
+      return;
+    }else{
+      showUnderstandPhase2(a,b,emoji);
+      return;
+    }
+  });
+}
+
+/* ═══════════════════════════════════════
+   UNDERSTAND PHASE 2 — Connect It
+═══════════════════════════════════════ */
+function showUnderstandPhase2(a,b,emoji){
+  sessionPhase="understand2";
+  var total=a+b;
+  var step=0;
+
+  var html='<div class="understand-card">';
+  html+='<h2>Connect It!</h2>';
+  html+='<div class="visual-area" id="u2Visual">';
+  for(var i=0;i<a;i++) html+='<span class="obj" style="animation-delay:'+(i*60)+'ms">'+emoji+'</span>';
+  html+='<span class="plus-sign" id="u2Plus" style="opacity:0">+</span>';
+  for(var i=0;i<b;i++) html+='<span class="obj" style="animation-delay:'+((a+i)*60)+'ms;opacity:0" data-group="b">'+emoji+'</span>';
+  html+='<span class="equals-sign" id="u2Eq" style="opacity:0">=</span>';
+  html+='<span id="u2Ans" style="opacity:0;font-size:2.8rem;font-weight:700;color:#2ecc71">?</span>';
+  html+='</div>';
+  html+='<div id="u2Nums" style="font-size:2.2rem;font-weight:700;min-height:50px;margin:8px 0"></div>';
+  html+='<div class="explain-text" id="u2Text"></div>';
+  html+='<button class="big-btn primary" id="u2Next">Show the numbers!</button>';
+  html+='</div>';
+  $("sessionContent").innerHTML=html;
+
+  $("u2Next").addEventListener("click",function(){
+    step++;
+    if(step===1){
+      var bItems=document.querySelectorAll("[data-group='b']");
+      for(var i=0;i<bItems.length;i++){
+        (function(el,idx){
+          setTimeout(function(){el.style.opacity="1";},idx*120);
+        })(bItems[i],i);
+      }
+      setTimeout(function(){$("u2Plus").style.opacity="1";},200);
+      $("u2Nums").innerHTML='<span class="number-label c-a">'+a+'</span> <span style="color:#333">+</span> <span class="number-label c-b">'+b+'</span> <span style="color:#333">=</span> <span style="color:#999;font-size:2.2rem">?</span>';
+      $("u2Text").textContent=a+" plus "+b+" equals... what?";
+      $("u2Next").textContent="Show the answer!";
+    }else if(step===2){
+      $("u2Eq").style.opacity="1";
+      $("u2Ans").style.opacity="1";
+      $("u2Ans").textContent=total;
+      $("u2Nums").innerHTML='<span class="number-label c-a">'+a+'</span> <span style="color:#333">+</span> <span class="number-label c-b">'+b+'</span> <span style="color:#333">=</span> <span class="number-label c-ans">'+total+'</span>';
+      $("u2Text").textContent=a+" + "+b+" = "+total+"!";
+      $("u2Next").textContent="I'm ready to practice!";
+      $("u2Next").className="big-btn success";
+      mascotHappy();
+    }else{
+      startPractice();
+    }
+  });
+}
+
+/* ═══════════════════════════════════════
+   PRACTICE PHASE
+═══════════════════════════════════════ */
+function generateProblems(lvl,count){
+  var bi=getLevelBand(lvl);
+  var band=BANDS[bi];
+  var inBand=getLevelInBand(lvl);
+  var n=count||20;
+  var problems=[];
+
+  for(var i=0;i<n;i++){
+    var addend,base;
+    if(band.addends==="mix10"){
+      addend=rInt(1,9);
+      base=rInt(1,10-addend);
+    }else if(band.addends==="mix20"){
+      addend=rInt(1,9);
+      base=rInt(1,Math.min(11,20-addend));
+    }else{
+      var aIdx=(inBand+Math.floor(i/4))%band.addends.length;
+      addend=band.addends[aIdx];
+      base=rInt(1,Math.min(9,20-addend));
+      if(base<1) base=1;
+    }
+    if(Math.random()>0.5){
+      problems.push({a:base,b:addend});
+    }else{
+      problems.push({a:addend,b:base});
+    }
+  }
+  return problems;
+}
+
+function startPractice(){
+  sessionPhase="practice";
+  var lvlInBand=getLevelInBand(currentLevel);
+  var dotsClass=lvlInBand>=3?"faded":"";
+
+  sessionData={
+    problems:generateProblems(currentLevel,20),
+    idx:0,correct:0,mistakes:0,attempts:0,
+    startTime:Date.now(),dotsClass:dotsClass,
+    slowCount:0,problemTimes:[]
+  };
+  renderProblem();
+}
+
+function renderProblem(){
+  var d=sessionData;
+  if(d.idx>=d.problems.length){showResults();return;}
+  var p=d.problems[d.idx];
+
+  var html='<div class="practice-card">';
+  html+='<div class="practice-progress"><span>Problem '+(d.idx+1)+' / '+d.problems.length+'</span><span>'+d.correct+' correct</span></div>';
+  html+='<div class="practice-bar"><div class="practice-bar-fill" style="width:'+((d.idx/d.problems.length)*100)+'%"></div></div>';
+
+  /* Dot strip (visual aid) */
+  html+='<div class="dot-strip '+d.dotsClass+'" id="dotStrip">';
+  for(var i=0;i<p.a;i++) html+='<span class="dot a">&#9679;</span>';
+  html+='<span class="dot sep">+</span>';
+  for(var i=0;i<p.b;i++) html+='<span class="dot b">&#9679;</span>';
+  html+='</div>';
+
+  html+='<div class="problem-display">'+p.a+' + '+p.b+' = ?</div>';
+  html+='<div class="answer-area">';
+  html+='<input type="number" class="answer-input" id="answerInput" inputmode="numeric" autocomplete="off" aria-label="Your answer">';
+  html+='<button class="submit-btn" id="submitBtn" aria-label="Check answer">&#10003;</button>';
+  html+='</div>';
+  html+='<div class="feedback-area" id="feedback"></div>';
+  html+='</div>';
+  $("sessionContent").innerHTML=html;
+
+  d.problemStart=Date.now();
+  d.attempts=0;
+
+  var inp=$("answerInput");
+  setTimeout(function(){inp.focus();},120);
+
+  inp.addEventListener("keydown",function(e){
+    if(e.key==="Enter") checkAnswer();
+  });
+  $("submitBtn").addEventListener("click",checkAnswer);
+}
+
+function checkAnswer(){
+  var d=sessionData;
+  var p=d.problems[d.idx];
+  var total=p.a+p.b;
+  var inp=$("answerInput");
+  var val=parseInt(inp.value,10);
+  var fb=$("feedback");
+  var addend=Math.max(p.a,p.b);
+  var elapsed=Date.now()-d.problemStart;
+
+  if(isNaN(val)||inp.value===""){
+    fb.className="feedback-area wrong";
+    fb.textContent="Type a number first!";
+    return;
+  }
+
+  /* Track per-addend */
+  if(!state.addendAttempts[addend]) state.addendAttempts[addend]=0;
+  state.addendAttempts[addend]++;
+  d.attempts++;
+
+  if(val===total){
+    /* Correct */
+    d.correct++;
+    d.problemTimes.push(elapsed);
+    inp.classList.add("correct");
+    inp.disabled=true;
+    $("submitBtn").disabled=true;
+    fb.className="feedback-area correct";
+    var msgs=["Great job!","Amazing!","You got it!","Wonderful!","Super!","Fantastic!","Nice work!"];
+    fb.textContent=msgs[rInt(0,msgs.length-1)];
+    mascotHappy();
+    setTimeout(function(){d.idx++;renderProblem();},850);
+  }else{
+    /* Wrong */
+    if(!state.addendErrors[addend]) state.addendErrors[addend]=0;
+    state.addendErrors[addend]++;
+
+    inp.classList.add("wrong");
+    setTimeout(function(){inp.classList.remove("wrong");inp.value="";inp.focus();},400);
+
+    /* Show dots if hidden */
+    var strip=$("dotStrip");
+    if(strip) strip.className="dot-strip";
+
+    if(d.attempts===1){
+      fb.className="feedback-area wrong";
+      fb.textContent="Let's try again! You can do it!";
+      mascotSad();
+    }else{
+      /* Second wrong: teach the answer */
+      fb.className="feedback-area teaching";
+      inp.disabled=true;
+      $("submitBtn").disabled=true;
+      teachAnswer(p.a,p.b,total);
+    }
+  }
+
+  /* Slow detection */
+  if(elapsed>20000) d.slowCount++;
+  if(d.slowCount>=3) d.dotsClass="";
+}
+
+function teachAnswer(a,b,total){
+  var fb=$("feedback");
+  var count=0;
+  fb.innerHTML="Let's count together!";
+
+  function countStep(){
+    if(count<a){
+      count++;
+      fb.innerHTML="Count: <strong>"+count+"...</strong>";
+      setTimeout(countStep,450);
+    }else if(count<total){
+      count++;
+      fb.innerHTML="Plus "+(count-a)+" more... <strong>"+count+"!</strong>";
+      setTimeout(countStep,450);
+    }else{
+      fb.innerHTML="<strong>"+a+" + "+b+" = "+total+"</strong> — Now you know!";
+      var inp=$("answerInput");
+      if(inp){inp.value=total;inp.classList.add("correct");}
+      mascotHappy();
+      setTimeout(function(){sessionData.idx++;renderProblem();},2200);
+    }
+  }
+  setTimeout(countStep,400);
+}
+
+/* ═══════════════════════════════════════
+   RESULTS
+═══════════════════════════════════════ */
+function showResults(){
+  var d=sessionData;
+  var total=d.problems.length;
+  var elapsed=Math.round((Date.now()-d.startTime)/1000);
+  state.totalTime+=elapsed;
+
+  /* Star calculation */
+  var mistakes=total-d.correct;
+  var stars=1;
+  if(mistakes===0) stars=3;
+  else if(mistakes<=2) stars=2;
+
+  /* Update level */
+  var ld=state.levels[currentLevel];
+  if(stars>ld.stars) ld.stars=stars;
+  ld.completed=true;
+  ld.accuracy=Math.round((d.correct/total)*100);
+  ld.date=new Date().toLocaleDateString();
+  state.totalCompleted++;
+
+  if(mistakes===0){state.hadPerfect=true;state.perfectStreak++;}
+  else{state.perfectStreak=0;}
+
+  var starStr="";
+  for(var i=0;i<3;i++) starStr+=(i<stars?"⭐":"☆");
+
+  var isReviewLevel=((currentLevel+1)%5===0)&&(currentLevel<TOTAL_LEVELS-1);
+  var heading=stars===3?"PERFECT!":stars===2?"Great Work!":"Level Complete!";
+
+  var html='<div class="results-card">';
+  html+='<h2>'+heading+'</h2>';
+  html+='<div class="big-stars">'+starStr+'</div>';
+  html+='<div class="results-stat">You got <strong>'+d.correct+'</strong> out of <strong>'+total+'</strong> right!</div>';
+  html+='<div class="results-stat">Time: <strong>'+Math.floor(elapsed/60)+'m '+elapsed%60+'s</strong></div>';
+
+  if(stars===3){
+    html+='<div class="results-stat" style="margin-top:12px;font-size:1.15rem;color:#2ecc71;font-weight:700">Amazing — you\'re a star!</div>';
+  }else{
+    html+='<div class="results-stat" style="margin-top:12px;color:#888">Keep practicing to earn more stars!</div>';
+  }
+
+  if(isReviewLevel){
+    html+='<div style="margin-top:16px;padding:12px;background:#f0f0f0;border-radius:10px"><strong>Band Complete!</strong><br>Great job finishing this group!</div>';
+    html+='<button class="big-btn orange" id="startReview" style="margin-top:14px">Start Band Review!</button>';
+  }
+
+  html+='<button class="big-btn primary" id="backMap" style="margin-top:12px">Back to Map</button>';
+  html+='</div>';
+  $("sessionContent").innerHTML=html;
+
+  if(stars===3) fireConfetti();
+  mascotHappy();
+  checkBadges();
+  updateStarsDisplay();
+  checkStruggles();
+  saveState();
+
+  $("backMap").addEventListener("click",function(){showScreen("screenMap");renderMap();});
+  var reviewBtn=$("startReview");
+  if(reviewBtn) reviewBtn.addEventListener("click",function(){startReview();});
+}
+
+/* ═══════════════════════════════════════
+   REVIEW (every 5 levels)
+═══════════════════════════════════════ */
+function startReview(){
+  sessionPhase="review";
+  sessionData={
+    problems:generateProblems(currentLevel,50),
+    idx:0,correct:0,mistakes:0,attempts:0,
+    startTime:Date.now(),dotsClass:"faded",
+    slowCount:0,problemTimes:[]
+  };
+  renderProblem();
+}
+
+/* ═══════════════════════════════════════
+   STRUGGLE DETECTION
+═══════════════════════════════════════ */
+function checkStruggles(){
+  for(var addend in state.addendErrors){
+    if(!state.addendErrors.hasOwnProperty(addend)) continue;
+    if(state.addendErrors[addend]>=3){
+      var attempts=state.addendAttempts[addend]||1;
+      var errRate=state.addendErrors[addend]/attempts;
+      if(errRate>0.3){
+        showStruggleSupport(parseInt(addend,10));
+        state.addendErrors[addend]=0;
+        return;
+      }
+    }
+  }
+}
+
+function showStruggleSupport(addend){
+  var emoji=pickEmoji();
+  var a=rInt(1,Math.min(5,10-addend));
+  if(a<1) a=1;
+  var total=a+addend;
+
+  var html='<div class="understand-card" style="border:3px solid #f39c12">';
+  html+='<h2>Let\'s Practice Adding '+addend+'!</h2>';
+  html+='<div class="explain-text">You\'re SO close! Let\'s see it one more time.</div>';
+  html+='<div class="visual-area">';
+  for(var i=0;i<a;i++) html+='<span class="obj">'+emoji+'</span>';
+  html+='<span class="plus-sign">+</span>';
+  for(var i=0;i<addend;i++) html+='<span class="obj new" style="animation-delay:'+(i*100)+'ms">'+emoji+'</span>';
+  html+='</div>';
+  html+='<div style="font-size:2rem;font-weight:700;margin:8px 0"><span class="number-label c-a">'+a+'</span> + <span class="number-label c-b">'+addend+'</span> = <span class="number-label c-ans">'+total+'</span></div>';
+  html+='<div class="explain-text">'+a+' plus '+addend+' equals '+total+'!</div>';
+  html+='<button class="big-btn success" id="struggleContinue">I got it! Let\'s keep going!</button>';
+  html+='</div>';
+
+  var overlay=document.createElement("div");
+  overlay.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .3s";
+  var card=document.createElement("div");
+  card.style.cssText="max-width:420px;width:100%";
+  card.innerHTML=html;
+  overlay.appendChild(card);
+  document.body.appendChild(overlay);
+
+  card.querySelector("#struggleContinue").addEventListener("click",function(){
+    if(overlay.parentNode) overlay.parentNode.removeChild(overlay);
+  });
+}
+
+/* ═══════════════════════════════════════
+   PARENT PANEL
+═══════════════════════════════════════ */
+function renderParentPanel(){
+  var html="";
+  var totalMin=Math.floor(state.totalTime/60);
+  html+='<p style="color:#555;font-size:.9rem;margin-bottom:12px">Total time: <strong>'+totalMin+' min</strong> | Levels done: <strong>'+state.totalCompleted+'</strong> | Stars: <strong>'+state.totalStars+'</strong></p>';
+
+  /* Per-level table */
+  html+='<h3 style="font-size:.95rem;margin-bottom:6px">Level Progress</h3>';
+  html+='<table class="parent-table"><thead><tr><th>#</th><th>Band</th><th>Stars</th><th>Acc.</th><th>Date</th></tr></thead><tbody>';
+  var lvlIdx=0;
+  for(var bi=0;bi<BANDS.length;bi++){
+    var band=BANDS[bi];
+    for(var i=0;i<band.levels;i++){
+      var ld=state.levels[lvlIdx];
+      var starStr="";for(var s=0;s<3;s++) starStr+=(s<ld.stars?"★":"☆");
+      html+='<tr><td>'+(lvlIdx+1)+'</td><td>'+band.name+'</td><td>'+starStr+'</td><td>'+(ld.completed?ld.accuracy+"%":"--")+'</td><td>'+(ld.date||"--")+'</td></tr>';
+      lvlIdx++;
+    }
+  }
+  html+='</tbody></table>';
+
+  /* Per-addend accuracy */
+  html+='<h3 style="font-size:.95rem;margin:16px 0 6px">Accuracy by Addend</h3>';
+  html+='<div class="addend-grid">';
+  for(var add=1;add<=9;add++){
+    var att=state.addendAttempts[add]||0;
+    var err=state.addendErrors[add]||0;
+    var acc=att>0?Math.round(((att-err)/att)*100):0;
+    var cls=att===0?"na":acc>=85?"good":acc>=60?"warn":"bad";
+    html+='<div class="addend-cell '+cls+'">+'+add+'<br>'+(att>0?acc+"%":"--")+'</div>';
+  }
+  html+='</div>';
+
+  /* Badges */
+  html+='<h3 style="font-size:.95rem;margin:16px 0 6px">Achievements</h3>';
+  html+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
+  for(var i=0;i<BADGES.length;i++){
+    var b=BADGES[i];
+    var earned=!!state.badges[b.id];
+    html+='<div style="padding:6px 12px;border-radius:8px;font-size:.85rem;font-weight:600;'+(earned?"background:#d4edda;color:#155724":"background:#f0f0f0;color:#999")+'">'+(earned?b.icon:"🔒")+" "+b.name+'</div>';
+  }
+  html+='</div>';
+
+  /* Reset button */
+  html+='<div style="margin-top:24px;text-align:center"><button id="resetBtn" style="padding:8px 20px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#999;font-size:.8rem;cursor:pointer">Reset All Progress</button></div>';
+
+  $("parentContent").innerHTML=html;
+
+  $("resetBtn").addEventListener("click",function(){
+    if(confirm("Are you sure you want to reset ALL progress? This cannot be undone.")){
+      state=defaultState();
+      saveState();
+      renderMap();
+      $("parentOverlay").classList.remove("active");
+    }
+  });
+}
+
+/* ═══════════════════════════════════════
+   EVENT LISTENERS
+═══════════════════════════════════════ */
+$("backToMap").addEventListener("click",function(){
+  showScreen("screenMap");
+  renderMap();
+});
+
+$("openParentBtn").addEventListener("click",function(){
+  renderParentPanel();
+  $("parentOverlay").classList.add("active");
+});
+
+$("closeParent").addEventListener("click",function(){
+  $("parentOverlay").classList.remove("active");
+});
+
+$("parentOverlay").addEventListener("click",function(e){
+  if(e.target===$("parentOverlay")) $("parentOverlay").classList.remove("active");
+});
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+renderMap();
+
+})();
+</script>
+</body>
+</html>

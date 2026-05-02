@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kumon Math — Level B2: 2-Digit Addition With Regrouping</title>
+<style>
+  :root {
+    --sky: #e8f4ff;
+    --blue: #4a90d9;
+    --dark-blue: #2c5f8a;
+    --green: #34c270;
+    --dark-green: #1e8a50;
+    --yellow: #ffd54f;
+    --orange: #ff8c42;
+    --red: #ff5252;
+    --purple: #7c4dff;
+    --white: #ffffff;
+    --light-gray: #f5f5f5;
+    --border: #dce3eb;
+    --text: #2d2d2d;
+    --muted: #7a8a9a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(160deg, #d0eaff 0%, #fdf6ff 100%);
+    min-height: 100vh;
+    color: var(--text);
+    font-size: 17px;
+  }
+
+  /* ── HUD ── */
+  #hud {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--dark-blue);
+    color: white;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 16px;
+    gap: 8px;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  }
+  .hud-pill {
+    background: rgba(255,255,255,.15);
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: transform .15s;
+  }
+  .hud-pill.bump { animation: bump .3s; }
+  @keyframes bump { 0%,100%{transform:scale(1)} 50%{transform:scale(1.25)} }
+
+  /* ── SFX Toast ── */
+  #sfx-toast {
+    position: fixed;
+    top: 68px;
+    right: 16px;
+    background: var(--purple);
+    color: white;
+    padding: 8px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s;
+    z-index: 200;
+    letter-spacing: .04em;
+  }
+  #sfx-toast.show { opacity: 1; }
+
+  /* ── Main layout ── */
+  main {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  /* ── Screen cards ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .card {
+    background: white;
+    border-radius: 20px;
+    padding: 28px 24px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 18px rgba(74,144,217,.12);
+  }
+
+  h1 { font-size: 1.6rem; color: var(--dark-blue); line-height: 1.25; }
+  h2 { font-size: 1.2rem; color: var(--dark-blue); margin-bottom: 10px; }
+  h3 { font-size: 1rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+
+  p { line-height: 1.65; margin-bottom: 8px; }
+  .big-emoji { font-size: 3rem; display: block; text-align: center; margin-bottom: 8px; }
+
+  /* ── Steps list ── */
+  .steps { list-style: none; counter-reset: step; }
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: .97rem;
+    line-height: 1.5;
+  }
+  .steps li::before {
+    content: counter(step);
+    min-width: 28px;
+    height: 28px;
+    background: var(--blue);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: .85rem;
+    flex-shrink: 0;
+  }
+
+  /* ── Column-addition display ── */
+  .column-add {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-end;
+    background: var(--sky);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 22px;
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    margin: 12px auto;
+    display: block;
+    width: fit-content;
+    line-height: 1.4;
+    color: var(--dark-blue);
+  }
+  .column-add .carry {
+    font-size: 1.1rem;
+    color: var(--orange);
+    align-self: flex-end;
+    margin-right: 6px;
+  }
+  .col-line {
+    width: 100%;
+    border-top: 3px solid var(--dark-blue);
+    margin: 4px 0;
+  }
+
+  /* ── Highlight spans ── */
+  .hi-ones { background: #fff3e0; border-radius: 4px; padding: 1px 4px; color: var(--orange); font-weight: 700; }
+  .hi-tens  { background: #e8f5e9; border-radius: 4px; padding: 1px 4px; color: var(--dark-green); font-weight: 700; }
+  .hi-carry { background: #fce4ec; border-radius: 4px; padding: 1px 4px; color: var(--red); font-weight: 700; }
+
+  /* ── Practice problem ── */
+  .problem-wrap {
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 14px;
+    transition: border-color .2s;
+  }
+  .problem-wrap.correct  { border-color: var(--green); background: #f0fdf4; }
+  .problem-wrap.wrong    { border-color: var(--red);   background: #fff5f5; }
+  .problem-wrap.retrying { border-color: var(--orange); background: #fffbf0; }
+
+  .problem-label { font-size: .85rem; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+  .problem-type-badge {
+    display: inline-block;
+    font-size: .72rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .badge-direct  { background: #e3f2fd; color: #1565c0; }
+  .badge-missing { background: #fce4ec; color: #c62828; }
+  .badge-truefalse { background: #f3e5f5; color: #6a1b9a; }
+  .badge-mistake { background: #fff8e1; color: #e65100; }
+  .badge-word    { background: #e8f5e9; color: #1b5e20; }
+
+  .problem-text {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--dark-blue);
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+
+  .answer-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .answer-input {
+    width: 90px;
+    height: 52px;
+    border: 2.5px solid var(--border);
+    border-radius: 12px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--dark-blue);
+    outline: none;
+    transition: border-color .2s;
+  }
+  .answer-input:focus { border-color: var(--blue); }
+
+  .check-btn {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 22px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+  }
+  .check-btn:hover { background: var(--dark-blue); transform: translateY(-1px); }
+  .check-btn:disabled { background: #b0bec5; cursor: default; transform: none; }
+
+  .feedback-msg {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: .95rem;
+    font-weight: 600;
+    display: none;
+  }
+  .feedback-msg.show { display: block; }
+  .feedback-msg.ok  { background: #d4edda; color: #155724; }
+  .feedback-msg.err { background: #fde8e8; color: #7f1d1d; }
+  .feedback-msg.hint { background: #fff8e1; color: #5d4037; }
+
+  /* ── TF choice ── */
+  .tf-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .tf-btn {
+    flex: 1 1 100px;
+    padding: 12px;
+    border: 2.5px solid var(--border);
+    border-radius: 12px;
+    background: white;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .tf-btn:hover { border-color: var(--blue); background: var(--sky); }
+  .tf-btn.selected { border-color: var(--blue); background: var(--sky); }
+
+  /* ── Nav buttons ── */
+  .nav-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    flex: 1;
+    background: linear-gradient(135deg, var(--blue), var(--dark-blue));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 4px 12px rgba(74,144,217,.35);
+    text-align: center;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(74,144,217,.45); }
+
+  .btn-secondary {
+    flex: 1;
+    background: white;
+    color: var(--blue);
+    border: 2px solid var(--blue);
+    border-radius: 14px;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .btn-secondary:hover { background: var(--sky); }
+
+  /* ── Reward card ── */
+  .reward-card {
+    background: linear-gradient(135deg, #fff9c4, #ffe082);
+    border: 2px solid #f9a825;
+    border-radius: 20px;
+    padding: 22px;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .reward-card h2 { color: #e65100; margin-bottom: 6px; }
+  .reward-card p { font-size: .97rem; color: #5d4037; }
+
+  .badge-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 12px;
+  }
+  .badge-chip {
+    background: white;
+    border: 2px solid var(--yellow);
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: .9rem;
+    font-weight: 700;
+    color: #5d4037;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .badge-chip.earned { border-color: var(--green); background: #f0fdf4; color: var(--dark-green); }
+
+  /* ── SFX label inline ── */
+  .sfx-tag {
+    display: inline-block;
+    background: #ede7f6;
+    color: var(--purple);
+    font-size: .72rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-family: monospace;
+    vertical-align: middle;
+    margin-left: 4px;
+  }
+
+  /* ── Progress bar ── */
+  .progress-bar-wrap {
+    background: #dce3eb;
+    border-radius: 999px;
+    height: 10px;
+    overflow: hidden;
+    margin: 8px 0 16px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), var(--green));
+    border-radius: 999px;
+    transition: width .4s ease;
+  }
+
+  /* ── Recap box ── */
+  .recap-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: .95rem;
+  }
+  .recap-item:last-child { border-bottom: none; }
+  .check-icon { color: var(--green); font-size: 1.3rem; }
+
+  /* ── Character mascot ── */
+  .mascot {
+    text-align: center;
+    font-size: 4rem;
+    margin-bottom: 4px;
+    animation: bounce 1.5s infinite ease-in-out;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+
+  /* ── Star display ── */
+  .stars { color: var(--yellow); font-size: 1.5rem; letter-spacing: 2px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 480px) {
+    h1 { font-size: 1.35rem; }
+    .column-add { font-size: 1.6rem; }
+    .problem-text { font-size: 1.3rem; }
+    .answer-input { width: 76px; height: 46px; font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HUD -->
+<div id="hud" role="banner" aria-label="Progress stats">
+  <div class="hud-pill" id="hud-level">🐯 Tiny Tiger</div>
+  <div class="hud-pill" id="hud-points">⭐ 0 pts</div>
+  <div class="hud-pill" id="hud-streak">🔥 0 streak</div>
+  <div class="hud-pill" id="hud-screen">Screen 1 / 7</div>
+</div>
+
+<!-- SFX Toast -->
+<div id="sfx-toast" role="status" aria-live="polite"></div>
+
+<main>
+
+<!-- ═══════════════════════════════════
+     SCREEN 1 · WELCOME
+═══════════════════════════════════ -->
+<section class="screen active" id="s1" aria-label="Welcome">
+  <div class="card">
+    <div class="mascot">🐯</div>
+    <h1 style="text-align:center;">Addition Power-Up!<br/>2-Digit Numbers with Regrouping</h1>
+    <p style="text-align:center;margin:10px 0;font-size:1rem;color:var(--muted);">Level B2 · Ages 6–8 · Kumon Math</p>
+
+    <div style="background:var(--sky);border-radius:14px;padding:16px;margin:16px 0;">
+      <h3>🎯 Your Mission</h3>
+      <p>Learn how to <strong>carry a ten</strong> when you add big numbers.<br/>
+         Earn points, build streaks, and unlock the <strong>Regrouping Hero</strong> badge! 🏅</p>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;">
+      <div style="flex:1;min-width:140px;background:#fff3e0;border-radius:12px;padding:12px;text-align:center;">
+        <div style="font-size:1.8rem;">📚</div>
+        <div style="font-weight:700;font-size:.9rem;">2 Worked Examples</div>
+      </div>
+      <div style="flex:1;min-width:140px;background:#e8f5e9;border-radius:12px;padding:12px;text-align:center;">
+        <div style="font-size:1.8rem;">✏️</div>
+        <div style="font-weight:700;font-size:.9rem;">8 Practice Problems</div>
+      </div>
+      <div style="flex:1;min-width:140px;background:#fce4ec;border-radius:12px;padding:12px;text-align:center;">
+        <div style="font-size:1.8rem;">🏆</div>
+        <div style="font-weight:700;font-size:.9rem;">2 Challenge Rounds</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-primary" onclick="goTo('s2')" aria-label="Start lesson">
+        Let's Go! 🚀
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     SCREEN 2 · LEARN
+═══════════════════════════════════ -->
+<section class="screen" id="s2" aria-label="Learn the concept">
+  <div class="card">
+    <h2>📖 Learn</h2>
+    <h1>When Ones Make 10 or More…</h1>
+
+    <p style="margin-top:12px;">Sometimes when we add the <span class="hi-ones">ones</span>, we get <strong>10 or more</strong>.<br/>
+    That's too big to fit in the ones place!</p>
+
+    <p>So we <strong>bundle 10 ones into 1 new ten</strong> and <em>carry it over</em> to the tens column.<br/>
+    We call this <strong>regrouping</strong> — it just means moving a group to the right column. 🎁</p>
+
+    <div style="background:#fff8e1;border-left:4px solid var(--orange);border-radius:10px;padding:14px;margin:14px 0;">
+      <strong>🦊 Think of it like this:</strong><br/>
+      You have 14 stickers. You put 10 in a bag (= 1 ten) and keep 4 loose (= 4 ones).<br/>
+      So 14 = <span class="hi-tens">1 ten</span> + <span class="hi-ones">4 ones</span>.
+    </div>
+
+    <div style="background:var(--sky);border-radius:12px;padding:14px;margin-top:12px;">
+      <strong>Three magic rules:</strong>
+      <ol style="margin-top:8px;padding-left:20px;line-height:2;">
+        <li>Always add the <span class="hi-ones">ones</span> first.</li>
+        <li>If the ones total is 10 or more, write the <span class="hi-ones">ones digit</span> and <span class="hi-carry">carry the 1</span>.</li>
+        <li>Add the <span class="hi-tens">tens</span> — don't forget to include the <span class="hi-carry">carried 1</span>!</li>
+      </ol>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-secondary" onclick="goTo('s1')">← Back</button>
+      <button class="btn-primary"   onclick="goTo('s3')">See Examples →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     SCREEN 3 · WORKED EXAMPLES
+═══════════════════════════════════ -->
+<section class="screen" id="s3" aria-label="Worked examples">
+  <div class="card">
+    <h2>💡 Example 1</h2>
+    <h1>27 + 15 = ?</h1>
+
+    <div class="column-add" aria-label="27 plus 15 column addition">
+      <span class="carry">¹</span>
+      <span>&nbsp;2 7</span>
+      <span>+ 1 5</span>
+      <div class="col-line"></div>
+      <span>&nbsp;4 2</span>
+    </div>
+
+    <ol class="steps">
+      <li>Add the <span class="hi-ones">ones</span>: <strong>7 + 5 = 12</strong></li>
+      <li>12 has <span class="hi-ones">2 ones</span> and <span class="hi-carry">1 ten</span> — write <strong>2</strong> in the ones place.</li>
+      <li>Carry the <span class="hi-carry">1</span> to the tens column (the little "¹" on top).</li>
+      <li>Add the <span class="hi-tens">tens</span>: <strong>2 + 1 + 1 (carried) = 4</strong> — write <strong>4</strong> in the tens place.</li>
+      <li>✅ Answer: <strong>42</strong></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>💡 Example 2</h2>
+    <h1>38 + 26 = ?</h1>
+
+    <div class="column-add" aria-label="38 plus 26 column addition">
+      <span class="carry">¹</span>
+      <span>&nbsp;3 8</span>
+      <span>+ 2 6</span>
+      <div class="col-line"></div>
+      <span>&nbsp;6 4</span>
+    </div>
+
+    <ol class="steps">
+      <li>Add the <span class="hi-ones">ones</span>: <strong>8 + 6 = 14</strong></li>
+      <li>14 = <span class="hi-ones">4 ones</span> + <span class="hi-carry">1 ten</span> — write <strong>4</strong>, carry the <strong>1</strong>.</li>
+      <li>Add the <span class="hi-tens">tens</span>: <strong>3 + 2 + 1 (carried) = 6</strong> — write <strong>6</strong>.</li>
+      <li>✅ Answer: <strong>64</strong></li>
+    </ol>
+
+    <div style="background:#e8f5e9;border-radius:12px;padding:12px;margin-top:8px;font-size:.95rem;">
+      <strong>🌟 Notice the pattern:</strong> Whenever your ones add up to 10 or more,
+      you always carry exactly <strong>1</strong> to the tens. The leftover ones go in the ones place.
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-secondary" onclick="goTo('s2')">← Back</button>
+      <button class="btn-primary"   onclick="goTo('s4')">Now You Try! ✏️</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     SCREEN 4 · GUIDED PRACTICE (3 problems)
+═══════════════════════════════════ -->
+<section class="screen" id="s4" aria-label="Guided practice">
+  <div class="card">
+    <h2>🧭 Guided Practice</h2>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:4px;">Hints are ON for these 3 problems. Take your time! 😊</p>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="gp-bar" style="width:0%"></div></div>
+  </div>
+
+  <!-- GP 1: direct -->
+  <div class="problem-wrap" id="gp1-wrap">
+    <div class="problem-label">Problem 1 of 3 <span class="problem-type-badge badge-direct">Direct</span></div>
+    <div class="problem-text">46 + 37 = <span style="color:var(--muted)">___</span></div>
+    <div style="background:#fffde7;border-radius:10px;padding:10px;margin-bottom:12px;font-size:.9rem;">
+      💡 <strong>Hint:</strong> Add the ones first: 6 + 7 = <strong>13</strong>. Write 3, carry 1. Then add tens: 4 + 3 + 1 = ?
+    </div>
+    <div class="answer-row">
+      <input class="answer-input" id="gp1-ans" type="number" min="0" max="999" placeholder="?" aria-label="Your answer for 46 plus 37" />
+      <button class="check-btn" onclick="checkGuided(1,83,'gp1')" aria-label="Check answer">Check ✓</button>
+    </div>
+    <div class="feedback-msg" id="gp1-fb"></div>
+  </div>
+
+  <!-- GP 2: missing addend -->
+  <div class="problem-wrap" id="gp2-wrap">
+    <div class="problem-label">Problem 2 of 3 <span class="problem-type-badge badge-missing">Missing Number</span></div>
+    <div class="problem-text">29 + ___ = 54</div>
+    <div style="background:#fffde7;border-radius:10px;padding:10px;margin-bottom:12px;font-size:.9rem;">
+      💡 <strong>Hint:</strong> Think backwards — 54 − 29. Ones: 4 needs more ones, so borrow. Or: what plus 29 gives 54?
+    </div>
+    <div class="answer-row">
+      <input class="answer-input" id="gp2-ans" type="number" min="0" max="99" placeholder="?" aria-label="Your answer for the missing number" />
+      <button class="check-btn" onclick="checkGuided(2,25,'gp2')" aria-label="Check answer">Check ✓</button>
+    </div>
+    <div class="feedback-msg" id="gp2-fb"></div>
+  </div>
+
+  <!-- GP 3: True/False -->
+  <div class="problem-wrap" id="gp3-wrap">
+    <div class="problem-label">Problem 3 of 3 <span class="problem-type-badge badge-truefalse">True or False</span></div>
+    <div class="problem-text">57 + 34 = 91 &nbsp;→&nbsp; Is that TRUE or FALSE?</div>
+    <div style="background:#fffde7;border-radius:10px;padding:10px;margin-bottom:12px;font-size:.9rem;">
+      💡 <strong>Hint:</strong> Add ones: 7 + 4 = 11. Write 1, carry 1. Tens: 5 + 3 + 1 = 9. So the answer is 91. 🤔
+    </div>
+    <div class="tf-row">
+      <button class="tf-btn" id="gp3-true"  onclick="checkTF('gp3','true', true)" aria-pressed="false">✅ TRUE</button>
+      <button class="tf-btn" id="gp3-false" onclick="checkTF('gp3','false',true)" aria-pressed="false">❌ FALSE</button>
+    </div>
+    <div class="feedback-msg" id="gp3-fb"></div>
+  </div>
+
+  <div class="nav-row" id="gp-nav" style="display:none;">
+    <button class="btn-primary" onclick="goTo('s5')">Keep Going! 💪</button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     SCREEN 5 · INDEPENDENT PRACTICE (5 problems)
+═══════════════════════════════════ -->
+<section class="screen" id="s5" aria-label="Independent practice">
+  <div class="card">
+    <h2>🚀 Independent Practice</h2>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:4px;">No hints this time — you've got this! 🌟</p>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="ip-bar" style="width:0%"></div></div>
+  </div>
+
+  <!-- IP 1: direct -->
+  <div class="problem-wrap" id="ip1-wrap">
+    <div class="problem-label">Problem 1 of 5 <span class="problem-type-badge badge-direct">Direct</span></div>
+    <div class="problem-text">35 + 47 = ___</div>
+    <div class="answer-row">
+      <input class="answer-input" id="ip1-ans" type="number" placeholder="?" aria-label="Your answer for 35 plus 47" />
+      <button class="check-btn" onclick="checkIndep(1,82,'ip1')" aria-label="Check answer">Check ✓</button>
+    </div>
+    <div class="feedback-msg" id="ip1-fb"></div>
+  </div>
+
+  <!-- IP 2: direct -->
+  <div class="problem-wrap" id="ip2-wrap">
+    <div class="problem-label">Problem 2 of 5 <span class="problem-type-badge badge-direct">Direct</span></div>
+    <div class="problem-text">68 + 17 = ___</div>
+    <div class="answer-row">
+      <input class="answer-input" id="ip2-ans" type="number" placeholder="?" aria-label="Your answer for 68 plus 17" />
+      <button class="check-btn" onclick="checkIndep(2,85,'ip2')" aria-label="Check answer">Check ✓</button>
+    </div>
+    <div class="feedback-msg" id="ip2-fb"></div>
+  </div>
+
+  <!-- IP 3: find the mistake -->
+  <div class="problem-wrap" id="ip3-wrap">
+    <div class="problem-label">Problem 3 of 5 <span class="problem-type-badge badge-mistake">Find the Mistake</span></div>
+    <div class="problem-text">
+      Jake says: 49 + 23 = <strong style="color:var(--red)">62</strong>.<br/>
+      <span style="font-size:1rem;font-weight:400;">What is the <em>correct</em> answer?</span>
+    </div>
+    <div class="answer-row">
+      <input class="answer-input" id="ip3-ans" type="number" placeholder="?" aria-label="Your answer for the correct sum of 49 plus 23" />
+      <button class="check-btn" onclick="checkIndep(3,72,'ip3')" aria-label="Check answer">Check ✓</button>
+    </div>
+    <div class="feedback-msg" id="ip3-fb"></div>
+  </div>
+
+  <!-- IP 4: word problem -->
+  <div class="problem-wrap" id="ip4-wrap">
+    <div class="problem-label">Problem 4 of 5 <span class="problem-type-badge badge-word">Word Problem</span></div>
+    <div class="problem-text" style="font-size:1.15rem;line-height:1.6;">
+      🦋 Maya collected <strong>36</strong> stickers on Monday and <strong>48</strong> stickers on Tuesday.<br/>
+      How many stickers does she have altogether?
+    </div>
+    <div class="answer-row">
+      <input class="answer-input" id="ip4-ans" type="number" placeholder="?" aria-label="Your answer for Maya's total stickers" />
+      <button class="check-btn" onclick="checkIndep(4,84,'ip4')" aria-label="Check answer">Check ✓</button>
+    </div>
+    <div class="feedback-msg" id="ip4-fb"></div>
+  </div>
+
+  <!-- IP 5: missing addend -->
+  <div class="problem-wrap" id="ip5-wrap">
+    <div class="problem-label">Problem 5 of 5 <span class="problem-type-badge badge-missing">Missing Number</span></div>
+    <div class="problem-text">___ + 58 = 93</div>
+    <div class="answer-row">
+      <input class="answer-input" id="ip5-ans" type="number" placeholder="?" aria-label="Your answer for the missing addend" />
+      <button class="check-btn" onclick="checkIndep(5,35,'ip5')" aria-label="Check answer">Check ✓</button>
+    </div>
+    <div class="feedback-msg" id="ip5-fb"></div>
+  </div>
+
+  <div class="nav-row" id="ip-nav" style="display:none;">
+    <button class="btn-primary" onclick="goTo('s6')">Challenge Round! 🏆</button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     SCREEN 6 · CHALLENGE ROUND (2 problems)
+═══════════════════════════════════ -->
+<section class="screen" id="s6" aria-label="Challenge round">
+  <div class="card" style="background:linear-gradient(135deg,#1a237e,#283593);color:white;">
+    <div style="font-size:2.5rem;text-align:center;margin-bottom:6px;">🏆</div>
+    <h2 style="color:#ffe082;text-align:center;">Challenge Round</h2>
+    <p style="text-align:center;color:#c5cae9;font-size:.95rem;">These are tougher — you'll earn extra points! Each correct answer = <strong style="color:#ffe082;">+20 pts</strong></p>
+  </div>
+
+  <!-- CH 1: word problem with three addends chain -->
+  <div class="problem-wrap" id="ch1-wrap">
+    <div class="problem-label">Challenge 1 of 2 <span class="problem-type-badge badge-word">Word Problem</span></div>
+    <div class="problem-text" style="font-size:1.1rem;line-height:1.65;">
+      🚀 A spaceship collected <strong>47</strong> moon rocks on the first trip and <strong>38</strong> moon rocks on the second trip.<br/>
+      The spaceship can only carry <strong>90</strong> rocks safely.<br/>
+      Did the spaceship collect <em>more or fewer</em> than 90 rocks?<br/>
+      <span style="font-size:.95rem;font-weight:400;">First find the total, then type <strong>MORE</strong> or <strong>FEWER</strong>.</span>
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="font-size:.9rem;font-weight:600;color:var(--muted);">Total rocks collected:</label>
+      <div class="answer-row" style="margin-top:6px;">
+        <input class="answer-input" id="ch1-total" type="number" placeholder="total?" aria-label="Total rocks" />
+      </div>
+    </div>
+    <div class="tf-row">
+      <button class="tf-btn" id="ch1-more"  onclick="checkChallenge1('more')"  aria-pressed="false">MORE than 90</button>
+      <button class="tf-btn" id="ch1-fewer" onclick="checkChallenge1('fewer')" aria-pressed="false">FEWER than 90</button>
+    </div>
+    <div class="feedback-msg" id="ch1-fb"></div>
+  </div>
+
+  <!-- CH 2: two-step -->
+  <div class="problem-wrap" id="ch2-wrap">
+    <div class="problem-label">Challenge 2 of 2 <span class="problem-type-badge badge-missing">Two-Step</span></div>
+    <div class="problem-text" style="font-size:1.1rem;line-height:1.65;">
+      🎯 A + 26 = 71 &nbsp;&nbsp;and&nbsp;&nbsp; B = A + 15<br/>
+      <span style="font-size:.95rem;font-weight:400;">Find A first. Then find B.</span>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+      <div>
+        <label style="font-size:.9rem;font-weight:600;color:var(--muted);">A =</label>
+        <div class="answer-row" style="margin-top:4px;">
+          <input class="answer-input" id="ch2-a" type="number" placeholder="A?" aria-label="Value of A" style="width:76px;" />
+        </div>
+      </div>
+      <div>
+        <label style="font-size:.9rem;font-weight:600;color:var(--muted);">B =</label>
+        <div class="answer-row" style="margin-top:4px;">
+          <input class="answer-input" id="ch2-b" type="number" placeholder="B?" aria-label="Value of B" style="width:76px;" />
+        </div>
+      </div>
+    </div>
+    <button class="check-btn" onclick="checkChallenge2()" aria-label="Check challenge 2">Check Both ✓</button>
+    <div class="feedback-msg" id="ch2-fb"></div>
+  </div>
+
+  <div class="nav-row" id="ch-nav" style="display:none;">
+    <button class="btn-primary" onclick="goTo('s7')">See My Rewards! 🌟</button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════
+     SCREEN 7 · REWARDS + RECAP
+═══════════════════════════════════ -->
+<section class="screen" id="s7" aria-label="Rewards and recap">
+  <div class="reward-card">
+    <div style="font-size:3rem;margin-bottom:6px;">🎉</div>
+    <h2>Amazing Work!</h2>
+    <div class="stars" id="reward-stars">⭐⭐⭐</div>
+    <p style="margin-top:10px;">You completed Level B2!</p>
+    <p style="font-size:1.4rem;font-weight:700;color:var(--dark-blue);margin-top:6px;" id="reward-points-display">Total: 0 pts</p>
+    <p style="margin-top:4px;font-size:.9rem;" id="reward-sfx-line">
+      <span class="sfx-tag">[SFX: level-up-chime]</span>
+    </p>
+  </div>
+
+  <!-- Badges earned -->
+  <div class="card">
+    <h2>🏅 Badges Unlocked</h2>
+    <div class="badge-grid">
+      <div class="badge-chip earned" id="badge-rh">🦸 Regrouping Hero</div>
+      <div class="badge-chip" id="badge-ar" style="opacity:.45;">🚀 Addition Rocket</div>
+      <div class="badge-chip" id="badge-pvp" style="opacity:.45;">📊 Place Value Pro</div>
+    </div>
+    <p id="badge-sfx-line" style="margin-top:12px;font-size:.9rem;color:var(--muted);">
+      Badge unlocked! <span class="sfx-tag">[SFX: badge-unlock-fanfare]</span>
+    </p>
+  </div>
+
+  <!-- Level status -->
+  <div class="card">
+    <h2>📈 Your Level</h2>
+    <p id="level-display" style="font-size:1.05rem;font-weight:600;"></p>
+    <p id="level-sfx-line" style="margin-top:6px;font-size:.9rem;color:var(--muted);"></p>
+  </div>
+
+  <!-- Recap -->
+  <div class="card">
+    <h2>📝 What You Learned</h2>
+    <div class="recap-item"><span class="check-icon">✅</span> When ones add to 10+, we regroup into a new ten.</div>
+    <div class="recap-item"><span class="check-icon">✅</span> Write the ones digit in the ones place.</div>
+    <div class="recap-item"><span class="check-icon">✅</span> Carry 1 to the tens column.</div>
+    <div class="recap-item"><span class="check-icon">✅</span> Add the tens — including the carried 1.</div>
+    <div class="recap-item"><span class="check-icon">✅</span> You can solve word problems and missing-number puzzles too!</div>
+  </div>
+
+  <!-- Next step -->
+  <div class="card" style="border:2px dashed var(--blue);">
+    <h2>🗺️ Next Mission</h2>
+    <p><strong>Level B3: 2-Digit Subtraction Without Borrowing</strong><br/>
+    Now that you can add with regrouping, you're ready to subtract!<br/>
+    You'll learn how to take away tens and ones carefully.</p>
+    <div style="margin-top:12px;font-size:.9rem;color:var(--muted);">
+      <span class="sfx-tag">[SFX: star-collect]</span> &nbsp;Keep going — Math Master is waiting for you! 🐉
+    </div>
+    <div class="nav-row" style="margin-top:16px;">
+      <button class="btn-primary" onclick="restartLesson()">Play Again 🔄</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ── State ── */
+const state = {
+  points: 0,
+  streak: 0,
+  screen: 's1',
+  gpDone: 0,
+  ipDone: 0,
+  chDone: 0,
+  ch1Done: false,
+  ch2Done: false,
+};
+
+const SCREENS = ['s1','s2','s3','s4','s5','s6','s7'];
+
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  state.screen = id;
+  updateHUD();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+/* ── SFX ── */
+function playSFX(tag) {
+  const toast = document.getElementById('sfx-toast');
+  toast.textContent = tag;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+/* ── Points ── */
+function addPoints(pts, bump = true) {
+  state.points += pts;
+  if (bump) {
+    const el = document.getElementById('hud-points');
+    el.classList.remove('bump');
+    void el.offsetWidth;
+    el.classList.add('bump');
+  }
+  updateHUD();
+}
+
+function addStreak() {
+  state.streak++;
+  if (state.streak === 3) { addPoints(10); playSFX('[SFX: combo-boost]'); }
+  if (state.streak === 5) { addPoints(25); playSFX('[SFX: combo-boost]'); }
+  const el = document.getElementById('hud-streak');
+  el.classList.remove('bump');
+  void el.offsetWidth;
+  el.classList.add('bump');
+  updateHUD();
+}
+
+function resetStreak() {
+  state.streak = 0;
+  updateHUD();
+}
+
+/* ── Level ── */
+function getLevel() {
+  if (state.points < 30)  return { name: '🐯 Tiny Tiger', num: 1 };
+  if (state.points < 80)  return { name: '🐰 Busy Bunny', num: 2 };
+  if (state.points < 150) return { name: '🦊 Clever Fox',  num: 3 };
+  if (state.points < 250) return { name: '🦁 Math Lion',   num: 4 };
+  return                         { name: '🐉 Number Dragon', num: 5 };
+}
+
+/* ── HUD ── */
+function updateHUD() {
+  const idx = SCREENS.indexOf(state.screen) + 1;
+  document.getElementById('hud-level').textContent  = getLevel().name;
+  document.getElementById('hud-points').textContent = `⭐ ${state.points} pts`;
+  document.getElementById('hud-streak').textContent = `🔥 ${state.streak} streak`;
+  document.getElementById('hud-screen').textContent = `Screen ${idx} / ${SCREENS.length}`;
+}
+
+/* ── Progress bars ── */
+function setBar(id, pct) {
+  const el = document.getElementById(id);
+  if (el) el.style.width = pct + '%';
+}
+
+/* ════════════════════════════════
+   GUIDED PRACTICE
+════════════════════════════════ */
+let gpCorrect = 0;
+
+function checkGuided(num, correct, prefix) {
+  const input = document.getElementById(prefix + '-ans');
+  const fb    = document.getElementById(prefix + '-fb');
+  const wrap  = document.getElementById(prefix + '-wrap');
+  const val   = parseInt(input.value, 10);
+
+  if (isNaN(val)) { showFB(fb, 'hint', "Type a number first! 🖊️"); return; }
+
+  if (val === correct) {
+    markCorrect(wrap, fb, input, 10, "🌟 Correct! Well done!");
+    playSFX('[SFX: correct-ding]');
+    addStreak();
+    gpCorrect++;
+    setBar('gp-bar', Math.round(gpCorrect / 3 * 100));
+    if (gpCorrect === 3) { showGPNav(); }
+  } else {
+    markWrong(wrap, fb, input, `Not quite — let's check the ones place first! The answer is ${correct}.`);
+    resetStreak();
+  }
+}
+
+function checkTF(prefix, choice, correctIsTrue) {
+  const fb     = document.getElementById(prefix + '-fb');
+  const wrap   = document.getElementById(prefix + '-wrap');
+  const trueBtn  = document.getElementById(prefix + '-true');
+  const falseBtn = document.getElementById(prefix + '-false');
+  trueBtn.classList.toggle('selected',  choice === 'true');
+  falseBtn.classList.toggle('selected', choice === 'false');
+
+  const isCorrect = (choice === 'true') === correctIsTrue;
+  if (isCorrect) {
+    wrap.classList.add('correct'); wrap.classList.remove('wrong');
+    showFB(fb, 'ok', "🎉 That's right! 57 + 34 = 91. You spotted it!");
+    playSFX('[SFX: correct-ding]');
+    addPoints(10);
+    addStreak();
+    gpCorrect++;
+    setBar('gp-bar', Math.round(gpCorrect / 3 * 100));
+    trueBtn.disabled = true; falseBtn.disabled = true;
+    if (gpCorrect === 3) { showGPNav(); }
+  } else {
+    wrap.classList.add('wrong'); wrap.classList.remove('correct');
+    showFB(fb, 'err', "Not quite — 7 + 4 = 11, so we carry 1. Tens: 5 + 3 + 1 = 9. The answer IS 91, so it's TRUE!");
+    resetStreak();
+  }
+}
+
+function showGPNav() {
+  document.getElementById('gp-nav').style.display = 'flex';
+  // badge check
+  if (gpCorrect === 3) {
+    playSFX('[SFX: badge-unlock-fanfare]');
+  }
+}
+
+/* ════════════════════════════════
+   INDEPENDENT PRACTICE
+════════════════════════════════ */
+let ipCorrect = 0;
+
+function checkIndep(num, correct, prefix) {
+  const input = document.getElementById(prefix + '-ans');
+  const fb    = document.getElementById(prefix + '-fb');
+  const wrap  = document.getElementById(prefix + '-wrap');
+  const val   = parseInt(input.value, 10);
+
+  if (isNaN(val)) { showFB(fb, 'hint', "Type a number! 🖊️"); return; }
+
+  if (val === correct) {
+    markCorrect(wrap, fb, input, 15, "⚡ Excellent!");
+    playSFX('[SFX: correct-ding]');
+    addStreak();
+    ipCorrect++;
+    setBar('ip-bar', Math.round(ipCorrect / 5 * 100));
+    if (ipCorrect === 5) {
+      document.getElementById('ip-nav').style.display = 'flex';
+      playSFX('[SFX: badge-unlock-fanfare]');
+    }
+  } else {
+    const hint = getIndepHint(num, correct);
+    markWrong(wrap, fb, input, hint);
+    resetStreak();
+  }
+}
+
+function getIndepHint(num, correct) {
+  const hints = {
+    1: `Ones: 5+7=12, write 2 carry 1. Tens: 3+4+1=8. Answer: ${correct}`,
+    2: `Ones: 8+7=15, write 5 carry 1. Tens: 6+1+1=8. Answer: ${correct}`,
+    3: `Jake forgot to carry! Ones: 9+3=12, write 2 carry 1. Tens: 4+2+1=7. Answer: ${correct}`,
+    4: `Ones: 6+8=14, write 4 carry 1. Tens: 3+4+1=8. Maya has ${correct} stickers!`,
+    5: `Think: ___+58=93. Subtract: 93−58. Ones: borrow. Answer: ${correct}`,
+  };
+  return `Not quite — ${hints[num]}`;
+}
+
+/* ════════════════════════════════
+   CHALLENGE ROUND
+════════════════════════════════ */
+function checkChallenge1(choice) {
+  if (state.ch1Done) return;
+  const totalInput = document.getElementById('ch1-total');
+  const fb   = document.getElementById('ch1-fb');
+  const wrap = document.getElementById('ch1-wrap');
+  const total = parseInt(totalInput.value, 10);
+
+  document.getElementById('ch1-more').classList.toggle('selected',  choice === 'more');
+  document.getElementById('ch1-fewer').classList.toggle('selected', choice === 'fewer');
+
+  if (total !== 85) {
+    showFB(fb, 'hint', `Check your addition first: 47 + 38 = ? (Ones: 7+8=15, write 5 carry 1. Tens: 4+3+1=8 → 85)`);
+    return;
+  }
+
+  if (choice === 'fewer') {
+    state.ch1Done = true;
+    markCorrect(wrap, fb, null, 20, "🚀 Perfect! 47 + 38 = 85, which is FEWER than 90. The spaceship is safe!");
+    playSFX('[SFX: correct-ding]');
+    addStreak();
+    document.getElementById('ch1-more').disabled = true;
+    document.getElementById('ch1-fewer').disabled = true;
+    checkChallengeNav();
+  } else {
+    showFB(fb, 'err', `47 + 38 = 85. Is 85 more or fewer than 90? Think carefully!`);
+    resetStreak();
+  }
+}
+
+function checkChallenge2() {
+  if (state.ch2Done) return;
+  const aVal = parseInt(document.getElementById('ch2-a').value, 10);
+  const bVal = parseInt(document.getElementById('ch2-b').value, 10);
+  const fb   = document.getElementById('ch2-fb');
+  const wrap = document.getElementById('ch2-wrap');
+
+  if (isNaN(aVal) || isNaN(bVal)) { showFB(fb, 'hint', "Fill in both A and B!"); return; }
+
+  if (aVal === 45 && bVal === 60) {
+    state.ch2Done = true;
+    markCorrect(wrap, fb, null, 20, "🏅 Brilliant! A = 71 − 26 = 45. B = 45 + 15 = 60. Math genius!");
+    playSFX('[SFX: correct-ding]');
+    addStreak();
+    checkChallengeNav();
+  } else if (aVal === 45 && bVal !== 60) {
+    showFB(fb, 'hint', `A is correct (45)! Now B = 45 + 15 = ?`);
+  } else {
+    showFB(fb, 'err', `Find A first: A + 26 = 71 → A = 71 − 26 = 45. Then B = 45 + 15.`);
+    resetStreak();
+  }
+}
+
+function checkChallengeNav() {
+  state.chDone++;
+  if (state.ch1Done && state.ch2Done) {
+    document.getElementById('ch-nav').style.display = 'flex';
+    playSFX('[SFX: level-up-chime]');
+  }
+}
+
+/* ════════════════════════════════
+   REWARDS SCREEN
+════════════════════════════════ */
+function buildRewards() {
+  const lvl = getLevel();
+  document.getElementById('reward-points-display').textContent = `Total: ${state.points} pts`;
+
+  // Stars based on accuracy
+  const total = gpCorrect + ipCorrect + (state.ch1Done ? 1 : 0) + (state.ch2Done ? 1 : 0);
+  const max   = 10;
+  const pct   = total / max;
+  const stars = pct >= 0.9 ? '⭐⭐⭐' : pct >= 0.7 ? '⭐⭐' : '⭐';
+  document.getElementById('reward-stars').textContent = stars;
+
+  // Level display
+  document.getElementById('level-display').textContent =
+    `You are now: ${lvl.name}`;
+  if (lvl.num >= 2) {
+    document.getElementById('level-sfx-line').innerHTML =
+      `Level up! <span class="sfx-tag">[SFX: level-up-chime]</span>`;
+  }
+
+  // Unlock extra badges
+  if (state.points >= 80) {
+    const ar = document.getElementById('badge-ar');
+    ar.style.opacity = '1';
+    ar.classList.add('earned');
+  }
+  if (state.points >= 120) {
+    const pvp = document.getElementById('badge-pvp');
+    pvp.style.opacity = '1';
+    pvp.classList.add('earned');
+  }
+}
+
+/* ════════════════════════════════
+   HELPERS
+════════════════════════════════ */
+function markCorrect(wrap, fb, input, pts, msg) {
+  wrap.classList.add('correct'); wrap.classList.remove('wrong','retrying');
+  showFB(fb, 'ok', msg + ` [SFX: correct-ding]`);
+  if (input) { input.disabled = true; }
+  const btn = wrap.querySelector('.check-btn');
+  if (btn) btn.disabled = true;
+  addPoints(pts);
+}
+
+function markWrong(wrap, fb, input, msg) {
+  wrap.classList.add('retrying'); wrap.classList.remove('correct','wrong');
+  showFB(fb, 'err', `Good try! ${msg} Try again!`);
+}
+
+function showFB(el, type, msg) {
+  el.className = `feedback-msg show ${type}`;
+  el.textContent = msg;
+}
+
+/* ── Screen intercept for rewards ── */
+const _goTo = goTo;
+window.goTo = function(id) {
+  if (id === 's7') buildRewards();
+  _goTo(id);
+};
+
+function restartLesson() {
+  Object.assign(state, { points:0, streak:0, gpDone:0, ipDone:0, chDone:0, ch1Done:false, ch2Done:false });
+  gpCorrect = 0; ipCorrect = 0;
+  // reset all inputs
+  document.querySelectorAll('.answer-input').forEach(i => { i.value=''; i.disabled=false; });
+  document.querySelectorAll('.check-btn').forEach(b => b.disabled=false);
+  document.querySelectorAll('.problem-wrap').forEach(w => w.className='problem-wrap');
+  document.querySelectorAll('.feedback-msg').forEach(f => { f.className='feedback-msg'; f.textContent=''; });
+  document.querySelectorAll('.tf-btn').forEach(b => { b.classList.remove('selected'); b.disabled=false; });
+  document.getElementById('gp-nav').style.display='none';
+  document.getElementById('ip-nav').style.display='none';
+  document.getElementById('ch-nav').style.display='none';
+  setBar('gp-bar', 0); setBar('ip-bar', 0);
+  goTo('s1');
+}
+
+updateHUD();
+</script>
+</body>
+</html>
