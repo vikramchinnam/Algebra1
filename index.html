@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learning Hub — Interactive Course Catalog</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --elementary-primary: #f97316;
+      --elementary-light: #fff7ed;
+      --elementary-accent: #fb923c;
+      --elementary-dark: #c2410c;
+      --middle-primary: #6366f1;
+      --middle-light: #eef2ff;
+      --middle-accent: #818cf8;
+      --middle-dark: #4338ca;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+      --shadow-md: 0 4px 16px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06);
+      --shadow-lg: 0 10px 40px rgba(0,0,0,.14), 0 4px 12px rgba(0,0,0,.08);
+      --radius: 16px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 70%, #6366f1 100%);
+      color: #fff;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 15% 50%, rgba(251,146,60,.20) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 50%, rgba(99,102,241,.30) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .hero-left { display: flex; align-items: center; gap: 14px; position: relative; }
+
+    .hero-icon {
+      width: 38px; height: 38px;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .hero h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -.02em;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(90deg, #fcd34d, #fb923c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: .75rem;
+      color: rgba(255,255,255,.60);
+      letter-spacing: .04em;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 28px;
+      position: relative;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 1.3rem;
+      font-weight: 800;
+      display: block;
+      line-height: 1.1;
+    }
+
+    .stat-label {
+      font-size: .65rem;
+      color: rgba(255,255,255,.60);
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .sections {
+      padding: 20px 0 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* ── Section header ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .elementary .section-icon { background: linear-gradient(135deg, #fed7aa, #fb923c); }
+    .middle      .section-icon { background: linear-gradient(135deg, #c7d2fe, #6366f1); }
+
+    .section-title-group { flex: 1; }
+
+    .section-label {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .elementary .section-label { color: var(--elementary-dark); }
+    .middle      .section-label { color: var(--middle-dark); }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -.02em;
+    }
+
+    .section-count {
+      font-size: .85rem;
+      font-weight: 600;
+      padding: 4px 14px;
+      border-radius: 100px;
+    }
+
+    .elementary .section-count { background: var(--elementary-light); color: var(--elementary-dark); }
+    .middle      .section-count { background: var(--middle-light);      color: var(--middle-dark); }
+
+    /* ── Divider ── */
+    .section-divider {
+      height: 3px;
+      border-radius: 2px;
+      margin-bottom: 14px;
+    }
+
+    .elementary .section-divider { background: linear-gradient(90deg, var(--elementary-primary), var(--elementary-light)); }
+    .middle      .section-divider { background: linear-gradient(90deg, var(--middle-primary),      var(--middle-light)); }
+
+    /* ── Card grid ── */
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .elementary .card:hover { border-color: var(--elementary-accent); }
+    .middle      .card:hover { border-color: var(--middle-accent); }
+
+    .card-stripe {
+      height: 5px;
+      width: 100%;
+    }
+
+    .elementary .card-stripe { background: linear-gradient(90deg, var(--elementary-primary), var(--elementary-accent)); }
+    .middle      .card-stripe { background: linear-gradient(90deg, var(--middle-primary), var(--middle-accent)); }
+
+    .card-body {
+      padding: 12px 16px 10px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-emoji {
+      font-size: 1.5rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .card-text { flex: 1; min-width: 0; }
+
+    .card-title {
+      font-size: .95rem;
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -.01em;
+    }
+
+    .card-desc {
+      font-size: .78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-footer {
+      padding: 8px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-tag {
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+
+    .elementary .card-tag { background: var(--elementary-light); color: var(--elementary-dark); }
+    .middle      .card-tag { background: var(--middle-light);      color: var(--middle-dark); }
+
+    .card-arrow {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform .15s ease;
+    }
+
+    .elementary .card-arrow { background: var(--elementary-light); color: var(--elementary-dark); }
+    .middle      .card-arrow { background: var(--middle-light);      color: var(--middle-dark); }
+
+    .card:hover .card-arrow { transform: translateX(4px); }
+
+    /* ── Footer ── */
+    footer {
+      background: #0f172a;
+      color: rgba(255,255,255,.5);
+      text-align: center;
+      padding: 16px 24px;
+      font-size: .8rem;
+    }
+
+    footer strong { color: rgba(255,255,255,.85); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .sections { grid-template-columns: 1fr; }
+      .hero { padding: 12px 16px; }
+      .hero-stats { gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Hero ── -->
+<header class="hero">
+  <div class="hero-left">
+    <div class="hero-icon">🏫</div>
+    <div>
+      <h1>Your <span>Learning Hub</span></h1>
+      <div class="hero-sub">Interactive · LISD &amp; Kumon · K–8</div>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-number">7</span>
+      <span class="stat-label">Courses</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">2</span>
+      <span class="stat-label">Grade Bands</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">100%</span>
+      <span class="stat-label">Interactive</span>
+    </div>
+  </div>
+</header>
+
+<!-- ── Main ── -->
+<main class="container">
+  <div class="sections">
+
+    <!-- ── Middle School (LEFT) ── -->
+    <section class="middle">
+      <div class="section-header">
+        <div class="section-icon">🎓</div>
+        <div class="section-title-group">
+          <div class="section-label">Grade 6–8</div>
+          <h2 class="section-title">Middle School</h2>
+        </div>
+        <span class="section-count">2 Courses</span>
+      </div>
+      <div class="section-divider"></div>
+      <div class="cards">
+
+        <a class="card" href="lisd-algebra1/lisd-algebra1-course.html">
+          <div class="card-stripe"></div>
+          <div class="card-body">
+            <div class="card-emoji">📐</div>
+            <div class="card-text">
+              <div class="card-title">LISD Honors Algebra 1</div>
+              <div class="card-desc">Linear equations, systems, quadratics, polynomials &amp; STAAR EOC prep</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag">LISD · Algebra 1</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="card" href="lisd-algebra1/lisd-honors-geometry-course.html">
+          <div class="card-stripe"></div>
+          <div class="card-body">
+            <div class="card-emoji">🔷</div>
+            <div class="card-text">
+              <div class="card-title">LISD Honors Geometry</div>
+              <div class="card-desc">Proofs, coordinate geometry, transformations &amp; STAAR assessments</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag">LISD · Geometry</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ── Elementary (RIGHT) ── -->
+    <section class="elementary">
+      <div class="section-header">
+        <div class="section-icon">🌟</div>
+        <div class="section-title-group">
+          <div class="section-label">Grade K–5</div>
+          <h2 class="section-title">Elementary School</h2>
+        </div>
+        <span class="section-count">5 Activities</span>
+      </div>
+      <div class="section-divider"></div>
+      <div class="cards">
+
+        <a class="card" href="lisd-algebra1/kumon-addition-app.html">
+          <div class="card-stripe"></div>
+          <div class="card-body">
+            <div class="card-emoji">➕</div>
+            <div class="card-text">
+              <div class="card-title">Kumon Addition App</div>
+              <div class="card-desc">Interactive addition exercises modeled after the Kumon method</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag">Kumon · Math</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="card" href="lisd-algebra1/kumon-b2-regrouping-lesson.html">
+          <div class="card-stripe"></div>
+          <div class="card-body">
+            <div class="card-emoji">🔢</div>
+            <div class="card-text">
+              <div class="card-title">Kumon B2 Regrouping Lesson</div>
+              <div class="card-desc">Step-by-step carrying and borrowing practice</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag">Kumon · Math</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="card" href="lisd-algebra1/kumon-base10-blocks-demo.html">
+          <div class="card-stripe"></div>
+          <div class="card-body">
+            <div class="card-emoji">🧱</div>
+            <div class="card-text">
+              <div class="card-title">Kumon Base-10 Blocks Demo</div>
+              <div class="card-desc">Animated base-10 blocks for place value understanding</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag">Kumon · Math</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="card" href="lisd-algebra1/kumon-base10-subtraction-demo.html">
+          <div class="card-stripe"></div>
+          <div class="card-body">
+            <div class="card-emoji">➖</div>
+            <div class="card-text">
+              <div class="card-title">Kumon Base-10 Subtraction Demo</div>
+              <div class="card-desc">Visual subtraction with base-10 borrowing models</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag">Kumon · Math</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+        <a class="card" href="lisd-algebra1/kumon-grade1-reading.html">
+          <div class="card-stripe"></div>
+          <div class="card-body">
+            <div class="card-emoji">📖</div>
+            <div class="card-text">
+              <div class="card-title">Kumon Grade 1 Reading</div>
+              <div class="card-desc">Early reading comprehension activities for Grade 1</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-tag">Kumon · Reading</span>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- ── Footer ── -->
+<footer>
+  <strong>Learning Hub</strong> · Lewisville ISD &amp; Kumon · Built for curious minds ✦ 2026
+</footer>
+
+</body>
+</html>
