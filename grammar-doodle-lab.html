@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grammar Doodle Lab — Sentence Diagramming Playground</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --nb-line:#b3d4f0;--nb-margin:#f5c6c6;
+  --noun:#4A90E2;--verb:#E24A4A;--adj:#66BB6A;--adv:#AB47BC;
+  --prep:#8D6E63;--conj:#FF7043;--intj:#F9A825;--art:#26A69A;
+  --pron:#5C6BC0;--verbal:#00ACC1;--punct:#9E9E9E;
+}
+body{
+  font-family:'Segoe UI',system-ui,sans-serif;
+  background:#fff;
+  background-image:
+    repeating-linear-gradient(transparent 0,transparent 27px,var(--nb-line) 27px,var(--nb-line) 28px),
+    linear-gradient(90deg,transparent 59px,var(--nb-margin) 59px,var(--nb-margin) 61px,transparent 61px);
+  min-height:100vh;color:#333;
+}
+/* HEADER */
+#hdr{
+  background:#fff8e1;border-bottom:3px solid #FFD54F;
+  padding:10px 18px;display:flex;align-items:center;
+  justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.1);
+  position:sticky;top:0;z-index:100;
+}
+#hdr h1{font-size:1.25rem;font-weight:900;color:#5D4037;letter-spacing:-0.5px}
+#hdr .sub{font-size:.75rem;color:#8D6E63;margin-left:8px}
+.stats{display:flex;gap:10px;align-items:center}
+.stat{
+  background:#fff;border:2px solid #FFD54F;border-radius:20px;
+  padding:4px 14px;text-align:center;min-width:60px;
+}
+.stat-l{font-size:9px;text-transform:uppercase;color:#8D6E63;letter-spacing:1px;display:block}
+.stat-v{font-size:1.2rem;font-weight:900;color:#E65100;display:block;line-height:1.1}
+/* LAYOUT */
+#layout{display:flex;height:calc(100vh - 56px);overflow:hidden}
+/* SIDEBAR */
+#sidebar{
+  width:190px;background:rgba(255,255,255,.88);
+  border-right:2px solid #e0e0e0;overflow-y:auto;
+  padding:12px 8px;flex-shrink:0;
+}
+#sidebar h2{font-size:.72rem;text-transform:uppercase;letter-spacing:2px;color:#8D6E63;margin-bottom:12px;padding:0 4px}
+.lvl-item{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 8px;border-radius:8px;cursor:pointer;
+  transition:background .15s;margin-bottom:2px;
+}
+.lvl-item:hover{background:rgba(255,213,79,.25)}
+.lvl-item.active{background:#FFF3E0;border-left:3px solid #FF8F00;padding-left:5px}
+.lvl-dot{
+  width:26px;height:26px;border-radius:50%;background:#e0e0e0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:#757575;flex-shrink:0;
+  border:2px solid #ccc;
+}
+.lvl-dot.done{background:#66BB6A;border-color:#43A047;color:#fff}
+.lvl-dot.cur{background:#FF8F00;border-color:#E65100;color:#fff}
+.lvl-name{font-size:11px;font-weight:600;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lvl-diff{font-size:9px;color:#9E9E9E;text-transform:uppercase;letter-spacing:.5px}
+/* CONTENT */
+#content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+/* SENTENCE DISPLAY */
+#sent-area{
+  background:rgba(255,255,255,.92);border-bottom:2px solid #e0e0e0;
+  padding:12px 18px;flex-shrink:0;
+}
+.sent-meta{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.lvl-badge{
+  background:linear-gradient(135deg,#FF8F00,#FF6F00);
+  color:#fff;font-size:10px;font-weight:700;padding:2px 10px;
+  border-radius:12px;text-transform:uppercase;letter-spacing:1px;
+}
+.sent-title{font-size:.9rem;font-weight:700;color:#5D4037}
+.diff-badge{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:600}
+.diff-Beginner{background:#E8F5E9;color:#2E7D32}
+.diff-Intermediate{background:#FFF3E0;color:#E65100}
+.diff-Advanced{background:#FCE4EC;color:#AD1457}
+.diff-Expert{background:#EDE7F6;color:#4527A0}
+.sent-text{
+  font-size:1.05rem;font-style:italic;color:#444;
+  margin-bottom:8px;background:rgba(255,248,225,.6);
+  padding:5px 10px;border-radius:6px;border-left:3px solid #FFD54F;
+}
+.sent-summary{font-size:.78rem;color:#666;margin-bottom:10px;line-height:1.5}
+#tiles{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+/* WORD TILES */
+.tile{
+  display:inline-flex;flex-direction:column;align-items:center;
+  padding:6px 11px 4px;background:#fff;border-radius:8px;
+  border:2px solid #e0e0e0;
+  box-shadow:2px 3px 6px rgba(0,0,0,.12),inset 0 -2px 0 rgba(0,0,0,.07);
+  cursor:grab;user-select:none;
+  transition:transform .1s,box-shadow .1s,opacity .15s;
+}
+.tile:hover{transform:translateY(-2px);box-shadow:2px 5px 10px rgba(0,0,0,.18)}
+.tile:active{cursor:grabbing}
+.tile.dragging{opacity:.35;transform:scale(.9)}
+.tile.placed{opacity:.45;cursor:default;border-style:dashed}
+.tile.lit{box-shadow:0 0 0 3px rgba(255,213,79,.5),2px 3px 6px rgba(0,0,0,.12)}
+.tile-w{font-size:.9rem;font-weight:700;color:#333;line-height:1.2}
+.tile-p{
+  font-size:8px;font-weight:700;padding:2px 5px;border-radius:8px;
+  text-transform:uppercase;letter-spacing:.4px;margin-top:2px;color:#fff;
+}
+.tile-p.pos-interjection{color:#333}
+/* TABS */
+#tabs{
+  display:flex;background:rgba(255,255,255,.85);
+  border-bottom:2px solid #e0e0e0;padding:0 18px;flex-shrink:0;overflow-x:auto;
+}
+.tab{
+  padding:9px 14px;border:none;background:none;cursor:pointer;
+  font-size:.78rem;font-weight:600;color:#999;
+  border-bottom:3px solid transparent;margin-bottom:-2px;
+  transition:color .15s,border-color .15s;white-space:nowrap;
+}
+.tab:hover{color:#5D4037}
+.tab.on{color:#FF8F00;border-bottom-color:#FF8F00}
+/* TAB PANES */
+#panes{flex:1;overflow-y:auto;background:rgba(255,255,255,.55)}
+.pane{display:none;padding:18px}
+.pane.on{display:block}
+/* WORKSPACE */
+.ws-hint{font-size:.8rem;color:#888;margin-bottom:14px;font-style:italic}
+.dz-grid{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:14px}
+.dz-group{display:flex;flex-direction:column;align-items:center;gap:4px}
+.dz-label{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#888;font-weight:700}
+.dz{
+  min-width:90px;min-height:54px;border:2.5px dashed #ccc;
+  border-radius:10px;padding:7px;background:rgba(255,255,255,.8);
+  transition:all .15s;display:flex;flex-direction:column;
+  gap:4px;align-items:center;
+}
+.dz.over{border-color:#4A90E2;border-style:solid;background:rgba(74,144,226,.07);transform:scale(1.03)}
+.dz.has{border-style:solid;border-color:#bbb;background:#fff}
+.dz.ok{border-color:#66BB6A;background:rgba(102,187,106,.1)}
+.dz.bad{border-color:#E24A4A;background:rgba(226,74,74,.08)}
+.dz-ph{font-size:11px;color:#ccc;font-style:italic;text-align:center;padding:4px}
+.dtile{
+  background:#fff;border:1.5px solid #ddd;border-radius:6px;
+  padding:3px 9px;font-size:.82rem;font-weight:600;
+  display:flex;align-items:center;gap:4px;cursor:default;
+}
+.dtile .rm{font-size:10px;color:#bbb;cursor:pointer;padding:0 2px}
+.dtile .rm:hover{color:#E24A4A}
+.ws-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.btn{
+  padding:7px 16px;border-radius:20px;border:none;cursor:pointer;
+  font-size:.82rem;font-weight:700;
+  transition:transform .1s,box-shadow .1s;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(0,0,0,.15)}
+.btn-p{background:linear-gradient(135deg,#FF8F00,#FF6F00);color:#fff}
+.btn-s{background:#fff;color:#666;border:2px solid #ddd}
+.btn-g{background:linear-gradient(135deg,#66BB6A,#43A047);color:#fff}
+.ws-fb{
+  margin-top:10px;padding:11px 15px;border-radius:10px;
+  font-size:.88rem;display:none;line-height:1.4;
+}
+.ws-fb.on{display:block}
+.ws-fb.ok{background:#E8F5E9;border-left:4px solid #66BB6A;color:#2E7D32}
+.ws-fb.bad{background:#FFEBEE;border-left:4px solid #E24A4A;color:#B71C1C}
+/* DIAGRAM */
+.diag-wrap{font-family:'Courier New',monospace;overflow-x:auto;padding:10px 0}
+.diag-popouts{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.diag-popout{
+  font-size:.88rem;color:#777;padding:4px 12px;
+  border:2px dashed #ccc;border-radius:8px;background:rgba(255,255,255,.7);
+  position:relative;
+}
+.diag-popout-lbl{font-size:8px;display:block;text-transform:uppercase;color:#bbb;letter-spacing:1px}
+.diag-main{display:flex;align-items:flex-end;flex-wrap:wrap;row-gap:0}
+.diag-seg{display:flex;flex-direction:column;align-items:center}
+.diag-word{
+  font-size:.95rem;font-weight:700;padding:3px 14px;
+  border-bottom:3px solid #333;white-space:nowrap;min-width:55px;text-align:center;
+}
+.diag-div{width:3px;height:48px;background:#333;align-self:flex-end}
+.diag-div.slant{
+  transform:skewX(15deg);background:#333;
+  transform-origin:bottom center;
+}
+.diag-mods{display:flex;flex-direction:column;align-items:flex-start;margin-top:0;padding-top:2px}
+.diag-mod-item{
+  font-size:.78rem;color:#555;padding:1px 8px;
+  border-bottom:1.5px solid #999;margin-top:2px;
+  white-space:nowrap;min-width:40px;text-align:center;
+  position:relative;
+}
+.diag-mod-item::before{
+  content:'';position:absolute;top:0;left:-14px;
+  width:14px;height:100%;
+  border-bottom:1.5px solid #999;
+  transform:skewY(30deg);transform-origin:bottom left;
+}
+.diag-clause-area{
+  margin-top:18px;padding-top:14px;
+  border-top:2px dashed #bbb;
+}
+.diag-clause-lbl{
+  font-size:9px;color:#aaa;text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:8px;
+}
+.diag-connector{
+  font-size:.7rem;color:#bbb;letter-spacing:1px;
+  margin:4px 0 4px 20px;
+  font-style:italic;
+}
+/* DETECTIVE */
+#det-panel{display:flex;flex-direction:column;gap:12px}
+.det-card{
+  background:#FFFDE7;border:2px solid #FFD54F;border-radius:12px;
+  padding:15px;transform:rotate(-.3deg);
+  box-shadow:3px 3px 8px rgba(0,0,0,.1);
+}
+.det-word{font-size:1.4rem;font-weight:900;color:#333;margin-bottom:3px}
+.det-pos{
+  display:inline-block;font-size:10px;font-weight:700;
+  padding:2px 9px;border-radius:10px;color:#fff;
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;
+}
+.det-pos.pos-interjection{color:#333}
+.det-grid{display:grid;grid-template-columns:auto 1fr;gap:5px 10px;font-size:.82rem}
+.det-k{font-weight:700;color:#8D6E63;white-space:nowrap}
+.det-v{color:#444}
+.mem-tip{
+  margin-top:10px;padding:9px 12px;background:rgba(255,255,255,.7);
+  border-radius:8px;border-left:3px solid #FFD54F;
+  font-size:.78rem;color:#555;font-style:italic;
+}
+.det-empty{text-align:center;color:#aaa;font-style:italic;padding:40px 20px;font-size:.88rem}
+/* PRACTICE */
+.prac-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.prac-score-row{display:flex;gap:10px;align-items:center}
+.psc{background:#fff;border:2px solid #FFD54F;border-radius:20px;padding:4px 14px;text-align:center}
+.psc-l{font-size:9px;text-transform:uppercase;color:#999;letter-spacing:1px;display:block}
+.psc-v{font-size:1.1rem;font-weight:900;color:#FF8F00;display:block;line-height:1.1}
+.q-dots{display:flex;gap:5px}
+.qdot{width:10px;height:10px;border-radius:50%;background:#e0e0e0}
+.qdot.done{background:#66BB6A}
+.qdot.cur{background:#FF8F00}
+.qdot.err{background:#E24A4A}
+.q-card{
+  background:#fff;border-radius:12px;padding:18px;
+  box-shadow:0 2px 12px rgba(0,0,0,.09);border:2px solid #f0f0f0;
+  margin-bottom:14px;
+}
+.q-num{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:#bbb;margin-bottom:7px}
+.q-text{font-size:.93rem;font-weight:600;color:#333;line-height:1.5;margin-bottom:14px}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{
+  text-align:left;padding:9px 14px;border-radius:8px;
+  border:2px solid #e0e0e0;background:#fff;cursor:pointer;
+  font-size:.85rem;color:#444;transition:all .15s;
+  display:flex;align-items:center;gap:9px;
+}
+.opt:hover:not(:disabled){border-color:#FFD54F;background:#FFFDE7}
+.opt.sel{border-color:#4A90E2;background:#E3F2FD;color:#1565C0}
+.opt.ok{border-color:#66BB6A;background:#E8F5E9;color:#2E7D32}
+.opt.bad{border-color:#E24A4A;background:#FFEBEE;color:#B71C1C}
+.opt-let{
+  width:21px;height:21px;border-radius:50%;background:#f0f0f0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;flex-shrink:0;
+}
+.prac-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.hint-box{
+  margin-top:10px;padding:9px 13px;background:#FFF8E1;
+  border-left:3px solid #FFD54F;border-radius:0 8px 8px 0;
+  font-size:.78rem;color:#8D6E63;display:none;
+}
+.hint-box.on{display:block}
+.fb-box{
+  margin-top:10px;padding:10px 15px;border-radius:8px;
+  font-size:.85rem;display:none;line-height:1.4;
+}
+.fb-box.on{display:block}
+.fb-ok{background:#E8F5E9;color:#2E7D32;border-left:3px solid #66BB6A}
+.fb-bad{background:#FFEBEE;color:#B71C1C;border-left:3px solid #E24A4A}
+/* TEACHER NOTES */
+.tn-wrap{display:flex;flex-direction:column;gap:12px}
+.sn{
+  padding:14px 16px;border-radius:4px;position:relative;
+  box-shadow:2px 3px 8px rgba(0,0,0,.1);font-size:.82rem;line-height:1.65;
+}
+.sn::before{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:4px;border-radius:4px 4px 0 0;
+}
+.sn-y{background:#FFFDE7}.sn-y::before{background:#FFD54F}
+.sn-b{background:#E3F2FD}.sn-b::before{background:#42A5F5}
+.sn-g{background:#E8F5E9}.sn-g::before{background:#66BB6A}
+.sn-pk{background:#FCE4EC}.sn-pk::before{background:#EC407A}
+.sn-o{background:#FFF3E0}.sn-o::before{background:#FF8F00}
+.sn-t{font-weight:800;font-size:.76rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;color:#5D4037}
+.sn ul{list-style:none;padding:0}
+.sn li{padding:2px 0 2px 16px;position:relative}
+.sn li::before{content:'→';position:absolute;left:0;color:#FF8F00;font-size:10px;top:3px}
+.ak{
+  background:#212121;color:#69F0AE;padding:11px 15px;
+  border-radius:8px;font-family:'Courier New',monospace;
+  font-size:.82rem;letter-spacing:.3px;
+}
+/* COLLAPSER */
+.col-hdr{
+  cursor:pointer;display:flex;align-items:center;
+  justify-content:space-between;padding:9px 13px;
+  background:rgba(255,255,255,.7);border-radius:8px;
+  font-weight:700;font-size:.82rem;color:#5D4037;
+  border:1.5px solid #e0e0e0;user-select:none;
+}
+.col-hdr:hover{background:rgba(255,248,225,.7)}
+.col-arr{transition:transform .2s;font-size:11px}
+.col-arr.open{transform:rotate(90deg)}
+.col-body{
+  display:none;padding:11px 13px;
+  background:rgba(255,255,255,.5);
+  border-radius:0 0 8px 8px;font-size:.82rem;
+  border:1.5px solid #e0e0e0;border-top:none;
+}
+.col-body.open{display:block}
+/* MISC */
+.done-banner{
+  background:linear-gradient(135deg,#66BB6A,#43A047);
+  color:#fff;padding:11px 16px;border-radius:10px;
+  text-align:center;font-weight:700;display:none;
+  font-size:.9rem;
+}
+.done-banner.on{display:block;animation:popIn .3s ease}
+@keyframes popIn{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.shake{animation:shake .3s ease}
+/* GENERATE BAR */
+#gen-bar{
+  display:flex;align-items:center;gap:10px;margin-top:10px;
+  padding:8px 12px;background:rgba(255,248,225,.75);
+  border-radius:10px;border:1.5px dashed #FFD54F;flex-wrap:wrap;
+}
+#gen-bar label{font-size:.76rem;color:#8D6E63;font-weight:700}
+#gen-bar select{
+  padding:4px 8px;border-radius:7px;border:1.5px solid #ddd;
+  background:#fff;font-size:.8rem;color:#333;cursor:pointer;
+}
+.gen-badge{
+  font-size:9px;padding:2px 8px;border-radius:10px;
+  background:#E3F2FD;color:#1565C0;font-weight:700;letter-spacing:.5px;
+  display:none;
+}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px}
+/* POS background colors for badges */
+.pos-noun{background:var(--noun)}.pos-verb{background:var(--verb)}
+.pos-adjective{background:var(--adj)}.pos-adverb{background:var(--adv)}
+.pos-preposition{background:var(--prep)}.pos-conjunction{background:var(--conj)}
+.pos-interjection{background:var(--intj)}.pos-article{background:var(--art)}
+.pos-pronoun{background:var(--pron)}.pos-verbal{background:var(--verbal)}
+.pos-punctuation{background:var(--punct)}
+/* tile border by pos */
+.tb-noun{border-color:var(--noun)}.tb-verb{border-color:var(--verb)}
+.tb-adjective{border-color:var(--adj)}.tb-adverb{border-color:var(--adv)}
+.tb-preposition{border-color:var(--prep)}.tb-conjunction{border-color:var(--conj)}
+.tb-interjection{border-color:var(--intj)}.tb-article{border-color:var(--art)}
+.tb-pronoun{border-color:var(--pron)}.tb-verbal{border-color:var(--verbal)}
+.tb-punctuation{border-color:var(--punct)}
+@media(max-width:700px){
+  #sidebar{display:none}
+  #content{width:100%}
+  .tab{padding:8px 10px;font-size:.72rem}
+}
+
+/* ═══════════════════════════════════════════
+   LEARNING HUB DESIGN SYSTEM INTEGRATION
+   Matches index.html: navy/indigo/violet theme
+═══════════════════════════════════════════ */
+:root{
+  --navy:#1e1b4b;--indigo:#4338ca;--violet:#6366f1;
+  --vlt:#eef2ff;--bg:#f1f5f9;--surface:#fff;
+  --border:#e2e8f0;--muted:#64748b;--txt:#0f172a;
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  background:var(--bg);color:var(--txt);
+  background-image:none;
+}
+/* Header → navy hero gradient */
+#hdr{
+  background:linear-gradient(145deg,#1e1b4b 0%,#312e81 45%,#4c1d95 100%);
+  border-bottom:none;box-shadow:0 2px 14px rgba(0,0,0,.22);gap:12px;
+}
+#hdr h1{color:#fff}
+#hdr .sub{color:rgba(255,255,255,.6)}
+.stat{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22)}
+.stat-l{color:rgba(255,255,255,.55)}
+.stat-v{color:#fcd34d}
+/* Back link */
+.back-link{
+  color:rgba(255,255,255,.65);text-decoration:none;font-size:.76rem;
+  font-weight:600;padding:4px 10px;border-radius:6px;
+  border:1px solid rgba(255,255,255,.22);transition:all .15s;
+  white-space:nowrap;flex-shrink:0;
+}
+.back-link:hover{color:#fff;background:rgba(255,255,255,.1)}
+/* Sidebar */
+#sidebar{background:var(--surface);border-right-color:var(--border)}
+#sidebar h2{color:var(--muted)}
+.lvl-name{color:var(--navy)}
+.lvl-diff{color:#94a3b8}
+.lvl-item:hover{background:var(--vlt)}
+.lvl-item.active{background:var(--vlt);border-left-color:var(--indigo)}
+.lvl-dot.cur{background:var(--indigo);border-color:#3730a3}
+/* Sentence area */
+#sent-area{background:var(--surface);border-bottom-color:var(--border)}
+.sent-title{color:var(--navy)}
+.sent-text{background:var(--vlt);border-left-color:var(--violet);color:#334155}
+.sent-summary{color:var(--muted)}
+/* Tabs */
+#tabs{background:var(--surface);border-bottom-color:var(--border)}
+.tab{color:var(--muted)}
+.tab:hover{color:var(--txt)}
+.tab.on{color:var(--indigo);border-bottom-color:var(--indigo)}
+/* Tab panes background */
+#panes{background:var(--bg)}
+/* Badges and buttons */
+.lvl-badge{background:linear-gradient(135deg,var(--indigo),var(--violet))}
+.btn-p{background:linear-gradient(135deg,var(--indigo),var(--violet))}
+/* Workspace */
+.ws-hint{color:var(--muted)}
+.dz-label{color:var(--muted)}
+.dz{background:rgba(255,255,255,.9)}
+.dz.over{border-color:var(--indigo);background:rgba(67,56,202,.06);transform:scale(1.02)}
+/* Detective */
+.det-card{background:var(--vlt);border-color:#818cf8}
+.det-k{color:var(--indigo)}
+.mem-tip{border-left-color:var(--violet);color:#475569;background:rgba(255,255,255,.8)}
+.det-empty{color:#94a3b8}
+/* Practice */
+.psc{border-color:#c7d2fe}
+.psc-v{color:var(--indigo)}
+.q-card{border-color:var(--border);box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.opt:hover:not(:disabled){border-color:#818cf8;background:var(--vlt)}
+.opt.sel{border-color:var(--indigo);background:var(--vlt);color:var(--navy)}
+/* Generate bar */
+#gen-bar{background:var(--vlt);border-color:#818cf8}
+#gen-bar label{color:var(--indigo)}
+#gen-bar select{border-color:#c7d2fe;color:var(--navy)}
+.gen-badge{background:#c7d2fe;color:#3730a3}
+/* Teacher notes */
+.sn-t{color:var(--navy)}
+.sn li::before{color:var(--indigo)}
+.col-hdr{color:var(--navy);border-color:var(--border)}
+.col-hdr:hover{background:var(--vlt)}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <a href="index.html" class="back-link">&#x2190; Learning Hub</a>
+  <div style="display:flex;align-items:baseline;gap:0;flex:1;min-width:0">
+    <h1>&#x1F4DD; Grammar Doodle Lab</h1>
+    <span class="sub">Sentence Diagramming Playground</span>
+  </div>
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-l">Score</span>
+      <span class="stat-v" id="g-score">0</span>
+    </div>
+    <div class="stat">
+      <span class="stat-l">&#x1F525; Streak</span>
+      <span class="stat-v" id="g-streak">0</span>
+    </div>
+  </div>
+</div>
+
+<div id="layout">
+  <aside id="sidebar">
+    <h2>Level Map</h2>
+    <div id="lvl-list"></div>
+  </aside>
+  <div id="content">
+    <div id="sent-area">
+      <div class="sent-meta" id="sent-meta"></div>
+      <div class="sent-text" id="sent-text"></div>
+      <div class="sent-summary" id="sent-sum"></div>
+      <div id="tiles"></div>
+      <div id="gen-bar">
+        <span style="font-size:.82rem;font-weight:800;color:#5D4037">&#x1F3B2; Random Sentence</span>
+        <label>Level</label>
+        <select id="gen-level">
+          <option value="1">1 – Subject + Verb</option>
+          <option value="2">2 – Add Modifiers</option>
+          <option value="3">3 – Prepositional Phrase</option>
+          <option value="4">4 – Compound (Conjunctions)</option>
+          <option value="5">5 – Interjections + Direct Address</option>
+          <option value="6">6 – Direct + Indirect Object</option>
+          <option value="7">7 – Linking Verb</option>
+        </select>
+        <label>Difficulty</label>
+        <select id="gen-diff">
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+        </select>
+        <button class="btn btn-p" onclick="generateRandom()" style="padding:5px 14px;font-size:.8rem">&#x1F3B2; Generate</button>
+        <span class="gen-badge" id="gen-badge">Generated</span>
+      </div>
+    </div>
+    <div id="tabs">
+      <button class="tab on" data-tab="ws">&#x1F5C2; Workspace</button>
+      <button class="tab" data-tab="diag">&#x270F; Diagram</button>
+      <button class="tab" data-tab="det">&#x1F50D; Detective</button>
+      <button class="tab" data-tab="prac">&#x1F3AF; Practice</button>
+      <button class="tab" data-tab="tn">&#x1F4CC; Teacher Notes</button>
+    </div>
+    <div id="panes">
+      <div class="pane on" id="pane-ws"></div>
+      <div class="pane" id="pane-diag"></div>
+      <div class="pane" id="pane-det"></div>
+      <div class="pane" id="pane-prac"></div>
+      <div class="pane" id="pane-tn"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================  DATA  ============================
+const LEVELS = [
+ {
+  id:1,level:1,difficulty:"Beginner",title:"Build the Main Line",
+  sentence:"Birds sing.",
+  summary:"Every sentence needs two things: a subject (who/what) and a predicate (what they do). These go on the main line.",
+  words:[
+   {w:"Birds",pos:"noun",job:"subject",mod:null,
+    exp:"The subject tells us WHO or WHAT performs the action.",
+    tip:"Subject = Star of the show! The sentence is all about them."},
+   {w:"sing",pos:"verb",job:"predicate",mod:null,
+    exp:"The verb (predicate) tells us WHAT the subject does.",
+    tip:"Verb = Action! If you can do it, it's probably a verb."},
+   {w:".",pos:"punctuation",job:"end mark",mod:null,
+    exp:"A period ends a declarative sentence.",tip:"Stop sign for sentences!"}
+  ],
+  zones:[
+   {id:"subj",label:"Subject",expected:["Birds"]},
+   {id:"verb",label:"Verb / Predicate",expected:["sing"]}
+  ],
+  diagram:{
+   type:"simple",
+   main:[{w:"Birds"},{div:"|"},{w:"sing"}],
+   mods:[],clauses:[],popouts:[]
+  },
+  questions:[
+   {q:"In 'Birds sing,' what is the subject?",opts:["sing","Birds","the sentence","loudly"],ans:1,hint:"The subject is who or what performs the action."},
+   {q:"What is the verb (predicate) in 'Birds sing'?",opts:["Birds","quietly","sing","in"],ans:2,hint:"The verb tells what the subject does."},
+   {q:"Which part of speech is 'Birds'?",opts:["Verb","Adjective","Adverb","Noun"],ans:3,hint:"Nouns name people, places, things, or ideas."}
+  ],
+  tn:{
+   exp:"The simple subject is the main noun. The simple predicate is the main verb. In traditional diagramming, a horizontal line is drawn with a vertical bar separating them.",
+   mistakes:["Including adjectives in the subject slot—only the noun goes on the main line.","Thinking 'is/are' are not predicates—all verbs are predicates."],
+   teach:"Have students act out the sentence: one student IS the bird, another SINGS.",
+   similar:["Cats sleep.","Dogs bark.","Fish swim.","Children laugh."],
+   key:"Subject: Birds | Predicate: sing"
+  }
+ },
+ {
+  id:2,level:2,difficulty:"Beginner",title:"Add Modifiers",
+  sentence:"The tiny birds sing sweetly.",
+  summary:"Adjectives describe nouns; adverbs describe verbs. In a diagram, modifiers hang below the words they describe on diagonal lines.",
+  words:[
+   {w:"The",pos:"article",job:"modifier",mod:"birds",exp:"An article (the, a, an) is a special adjective signaling a noun is coming.",tip:"'The' = specific thing. 'A/An' = any one thing."},
+   {w:"tiny",pos:"adjective",job:"modifier",mod:"birds",exp:"Adjectives describe nouns—what kind, how many, which one.",tip:"Adjective = adds detail to a noun. Ask 'What kind? Which one? How many?'"},
+   {w:"birds",pos:"noun",job:"subject",mod:null,exp:"The simple subject—who the sentence is about.",tip:"This is the star! Modifiers are the supporting cast."},
+   {w:"sing",pos:"verb",job:"predicate",mod:null,exp:"Action verb—what the subject does.",tip:"Verb = Action word!"},
+   {w:"sweetly",pos:"adverb",job:"modifier",mod:"sing",exp:"Adverbs modify verbs, adjectives, or other adverbs. Many end in -ly.",tip:"Adverbs answer: HOW? WHEN? WHERE? Sweetly = HOW they sing."},
+   {w:".",pos:"punctuation",job:"end mark",mod:null,exp:"Period ends the sentence.",tip:"Stop!"}
+  ],
+  zones:[
+   {id:"subj",label:"Subject",expected:["birds"]},
+   {id:"verb",label:"Verb",expected:["sing"]},
+   {id:"adj-mod",label:"Adjective Modifiers",expected:["The","tiny"],multi:true},
+   {id:"adv-mod",label:"Adverb Modifiers",expected:["sweetly"],multi:true}
+  ],
+  diagram:{
+   type:"modifiers",
+   main:[{w:"birds"},{div:"|"},{w:"sing"}],
+   mods:[{w:"The",under:"birds"},{w:"tiny",under:"birds"},{w:"sweetly",under:"sing"}],
+   clauses:[],popouts:[]
+  },
+  questions:[
+   {q:"Which word is an adverb in 'The tiny birds sing sweetly'?",opts:["tiny","birds","sweetly","The"],ans:2,hint:"Adverbs often end in -ly and describe verbs."},
+   {q:"What does the adjective 'tiny' modify?",opts:["sing","birds","sweetly","The"],ans:1,hint:"Adjectives always modify nouns."},
+   {q:"In sentence diagramming, where do modifiers go?",opts:["On the main line to the right","Above the words they modify","Below the words they modify","On a separate line"],ans:2,hint:"Think of modifiers as hanging down from the words they describe."}
+  ],
+  tn:{
+   exp:"Modifiers are placed on diagonal lines hanging below the words they describe. Articles (a, an, the) are treated as adjectives.",
+   mistakes:["Confusing adjectives and adverbs—adjectives describe NOUNS, adverbs describe VERBS/ADJ/ADV.","Placing adverbs under the subject noun instead of the verb."],
+   teach:"Color-code adjectives and adverbs differently. Have students draw arrows from modifiers to the words they describe.",
+   similar:["A big red dog barks loudly.","Three sleepy children played quietly.","The old clock ticks steadily."],
+   key:"Subject: birds (modifiers: The, tiny) | Predicate: sing (modifier: sweetly)"
+  }
+ },
+ {
+  id:3,level:3,difficulty:"Beginner",title:"Add Prepositional Phrases",
+  sentence:"The birds sing in the tall trees.",
+  summary:"A prepositional phrase = preposition + object. It acts as an adjective (describes a noun) or adverb (describes a verb).",
+  words:[
+   {w:"The",pos:"article",job:"modifier",mod:"birds",exp:"Article modifying 'birds'.",tip:"'The' signals a specific noun."},
+   {w:"birds",pos:"noun",job:"subject",mod:null,exp:"Simple subject of the sentence.",tip:"Who is doing the action?"},
+   {w:"sing",pos:"verb",job:"predicate",mod:null,exp:"Action verb—what the birds do.",tip:"What is the action?"},
+   {w:"in",pos:"preposition",job:"preposition",mod:"sing",exp:"A preposition shows relationship between its object and another word. 'In' shows location.",tip:"Prepositions: anywhere a mouse can go—IN a box, ON a box, UNDER a box..."},
+   {w:"the",pos:"article",job:"modifier",mod:"trees",exp:"Article modifying 'trees'.",tip:"Specific trees!"},
+   {w:"tall",pos:"adjective",job:"modifier",mod:"trees",exp:"Adjective describing the trees.",tip:"What kind of trees?"},
+   {w:"trees",pos:"noun",job:"object of preposition",mod:null,exp:"The object of the preposition—answers 'in WHAT?'",tip:"Every preposition needs an object to complete the phrase."},
+   {w:".",pos:"punctuation",job:"end mark",mod:null,exp:"Period.",tip:"Stop sign!"}
+  ],
+  zones:[
+   {id:"subj",label:"Subject",expected:["birds"]},
+   {id:"verb",label:"Verb",expected:["sing"]},
+   {id:"prep",label:"Preposition",expected:["in"]},
+   {id:"obj-prep",label:"Object of Prep",expected:["trees"]}
+  ],
+  diagram:{
+   type:"prepositional",
+   main:[{w:"birds"},{div:"|"},{w:"sing"}],
+   mods:[{w:"The",under:"birds"}],
+   clauses:[],popouts:[],
+   preps:[{prep:"in",obj:"trees",obj_mods:["the","tall"],attachedTo:"sing"}]
+  },
+  questions:[
+   {q:"What is the preposition in 'in the tall trees'?",opts:["tall","trees","in","the"],ans:2,hint:"Prepositions show relationships like location, time, or direction."},
+   {q:"What is the object of the preposition?",opts:["in","tall","the","trees"],ans:3,hint:"Ask: 'in WHAT?' — that noun is the object of the preposition."},
+   {q:"The phrase 'in the tall trees' acts as which part of speech here?",opts:["Adjective (describes birds)","Adverb (describes sing)","Noun (is the subject)","Conjunction"],ans:1,hint:"Does the phrase describe a noun or a verb?"}
+  ],
+  tn:{
+   exp:"Prepositional phrases are drawn below on a diagonal line from the preposition, with a horizontal line for the object. Modifiers of the object hang below it.",
+   mistakes:["Confusing the preposition with the object.","Attaching the phrase to the wrong word on the main line."],
+   teach:"Teach 'anywhere a mouse can go' for prepositions: in, on, under, over, beside, between, through, around.",
+   similar:["The cat sits on the warm mat.","Students work in small groups.","The book fell under the desk."],
+   key:"Subject: birds | Predicate: sing | Prep Phrase: in trees (adj: tall, art: the) — modifies 'sing'"
+  }
+ },
+ {
+  id:4,level:4,difficulty:"Intermediate",title:"Connect Ideas",
+  sentence:"Birds and frogs sing and croak.",
+  summary:"Coordinating conjunctions (FANBOYS) connect equal parts. Two subjects = compound subject. Two verbs = compound predicate.",
+  words:[
+   {w:"Birds",pos:"noun",job:"subject (1)",mod:null,exp:"First part of the compound subject.",tip:"First subject!"},
+   {w:"and",pos:"conjunction",job:"coordinating conjunction",mod:null,exp:"Connects 'Birds' and 'frogs'—both are subjects.",tip:"FANBOYS: For, And, Nor, But, Or, Yet, So"},
+   {w:"frogs",pos:"noun",job:"subject (2)",mod:null,exp:"Second part of the compound subject.",tip:"Second subject!"},
+   {w:"sing",pos:"verb",job:"predicate (1)",mod:null,exp:"First part of the compound predicate.",tip:"First action!"},
+   {w:"and",pos:"conjunction",job:"coordinating conjunction",mod:null,exp:"Connects 'sing' and 'croak'.",tip:"FANBOYS again!"},
+   {w:"croak",pos:"verb",job:"predicate (2)",mod:null,exp:"Second part of the compound predicate.",tip:"Second action!"},
+   {w:".",pos:"punctuation",job:"end mark",mod:null,exp:"Period.",tip:"Stop!"}
+  ],
+  zones:[
+   {id:"subj1",label:"Subject 1",expected:["Birds"]},
+   {id:"subj2",label:"Subject 2",expected:["frogs"]},
+   {id:"conj-s",label:"Conjunction (subjects)",expected:["and"]},
+   {id:"verb1",label:"Verb 1",expected:["sing"]},
+   {id:"verb2",label:"Verb 2",expected:["croak"]},
+   {id:"conj-v",label:"Conjunction (verbs)",expected:["and"]}
+  ],
+  diagram:{
+   type:"compound",
+   main:[{w:"Birds / frogs"},{div:"|"},{w:"sing / croak"}],
+   mods:[],clauses:[],popouts:[],
+   note:"Compound subject and compound predicate each joined by 'and'"
+  },
+  questions:[
+   {q:"What kind of conjunction is 'and' in this sentence?",opts:["Subordinating","Correlative","Coordinating","Conjunctive adverb"],ans:2,hint:"Remember FANBOYS: For, And, Nor, But, Or, Yet, So"},
+   {q:"'Birds and frogs' is an example of a:",opts:["Compound predicate","Compound subject","Compound sentence","Compound object"],ans:1,hint:"When two nouns are joined as subjects, that's a compound subject."},
+   {q:"Which of these is NOT a coordinating conjunction (FANBOYS)?",opts:["But","Because","Or","Yet"],ans:1,hint:"FANBOYS: For, And, Nor, But, Or, Yet, So — 'Because' is not in FANBOYS."}
+  ],
+  tn:{
+   exp:"Compound subjects/predicates are shown on parallel horizontal lines with a dotted vertical line connecting them, and the conjunction written on the dotted line.",
+   mistakes:["Confusing coordinating and subordinating conjunctions.","Thinking 'because' is in FANBOYS."],
+   teach:"Have students clap once for each FANBOYS word as they recite it together.",
+   similar:["Dogs bark and growl.","Cats and dogs play and sleep.","She ran but fell."],
+   key:"Compound Subject: Birds + frogs (joined by 'and') | Compound Predicate: sing + croak (joined by 'and')"
+  }
+ },
+ {
+  id:5,level:5,difficulty:"Intermediate",title:"Words That Pop Out",
+  sentence:"Oh, Maya, the parrot talks!",
+  summary:"Interjections express emotion and have no grammatical connection to the sentence. Nouns of direct address name the person being spoken to. Both 'pop out' above the main diagram.",
+  words:[
+   {w:"Oh",pos:"interjection",job:"interjection",mod:null,exp:"An interjection expresses strong emotion. It has NO grammatical connection to the sentence.",tip:"Interjections inject emotion! They float on a separate line above the diagram."},
+   {w:"Maya",pos:"noun",job:"noun of direct address",mod:null,exp:"A noun of direct address names the person being spoken TO. Set off by commas.",tip:"Direct address = talking TO someone. Their name 'pops out' above the diagram."},
+   {w:"the",pos:"article",job:"modifier",mod:"parrot",exp:"Article modifying 'parrot'.",tip:"Specific parrot!"},
+   {w:"parrot",pos:"noun",job:"subject",mod:null,exp:"The subject of the main clause.",tip:"Who talks?"},
+   {w:"talks",pos:"verb",job:"predicate",mod:null,exp:"The verb—what the parrot does.",tip:"What does it do?"},
+   {w:"!",pos:"punctuation",job:"end mark",mod:null,exp:"Exclamation point shows strong emotion.",tip:"Exciting!"}
+  ],
+  zones:[
+   {id:"intj",label:"Interjection",expected:["Oh"]},
+   {id:"nda",label:"Direct Address",expected:["Maya"]},
+   {id:"subj",label:"Subject",expected:["parrot"]},
+   {id:"verb",label:"Verb",expected:["talks"]}
+  ],
+  diagram:{
+   type:"popout",
+   main:[{w:"parrot"},{div:"|"},{w:"talks"}],
+   mods:[{w:"the",under:"parrot"}],
+   clauses:[],
+   popouts:[{w:"Oh",type:"interjection"},{w:"Maya",type:"direct address"}]
+  },
+  questions:[
+   {q:"In 'Oh, Maya, the parrot talks!' what is 'Oh'?",opts:["Noun","Verb","Interjection","Adjective"],ans:2,hint:"It expresses surprise/emotion and is set off by a comma."},
+   {q:"What is 'Maya' in this sentence?",opts:["Subject","Object","Noun of direct address","Predicate noun"],ans:2,hint:"Is Maya doing the talking, or are we talking TO Maya?"},
+   {q:"Where do interjections and nouns of direct address go in a diagram?",opts:["On the main line before the subject","On the main line after the verb","Below the diagram","Above the diagram on floating lines"],ans:3,hint:"They 'pop out' of the main sentence structure."}
+  ],
+  tn:{
+   exp:"Interjections go on a separate line above-left of the diagram. Nouns of direct address go on a separate line above the subject. Both connect to the diagram with dotted lines.",
+   mistakes:["Making the NDA the subject.","Forgetting that interjections have no grammatical connection to the sentence."],
+   teach:"Role-play: 'Alex, come here!' — Alex is the NDA, not the subject.",
+   similar:["Wow, the show was amazing!","Hey, Jordan, pass the ball!","No, I won't do it!"],
+   key:"Interjection: Oh | NDA: Maya | Subject: parrot (with 'the') | Verb: talks"
+  }
+ },
+ {
+  id:6,level:6,difficulty:"Intermediate",title:"Action Receivers",
+  sentence:"The teacher gave students a quiz.",
+  summary:"Transitive verbs pass action to receivers. Direct object = WHAT was given. Indirect object = TO WHOM it was given.",
+  words:[
+   {w:"The",pos:"article",job:"modifier",mod:"teacher",exp:"Article modifying 'teacher'.",tip:"Specific teacher!"},
+   {w:"teacher",pos:"noun",job:"subject",mod:null,exp:"The subject—who performs the action.",tip:"Who gave?"},
+   {w:"gave",pos:"verb",job:"predicate (transitive)",mod:null,exp:"Transitive action verb—transfers action to an object.",tip:"'Gave' needs something to be given!"},
+   {w:"students",pos:"noun",job:"indirect object",mod:null,exp:"Indirect object—answers 'gave TO WHOM?'",tip:"IO comes before the DO. Ask: 'to/for whom was the action done?'"},
+   {w:"a",pos:"article",job:"modifier",mod:"quiz",exp:"Article modifying 'quiz'.",tip:"One quiz!"},
+   {w:"quiz",pos:"noun",job:"direct object",mod:null,exp:"Direct object—answers 'gave WHAT?' The quiz is what was given.",tip:"Direct object = directly receives the action. Ask: 'subject verb WHAT?'"},
+   {w:".",pos:"punctuation",job:"end mark",mod:null,exp:"Period.",tip:"Stop!"}
+  ],
+  zones:[
+   {id:"subj",label:"Subject",expected:["teacher"]},
+   {id:"verb",label:"Verb",expected:["gave"]},
+   {id:"io",label:"Indirect Object",expected:["students"]},
+   {id:"do",label:"Direct Object",expected:["quiz"]}
+  ],
+  diagram:{
+   type:"objects",
+   main:[{w:"teacher"},{div:"|"},{w:"gave"},{div:"|"},{w:"quiz"}],
+   mods:[{w:"The",under:"teacher"},{w:"a",under:"quiz"}],
+   clauses:[],popouts:[],
+   io:"students"
+  },
+  questions:[
+   {q:"In 'The teacher gave students a quiz,' what is the direct object?",opts:["teacher","students","quiz","gave"],ans:2,hint:"Ask: The teacher gave WHAT? The thing given is the DO."},
+   {q:"What is 'students' in this sentence?",opts:["Subject","Direct object","Indirect object","Predicate noun"],ans:2,hint:"Ask: The teacher gave a quiz TO WHOM? That person is the IO."},
+   {q:"Which sentence has both a direct and indirect object?",opts:["She ran quickly.","He is tall.","Mom baked us cookies.","The bird sang."],ans:2,hint:"Look for a transitive verb that transfers something to someone."}
+  ],
+  tn:{
+   exp:"Direct objects go on the main line after the verb, separated by a vertical bar. Indirect objects go on a horizontal line below the verb, connected by a diagonal line.",
+   mistakes:["Swapping direct and indirect objects.","Confusing 'to + noun' prepositional phrases with indirect objects."],
+   teach:"Test: rewrite IO as 'to/for + noun': 'gave a quiz TO students.' If it works, it's an IO.",
+   similar:["Dad made me breakfast.","She sent her friend a letter.","We brought the team water."],
+   key:"Subject: teacher | Verb: gave | IO: students | DO: quiz (with 'a')"
+  }
+ },
+ {
+  id:7,level:7,difficulty:"Intermediate",title:"Linking and Passive Verbs",
+  sentence:"The sunset looks absolutely gorgeous.",
+  summary:"Linking verbs connect subject to a complement. The predicate adjective describes the subject; the predicate noun renames it. A backward-slanting line (\\) in the diagram shows it reflects back to the subject.",
+  words:[
+   {w:"The",pos:"article",job:"modifier",mod:"sunset",exp:"Article modifying 'sunset'.",tip:"Specific sunset!"},
+   {w:"sunset",pos:"noun",job:"subject",mod:null,exp:"The subject of the sentence.",tip:"What looks gorgeous?"},
+   {w:"looks",pos:"verb",job:"linking verb",mod:null,exp:"Linking verb—connects subject to its complement. 'Looks' describes a state, not an action.",tip:"Linking verbs: be, seem, appear, look, feel, smell, taste, sound, become. If 'is/are' works in its place, it's linking!"},
+   {w:"absolutely",pos:"adverb",job:"modifier",mod:"gorgeous",exp:"Adverb modifying the adjective 'gorgeous'—it intensifies it.",tip:"Adverbs can modify adjectives too! 'Absolutely' tells HOW gorgeous."},
+   {w:"gorgeous",pos:"adjective",job:"predicate adjective",mod:"sunset",exp:"Predicate adjective—follows a linking verb and describes the subject.",tip:"PA = after a linking verb, describes the subject. Point back: 'The sunset IS gorgeous.'"},
+   {w:".",pos:"punctuation",job:"end mark",mod:null,exp:"Period.",tip:"Stop!"}
+  ],
+  zones:[
+   {id:"subj",label:"Subject",expected:["sunset"]},
+   {id:"lv",label:"Linking Verb",expected:["looks"]},
+   {id:"pa",label:"Predicate Adjective",expected:["gorgeous"]}
+  ],
+  diagram:{
+   type:"linking",
+   main:[{w:"sunset"},{div:"|"},{w:"looks"},{div:"\\",slant:true},{w:"gorgeous"}],
+   mods:[{w:"The",under:"sunset"},{w:"absolutely",under:"gorgeous"}],
+   clauses:[],popouts:[]
+  },
+  questions:[
+   {q:"What type of verb is 'looks' in 'The sunset looks gorgeous'?",opts:["Action verb","Helping verb","Linking verb","Transitive verb"],ans:2,hint:"Try substituting 'is'—if it makes sense, it's likely a linking verb."},
+   {q:"What is 'gorgeous' in this sentence?",opts:["Direct object","Predicate adjective","Predicate noun","Adverb"],ans:1,hint:"It comes after a linking verb and describes the subject."},
+   {q:"Which sentence contains a PREDICATE NOUN (not a predicate adjective)?",opts:["She seems happy.","The dog is huge.","Alex became captain.","The soup tastes salty."],ans:2,hint:"A predicate noun RENAMES the subject as a noun; a predicate adjective DESCRIBES it."}
+  ],
+  tn:{
+   exp:"The predicate noun or adjective goes on the main line after the linking verb, separated by a backward-slanting line (\\). This backward line shows the complement reflects back to the subject.",
+   mistakes:["Treating linking verbs like action verbs and adding direct objects.","Confusing predicate adjectives with regular adjectives."],
+   teach:"The backward slash is key: it visually shows the complement is 'reflecting back' to the subject—Sunset = gorgeous.",
+   similar:["She became a doctor.","The soup smells delicious.","He is the captain.","They seem tired."],
+   key:"Subject: sunset | Linking Verb: looks | Predicate Adj: gorgeous (modified by 'absolutely') | modifier: The (on sunset)"
+  }
+ },
+ {
+  id:8,level:8,difficulty:"Advanced",title:"Adverb Clauses",
+  sentence:"The crowd cheered when the team scored.",
+  summary:"An adverb clause is a dependent clause acting as an adverb. It starts with a subordinating conjunction and modifies a verb, adjective, or adverb in the main clause.",
+  words:[
+   {w:"The",pos:"article",job:"modifier",mod:"crowd",exp:"Article modifying 'crowd'.",tip:"Specific crowd!"},
+   {w:"crowd",pos:"noun",job:"subject (main)",mod:null,exp:"Subject of the main clause.",tip:"Who cheered?"},
+   {w:"cheered",pos:"verb",job:"predicate (main)",mod:null,exp:"Verb of the main clause.",tip:"What did they do?"},
+   {w:"when",pos:"conjunction",job:"subordinating conjunction",mod:null,exp:"Subordinating conjunction introducing the adverb clause—shows a time relationship.",tip:"Common subordinating conjunctions: when, because, although, if, since, while, after, before, unless, until"},
+   {w:"the",pos:"article",job:"modifier",mod:"team",exp:"Article modifying 'team'.",tip:"Specific team!"},
+   {w:"team",pos:"noun",job:"subject (clause)",mod:null,exp:"Subject of the dependent adverb clause.",tip:"Who scored?"},
+   {w:"scored",pos:"verb",job:"predicate (clause)",mod:null,exp:"Verb of the dependent adverb clause.",tip:"What did they do?"},
+   {w:".",pos:"punctuation",job:"end mark",mod:null,exp:"Period.",tip:"Stop!"}
+  ],
+  zones:[
+   {id:"m-subj",label:"Main Subject",expected:["crowd"]},
+   {id:"m-verb",label:"Main Verb",expected:["cheered"]},
+   {id:"sub-conj",label:"Subordinating Conj.",expected:["when"]},
+   {id:"c-subj",label:"Clause Subject",expected:["team"]},
+   {id:"c-verb",label:"Clause Verb",expected:["scored"]}
+  ],
+  diagram:{
+   type:"adv-clause",
+   main:[{w:"crowd"},{div:"|"},{w:"cheered"}],
+   mods:[{w:"The",under:"crowd"}],
+   popouts:[],
+   clause:{type:"adverb",subconj:"when",csubj:"team",cverb:"scored",cmods:[{w:"the",under:"team"}],attachedTo:"cheered"}
+  },
+  questions:[
+   {q:"What is 'when the team scored' in this sentence?",opts:["A prepositional phrase","An adverb clause","An adjective clause","A noun clause"],ans:1,hint:"It begins with a subordinating conjunction and modifies the verb 'cheered.'"},
+   {q:"What does the adverb clause 'when the team scored' modify?",opts:["crowd","The","cheered","team"],ans:2,hint:"Adverb clauses modify verbs. Ask: 'WHEN did the crowd cheer?'"},
+   {q:"Which word is the subordinating conjunction?",opts:["crowd","cheered","when","scored"],ans:2,hint:"Subordinating conjunctions introduce dependent clauses—when, because, although, if, since..."}
+  ],
+  tn:{
+   exp:"Adverb clauses are drawn below the main clause on a separate baseline. A dotted line connects the dependent clause verb to the word it modifies in the main clause. The subordinating conjunction is written on the dotted line.",
+   mistakes:["Confusing subordinating and coordinating conjunctions.","Not identifying which word the adverb clause modifies."],
+   teach:"Test: Can you move the clause? 'When the team scored, the crowd cheered.' Yes! Adverb clauses are moveable—unlike adjective clauses.",
+   similar:["She smiled because she won.","Although it rained, they played.","I'll leave if you're ready."],
+   key:"Main: crowd | cheered | Adverb clause: [team | scored] attached to 'cheered' via 'when'"
+  }
+ },
+ {
+  id:9,level:9,difficulty:"Advanced",title:"Adjective Clauses",
+  sentence:"The student who studies hard succeeds.",
+  summary:"An adjective clause modifies a noun. It begins with a relative pronoun (who, whom, which, that) and cannot be moved to a different position.",
+  words:[
+   {w:"The",pos:"article",job:"modifier",mod:"student",exp:"Article modifying 'student'.",tip:"Specific student!"},
+   {w:"student",pos:"noun",job:"subject",mod:null,exp:"Subject of the main clause—also the antecedent of the adjective clause.",tip:"Antecedent = the noun the relative pronoun refers back to."},
+   {w:"who",pos:"pronoun",job:"relative pronoun",mod:null,exp:"Relative pronoun introducing the adjective clause. 'Who' refers back to 'student.'",tip:"Relative pronouns: who (people), which (things), that (people or things)"},
+   {w:"studies",pos:"verb",job:"predicate (clause)",mod:null,exp:"Verb of the adjective clause.",tip:"What does 'who' do?"},
+   {w:"hard",pos:"adverb",job:"modifier",mod:"studies",exp:"Adverb modifying 'studies'—note: 'hard' not 'hardly'!",tip:"'Hard' = works with effort. 'Hardly' = barely. Big difference!"},
+   {w:"succeeds",pos:"verb",job:"predicate (main)",mod:null,exp:"Main verb—what the student does.",tip:"What does the student do?"},
+   {w:".",pos:"punctuation",job:"end mark",mod:null,exp:"Period.",tip:"Stop!"}
+  ],
+  zones:[
+   {id:"m-subj",label:"Main Subject",expected:["student"]},
+   {id:"m-verb",label:"Main Verb",expected:["succeeds"]},
+   {id:"rel",label:"Relative Pronoun",expected:["who"]},
+   {id:"c-verb",label:"Clause Verb",expected:["studies"]}
+  ],
+  diagram:{
+   type:"adj-clause",
+   main:[{w:"student"},{div:"|"},{w:"succeeds"}],
+   mods:[{w:"The",under:"student"}],
+   popouts:[],
+   clause:{type:"adjective",rel:"who",cverb:"studies",cmods:[{w:"hard",under:"studies"}],attachedTo:"student"}
+  },
+  questions:[
+   {q:"What is 'who studies hard' in this sentence?",opts:["Adverb clause","Noun clause","Adjective clause","Prepositional phrase"],ans:2,hint:"It modifies the noun 'student'—what kind of student? The one who studies hard."},
+   {q:"What does 'who studies hard' modify?",opts:["The (article)","student","hard","succeeds"],ans:1,hint:"Adjective clauses modify nouns. Find the noun right before 'who.'"},
+   {q:"Which relative pronoun would you use if the antecedent were a thing?",opts:["whom","whose","which","whoever"],ans:2,hint:"'who' = for people; '___' = for things."}
+  ],
+  tn:{
+   exp:"The adjective clause sits below on its own baseline. A dotted line connects the relative pronoun in the clause to its antecedent in the main clause.",
+   mistakes:["Moving the adjective clause away from its antecedent (dangling modifiers).","Confusing who/whom."],
+   teach:"Test moveability: 'Who studies hard, the student succeeds'—sounds wrong! Adjective clauses are NOT moveable (unlike adverb clauses).",
+   similar:["The book that she read was fascinating.","The park where we played is closed.","The person whom you met is my uncle."],
+   key:"Main: student | succeeds | Adj clause: [who | studies (hard)] dotted line to 'student'"
+  }
+ },
+ {
+  id:10,level:10,difficulty:"Advanced",title:"Noun Clauses",
+  sentence:"What she discovered amazed everyone.",
+  summary:"A noun clause acts as a noun—subject, object, or complement. The whole clause can replace a single noun. Common introductory words: that, what, who, whoever, whether, how, why.",
+  words:[
+   {w:"What",pos:"pronoun",job:"relative pronoun (in noun clause)",mod:null,exp:"'What' introduces the noun clause and acts as its object ('she discovered what'). The whole phrase is the subject of 'amazed.'",tip:"'What' here = 'the thing that.' The whole phrase 'what she discovered' is the subject."},
+   {w:"she",pos:"pronoun",job:"subject (of clause)",mod:null,exp:"Subject of the noun clause.",tip:"Who did the discovering?"},
+   {w:"discovered",pos:"verb",job:"predicate (of clause)",mod:null,exp:"Verb of the noun clause.",tip:"What action happened inside the clause?"},
+   {w:"amazed",pos:"verb",job:"main predicate",mod:null,exp:"The main verb of the sentence. The subject is the whole noun clause.",tip:"The WHOLE clause 'what she discovered' does the amazing!"},
+   {w:"everyone",pos:"noun",job:"direct object",mod:null,exp:"Direct object—who was amazed.",tip:"amazed WHOM?"},
+   {w:".",pos:"punctuation",job:"end mark",mod:null,exp:"Period.",tip:"Stop!"}
+  ],
+  zones:[
+   {id:"nc",label:"Noun Clause (subject)",expected:["What","she","discovered"],multi:true},
+   {id:"m-verb",label:"Main Verb",expected:["amazed"]},
+   {id:"do",label:"Direct Object",expected:["everyone"]}
+  ],
+  diagram:{
+   type:"noun-clause",
+   main:[{w:"[noun clause]"},{div:"|"},{w:"amazed"},{div:"|"},{w:"everyone"}],
+   mods:[],popouts:[],
+   clause:{type:"noun",intro:"What",csubj:"she",cverb:"discovered",role:"subject"}
+  },
+  questions:[
+   {q:"In 'What she discovered amazed everyone,' the phrase 'what she discovered' functions as:",opts:["Adverb clause","Adjective clause","Subject of the main verb","Object of a preposition"],ans:2,hint:"Ask: what amazed everyone? That answer is the subject."},
+   {q:"What is the main verb in this sentence?",opts:["discovered","What","amazed","she"],ans:2,hint:"The main verb is the verb of the independent clause, not the dependent clause."},
+   {q:"Which word begins the noun clause?",opts:["she","What","amazed","everyone"],ans:1,hint:"The noun clause begins with its introductory word."}
+  ],
+  tn:{
+   exp:"Noun clauses are placed on a pedestal (a small raised platform) at the location of the noun role. The clause is diagrammed on a separate baseline with its introductory word.",
+   mistakes:["Confusing noun clauses with adjective/adverb clauses.","Thinking 'what' is the subject of the sentence."],
+   teach:"Substitute a pronoun: 'IT amazed everyone.' If 'it' works, the whole clause is the subject.",
+   similar:["How he solved it surprised us.","That she won is wonderful.","I know what you mean."],
+   key:"Noun clause (subject): [What | she | discovered] | Main verb: amazed | DO: everyone"
+  }
+ },
+ {
+  id:11,level:11,difficulty:"Expert",title:"Verbals",
+  sentence:"Running fast, she crossed the finish line.",
+  summary:"Verbals are verb forms used as other parts of speech. A participle acts as an adjective. A participial phrase includes the participle + modifiers/objects.",
+  words:[
+   {w:"Running",pos:"verbal",job:"participle (adjective)",mod:"she",exp:"A participle is a verb form used as an adjective. 'Running' modifies 'she.'",tip:"Participles end in -ing (present) or -ed/-en (past) and always describe a noun."},
+   {w:"fast",pos:"adverb",job:"modifier",mod:"Running",exp:"Adverb modifying the participle 'Running'.",tip:"How was she running?"},
+   {w:"she",pos:"pronoun",job:"subject",mod:null,exp:"Subject of the main clause.",tip:"Who crossed?"},
+   {w:"crossed",pos:"verb",job:"predicate",mod:null,exp:"Main verb of the sentence.",tip:"What did she do?"},
+   {w:"the",pos:"article",job:"modifier",mod:"line",exp:"Article modifying 'line'.",tip:"Specific line!"},
+   {w:"finish",pos:"adjective",job:"modifier",mod:"line",exp:"Adjective modifying 'line'.",tip:"What kind of line?"},
+   {w:"line",pos:"noun",job:"direct object",mod:null,exp:"Direct object—she crossed WHAT?",tip:"The finish line is what was crossed."},
+   {w:".",pos:"punctuation",job:"end mark",mod:null,exp:"Period.",tip:"Stop!"}
+  ],
+  zones:[
+   {id:"part",label:"Participial Phrase",expected:["Running","fast"],multi:true},
+   {id:"subj",label:"Subject",expected:["she"]},
+   {id:"verb",label:"Verb",expected:["crossed"]},
+   {id:"do",label:"Direct Object",expected:["line"]}
+  ],
+  diagram:{
+   type:"verbal",
+   main:[{w:"she"},{div:"|"},{w:"crossed"},{div:"|"},{w:"line"}],
+   mods:[{w:"the",under:"line"},{w:"finish",under:"line"}],
+   popouts:[],clauses:[],
+   participle:{p:"Running",pmods:[{w:"fast",under:"Running"}],attachedTo:"she"}
+  },
+  questions:[
+   {q:"What type of verbal is 'Running' in 'Running fast, she crossed the finish line'?",opts:["Gerund","Infinitive","Participle","Auxiliary verb"],ans:2,hint:"This verbal acts as an adjective—it describes the subject 'she.'"},
+   {q:"What does the participial phrase 'Running fast' modify?",opts:["crossed","line","fast","she"],ans:3,hint:"Participial phrases always modify a noun or pronoun."},
+   {q:"If 'running' were a GERUND in a different sentence, it would function as a:",opts:["Verb","Adjective","Adverb","Noun"],ans:3,hint:"Gerunds = -ing verbals that act as NOUNS. 'Running is fun.'"}
+  ],
+  tn:{
+   exp:"Participial phrases are diagrammed below the noun they modify on a curved/bent line. The participle sits on the bend, its modifiers hang below.",
+   mistakes:["Dangling participles—the phrase seems to modify the wrong word.","Confusing gerunds (nouns) and participles (adjectives)."],
+   teach:"Test: 'Running is a sport'—gerund (subject). 'Running quickly, I caught the bus'—participle (modifies I). Same form, different job!",
+   similar:["Exhausted from practice, the team rested.","Swimming gracefully, the dolphin leaped.","To win, you must practice daily."],
+   key:"Participial phrase: Running (fast) modifies 'she' | Main: she | crossed | DO: line (with 'the' and 'finish')"
+  }
+ }
+];
+
+// ==========================  STATE  ==========================
+const S = {
+ level: 1,
+ score: 0,
+ streak: 0,
+ done: new Set(),
+ placements: {},   // zoneId -> [word strings]
+ dragWord: null,
+ dragIdx: null,
+ activeWordIdx: null,
+ quiz: { q:0, answered:false, sel:null, correct:0, shown:false }
+};
+
+// ==========================  HELPERS  ==========================
+const $ = id => document.getElementById(id);
+const posClass = pos => 'pos-' + pos.replace(/\s.*/,'').replace(/[()]/g,'').toLowerCase();
+const tbClass  = pos => 'tb-'  + pos.replace(/\s.*/,'').replace(/[()]/g,'').toLowerCase();
+
+function posColor(pos){
+ const map={noun:'#4A90E2',verb:'#E24A4A',adjective:'#66BB6A',adverb:'#AB47BC',
+  preposition:'#8D6E63',conjunction:'#FF7043',interjection:'#F9A825',
+  article:'#26A69A',pronoun:'#5C6BC0',verbal:'#00ACC1',punctuation:'#9E9E9E'};
+ const k = pos.replace(/\s.*/,'').replace(/[()]/g,'').toLowerCase();
+ return map[k] || '#9E9E9E';
+}
+
+function updateHeader(){
+ $('g-score').textContent = S.score;
+ $('g-streak').textContent = S.streak;
+}
+
+// ==========================  LEVEL MAP  ==========================
+function renderLevelMap(){
+ const list = $('lvl-list'); list.innerHTML='';
+ LEVELS.filter(l=>l.id!=='random').forEach(lv => {
+  const d = document.createElement('div');
+  d.className='lvl-item' + (lv.level===S.level?' active':'');
+  d.dataset.level = lv.level;
+  const dotClass = S.done.has(lv.level) ? 'done' : (lv.level===S.level ? 'cur' : '');
+  d.innerHTML=`<div class="lvl-dot ${dotClass}">${S.done.has(lv.level)?'✓':lv.level}</div>
+   <div><div class="lvl-name">${lv.title}</div><div class="lvl-diff">${lv.difficulty}</div></div>`;
+  d.addEventListener('click',()=>loadLevel(lv.level));
+  list.appendChild(d);
+ });
+}
+
+// ==========================  LOAD LEVEL  ==========================
+function loadLevel(n){
+ S.level=n; S.placements={}; S.dragWord=null; S.dragIdx=null;
+ S.activeWordIdx=null; S.quiz={q:0,answered:false,sel:null,correct:0,shown:false};
+ const lv = LEVELS.find(l=>l.level===n);
+ renderLevelMap();
+ renderSentence(lv);
+ renderTiles(lv);
+ renderWorkspace(lv);
+ renderDiagram(lv);
+ renderDetective(null, lv);
+ renderPractice(lv);
+ renderTeacher(lv);
+ switchTab('ws');
+}
+
+// ==========================  SENTENCE  ==========================
+function renderSentence(lv){
+ const lbl=lv.id==='random'?'&#x1F3B2; Random':'Level '+lv.level;
+ $('sent-meta').innerHTML=
+  `<span class="lvl-badge">${lbl}</span>
+   <span class="sent-title">${lv.title}</span>
+   <span class="diff-badge diff-${lv.difficulty}">${lv.difficulty}</span>`;
+ $('sent-text').textContent = lv.sentence;
+ $('sent-sum').textContent  = lv.summary;
+}
+
+// ==========================  TILES  ==========================
+function renderTiles(lv){
+ const box=$('tiles'); box.innerHTML='';
+ lv.words.forEach((word,i)=>{
+  const t=document.createElement('div');
+  t.className=`tile ${tbClass(word.pos)}`;
+  t.dataset.idx=i; t.dataset.word=word.w;
+  t.draggable=true;
+  t.innerHTML=`<span class="tile-w">${word.w}</span>
+   <span class="tile-p ${posClass(word.pos)}">${word.pos}</span>`;
+  t.addEventListener('dragstart',e=>{
+   S.dragWord=word.w; S.dragIdx=i;
+   t.classList.add('dragging');
+   e.dataTransfer.effectAllowed='copy';
+   e.dataTransfer.setData('text/plain', word.w);
+  });
+  t.addEventListener('dragend',()=>t.classList.remove('dragging'));
+  t.addEventListener('click',()=>{
+   document.querySelectorAll('.tile').forEach(x=>x.classList.remove('lit'));
+   t.classList.add('lit');
+   S.activeWordIdx=i;
+   renderDetective(word, lv);
+   switchTab('det');
+  });
+  box.appendChild(t);
+ });
+}
+
+function markPlaced(word){
+ document.querySelectorAll('.tile').forEach(t=>{
+  if(t.dataset.word===word) t.classList.add('placed');
+ });
+}
+function unmarkPlaced(word){
+ // only unmark if word not in any zone
+ const allPlaced = Object.values(S.placements).flat();
+ if(!allPlaced.includes(word))
+  document.querySelectorAll('.tile').forEach(t=>{
+   if(t.dataset.word===word) t.classList.remove('placed');
+  });
+}
+
+// ==========================  WORKSPACE  ==========================
+function renderWorkspace(lv){
+ const pane=$('pane-ws');
+ pane.innerHTML=`<p class="ws-hint">Drag word tiles from above into the correct zones, then click <strong>Check</strong>.</p>
+  <div class="dz-grid" id="dz-grid"></div>
+  <div class="ws-actions">
+   <button class="btn btn-p" onclick="checkZones()">✓ Check</button>
+   <button class="btn btn-s" onclick="resetZones()">↺ Reset</button>
+   <button class="btn btn-g" onclick="revealZones()">👁 Reveal</button>
+  </div>
+  <div class="ws-fb" id="ws-fb"></div>
+  <div class="done-banner" id="done-banner">🎉 Correct! Level complete! (+10 pts)</div>`;
+
+ const grid=$('dz-grid');
+ lv.zones.forEach(zone=>{
+  S.placements[zone.id] = S.placements[zone.id] || [];
+  const grp=document.createElement('div');
+  grp.className='dz-group';
+  grp.innerHTML=`<div class="dz-label">${zone.label}</div>
+   <div class="dz" id="dz-${zone.id}" data-zone="${zone.id}">
+    <div class="dz-ph" id="dz-ph-${zone.id}">drop here</div>
+   </div>`;
+  grid.appendChild(grp);
+  // repaint existing placements
+  S.placements[zone.id].forEach(w=>addToZone(zone.id,w));
+ });
+
+ // drop zone events
+ document.querySelectorAll('.dz').forEach(dz=>{
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over')});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+  dz.addEventListener('drop',e=>{
+   e.preventDefault(); dz.classList.remove('over');
+   if(!S.dragWord) return;
+   const zid=dz.dataset.zone;
+   const zone=LEVELS.find(l=>l.level===S.level).zones.find(z=>z.id===zid);
+   if(!zone.multi && S.placements[zid].length>0) return; // single slot full
+   if(!S.placements[zid].includes(S.dragWord)){
+    S.placements[zid].push(S.dragWord);
+    addToZone(zid, S.dragWord);
+    markPlaced(S.dragWord);
+   }
+   S.dragWord=null;
+  });
+ });
+}
+
+function addToZone(zid, word){
+ const dz=$(`dz-${zid}`); if(!dz) return;
+ const ph=$(`dz-ph-${zid}`); if(ph) ph.style.display='none';
+ dz.classList.add('has');
+ const dt=document.createElement('div');
+ dt.className='dtile'; dt.dataset.word=word; dt.dataset.zone=zid;
+ dt.innerHTML=`${word}<span class="rm" onclick="removeFromZone('${zid}','${word}',this)">✕</span>`;
+ dz.appendChild(dt);
+}
+
+function removeFromZone(zid, word, el){
+ S.placements[zid] = S.placements[zid].filter(w=>w!==word);
+ el.parentElement.remove();
+ unmarkPlaced(word);
+ const dz=$(`dz-${zid}`);
+ if(!dz.querySelector('.dtile')){
+  dz.classList.remove('has','ok','bad');
+  const ph=$(`dz-ph-${zid}`); if(ph) ph.style.display='';
+ }
+}
+
+function resetZones(){
+ S.placements={};
+ document.querySelectorAll('.tile').forEach(t=>t.classList.remove('placed'));
+ const lv=LEVELS.find(l=>l.level===S.level);
+ renderWorkspace(lv);
+ const fb=$('ws-fb'); if(fb){fb.className='ws-fb';fb.textContent=''}
+ const db=$('done-banner'); if(db){db.className='done-banner'}
+}
+
+function revealZones(){
+ const lv=LEVELS.find(l=>l.level===S.level);
+ resetZones();
+ lv.zones.forEach(zone=>{
+  S.placements[zone.id] = [...zone.expected];
+  zone.expected.forEach(w=>{addToZone(zone.id,w);markPlaced(w)});
+  const dz=$(`dz-${zone.id}`);
+  if(dz) dz.classList.add('ok');
+ });
+ const fb=$('ws-fb');
+ fb.className='ws-fb ok on';
+ fb.textContent='Answer key revealed! Study the correct placement, then try another level.';
+}
+
+function checkZones(){
+ const lv=LEVELS.find(l=>l.level===S.level);
+ let correct=0; let total=lv.zones.length;
+ lv.zones.forEach(zone=>{
+  const placed=(S.placements[zone.id]||[]).map(w=>w.toLowerCase());
+  const exp=zone.expected.map(w=>w.toLowerCase());
+  const ok = exp.every(e=>placed.includes(e)) && placed.every(p=>exp.includes(p));
+  const dz=$(`dz-${zone.id}`);
+  if(dz){dz.classList.remove('ok','bad');dz.classList.add(ok?'ok':'bad');}
+  if(ok) correct++;
+ });
+ const fb=$('ws-fb'); const db=$('done-banner');
+ if(correct===total){
+  fb.className='ws-fb ok on';
+  fb.textContent=`✓ Perfect! All ${total} zone${total>1?'s':''} correct.`;
+  if(!S.done.has(lv.level)){
+   S.done.add(lv.level); S.score+=10; S.streak++;
+   updateHeader(); renderLevelMap();
+   db.className='done-banner on';
+  }
+ } else {
+  S.streak=0; updateHeader();
+  fb.className='ws-fb bad on';
+  fb.textContent=`${correct}/${total} zones correct. Red zones need fixing — try again or click Reveal.`;
+  fb.classList.add('shake');
+  setTimeout(()=>fb.classList.remove('shake'),400);
+ }
+}
+
+// ==========================  DIAGRAM  ==========================
+function renderDiagram(lv){
+ const pane=$('pane-diag'); const d=lv.diagram;
+ let html='<div class="diag-wrap">';
+
+ // Pop-outs above
+ if(d.popouts && d.popouts.length){
+  html+='<div class="diag-popouts">';
+  d.popouts.forEach(p=>{
+   html+=`<div class="diag-popout"><span class="diag-popout-lbl">${p.type}</span>${p.w}</div>`;
+  });
+  html+='</div>';
+ }
+
+ // Participle above main
+ if(d.participle){
+  html+=`<div style="margin-bottom:6px;padding:8px 12px;background:rgba(0,172,193,.08);border-radius:8px;display:inline-block;border:1.5px dashed var(--verbal)">
+   <span style="font-size:.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--verbal);font-weight:700;">Participial Phrase</span><br>
+   <strong>${d.participle.p}</strong>${d.participle.pmods.map(m=>`&nbsp;<em style="color:#777;font-size:.85rem">(${m.w})</em>`).join('')}
+   <span style="font-size:.7rem;color:#aaa;"> — modifies: <em>${d.participle.attachedTo}</em></span>
+  </div>`;
+ }
+
+ // Main line
+ html+='<div class="diag-main">';
+ d.main.forEach(item=>{
+  if(item.div){
+   html+=`<div class="diag-div${item.slant?' slant':''}">&nbsp;</div>`;
+  } else {
+   // gather mods for this word
+   const mods=(d.mods||[]).filter(m=>m.under===item.w);
+   html+='<div class="diag-seg">';
+   html+=`<div class="diag-word">${item.w}</div>`;
+   if(mods.length){
+    html+='<div class="diag-mods">';
+    mods.forEach(m=>html+=`<div class="diag-mod-item">${m.w}</div>`);
+    html+='</div>';
+   }
+   html+='</div>';
+  }
+ });
+ html+='</div>'; // end main
+
+ // Indirect object
+ if(d.io){
+  html+=`<div style="margin-top:10px;padding-left:60px;display:flex;align-items:center;gap:6px">
+   <span style="font-size:.8rem;color:#999;font-style:italic">indirect object:</span>
+   <div style="border-bottom:2px solid #999;padding:2px 10px;font-size:.9rem;font-weight:700">${d.io}</div>
+  </div>`;
+ }
+
+ // Prep phrases
+ if(d.preps){
+  d.preps.forEach(pp=>{
+   html+=`<div style="margin-top:12px;padding-left:60px">
+    <div style="font-size:.75rem;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">
+     Prep phrase (modifies: ${pp.attachedTo})</div>
+    <div class="diag-main">
+     <div class="diag-seg"><div class="diag-word">${pp.prep}</div></div>
+     <div class="diag-div">&nbsp;</div>
+     <div class="diag-seg">
+      <div class="diag-word">${pp.obj}</div>
+      <div class="diag-mods">${pp.obj_mods.map(m=>`<div class="diag-mod-item">${m}</div>`).join('')}</div>
+     </div>
+    </div>
+   </div>`;
+  });
+ }
+
+ // Clause
+ if(d.clause){
+  const cl=d.clause;
+  html+=`<div class="diag-clause-area">
+   <div class="diag-clause-lbl">${cl.type} clause — modifies: ${cl.attachedTo||cl.role}</div>
+   <div class="diag-connector">· · · (${cl.subconj||cl.rel||cl.intro}) · · ·</div>
+   <div class="diag-main">`;
+  if(cl.csubj||cl.rel){
+   html+=`<div class="diag-seg"><div class="diag-word">${cl.csubj||cl.rel}</div>`;
+   if(cl.cmods){
+    const sm=cl.cmods.filter(m=>m.under===(cl.csubj||cl.rel));
+    if(sm.length){html+='<div class="diag-mods">'+sm.map(m=>`<div class="diag-mod-item">${m.w}</div>`).join('')+'</div>';}
+   }
+   html+='</div>';
+   html+=`<div class="diag-div">&nbsp;</div>`;
+  }
+  html+=`<div class="diag-seg"><div class="diag-word">${cl.cverb}</div>`;
+  if(cl.cmods){
+   const vm=cl.cmods.filter(m=>m.under===cl.cverb);
+   if(vm.length){html+='<div class="diag-mods">'+vm.map(m=>`<div class="diag-mod-item">${m.w}</div>`).join('')+'</div>';}
+  }
+  html+='</div>';
+  html+='</div></div>';
+ }
+
+ // Noun clause detail
+ if(d.clause && d.clause.type==='noun'){
+  const cl=d.clause;
+  html=html; // already rendered above
+ }
+
+ if(d.note){
+  html+=`<div style="margin-top:14px;font-size:.75rem;color:#aaa;font-style:italic">${d.note}</div>`;
+ }
+
+ html+='</div>'; // end diag-wrap
+ pane.innerHTML=html;
+}
+
+// ==========================  DETECTIVE  ==========================
+function renderDetective(word, lv){
+ const pane=$('pane-det');
+ if(!word){
+  pane.innerHTML=`<div id="det-panel"><div class="det-empty">&#x1F4CB; Click any word tile to investigate it!<br><br>
+   Learn each word's part of speech, job in the sentence, and memory tip.</div></div>`;
+  return;
+ }
+ const c = posColor(word.pos);
+ const modsInfo = word.mod ? `Modifies <strong>${word.mod}</strong>` : '—';
+ pane.innerHTML=`<div id="det-panel">
+  <div class="det-card">
+   <div class="det-word">${word.w}</div>
+   <span class="det-pos ${posClass(word.pos)}" style="${word.pos==='interjection'?'color:#333':''}">${word.pos}</span>
+   <div class="det-grid">
+    <span class="det-k">Job:</span><span class="det-v">${word.job}</span>
+    <span class="det-k">Modifies:</span><span class="det-v">${modsInfo}</span>
+    <span class="det-k">Explanation:</span><span class="det-v">${word.exp}</span>
+   </div>
+   <div class="mem-tip">${word.tip}</div>
+  </div>
+  <div style="padding:10px 0;font-size:.78rem;color:#aaa;text-align:center">
+   ← → Use arrow keys to navigate words
+  </div>
+ </div>`;
+
+ // arrow key nav
+ pane.onkeydown = null;
+}
+
+// ==========================  PRACTICE  ==========================
+function renderPractice(lv){
+ renderQuestion(lv);
+}
+
+function renderQuestion(lv){
+ const pane=$('pane-prac'); const qz=S.quiz;
+ const qs=lv.questions; const total=qs.length;
+ if(qz.q>=total){
+  // finished
+  const pct=Math.round(qz.correct/total*100);
+  const pts=qz.correct*5;
+  pane.innerHTML=`<div class="prac-top">
+   <div class="prac-score-row">
+    <div class="psc"><span class="psc-l">Questions</span><span class="psc-v">${total}</span></div>
+    <div class="psc"><span class="psc-l">Correct</span><span class="psc-v">${qz.correct}</span></div>
+    <div class="psc"><span class="psc-l">Score</span><span class="psc-v">${pct}%</span></div>
+   </div>
+  </div>
+  <div class="q-card" style="text-align:center;padding:30px">
+   <div style="font-size:2.5rem;margin-bottom:12px">${pct===100?'🏆':pct>=67?'⭐':'📚'}</div>
+   <div style="font-size:1.1rem;font-weight:700;color:#333;margin-bottom:8px">
+    ${pct===100?'Perfect score! Amazing work!':pct>=67?'Good job! Keep practicing!':'Keep it up — review and try again!'}
+   </div>
+   <div style="font-size:.85rem;color:#888;margin-bottom:18px">You got ${qz.correct} of ${total} correct (+${pts} pts)</div>
+   <button class="btn btn-p" onclick="retryPractice()">↺ Try Again</button>
+   <button class="btn btn-s" style="margin-left:8px" onclick="nextLevel()">Next Level →</button>
+  </div>`;
+  if(pts>0){S.score+=pts;S.streak++;updateHeader();}
+  return;
+ }
+
+ const q=qs[qz.q];
+ const dots=qs.map((_,i)=>`<div class="qdot ${i<qz.q?'done':i===qz.q?'cur':''}"></div>`).join('');
+
+ pane.innerHTML=`<div class="prac-top">
+  <div class="prac-score-row">
+   <div class="psc"><span class="psc-l">Question</span><span class="psc-v">${qz.q+1}/${total}</span></div>
+   <div class="psc"><span class="psc-l">Correct</span><span class="psc-v">${qz.correct}</span></div>
+  </div>
+  <div class="q-dots">${dots}</div>
+ </div>
+ <div class="q-card">
+  <div class="q-num">Question ${qz.q+1}</div>
+  <div class="q-text">${q.q}</div>
+  <div class="opts" id="opts">
+   ${q.opts.map((o,i)=>`
+    <button class="opt" data-i="${i}" onclick="selectOpt(${i})">
+     <span class="opt-let">${'ABCD'[i]}</span>${o}
+    </button>`).join('')}
+  </div>
+  <div class="hint-box" id="hint-box">💡 ${q.hint}</div>
+  <div class="fb-box" id="fb-box"></div>
+ </div>
+ <div class="prac-btns">
+  <button class="btn btn-p" onclick="checkAnswer()" ${qz.answered?'disabled':''} id="check-btn">Check</button>
+  <button class="btn btn-s" onclick="showHint()">💡 Hint</button>
+  <button class="btn btn-s" onclick="showAnswer()">👁 Show Answer</button>
+  <button class="btn btn-g" id="next-btn" onclick="nextQuestion()" style="display:${qz.answered?'':'none'}">Next →</button>
+ </div>`;
+}
+
+function selectOpt(i){
+ if(S.quiz.answered) return;
+ S.quiz.sel=i;
+ document.querySelectorAll('.opt').forEach((o,idx)=>{
+  o.classList.toggle('sel', idx===i);
+ });
+}
+
+function showHint(){
+ const hb=$('hint-box'); if(hb) hb.classList.toggle('on');
+}
+
+function showAnswer(){
+ const lv=LEVELS.find(l=>l.level===S.level);
+ const q=lv.questions[S.quiz.q];
+ S.quiz.answered=true; S.quiz.shown=true;
+ const opts=document.querySelectorAll('.opt');
+ opts.forEach((o,i)=>{o.disabled=true;o.classList.remove('sel','ok','bad')});
+ opts[q.ans].classList.add('ok');
+ const fb=$('fb-box');
+ if(fb){fb.className='fb-box fb-bad on';fb.textContent='Answer revealed — no points awarded for this question.'}
+ const cb=$('check-btn'); if(cb) cb.disabled=true;
+ const nb=$('next-btn'); if(nb) nb.style.display='';
+}
+
+function checkAnswer(){
+ const lv=LEVELS.find(l=>l.level===S.level);
+ const q=lv.questions[S.quiz.q];
+ if(S.quiz.sel===null) return;
+ S.quiz.answered=true;
+ const correct=(S.quiz.sel===q.ans);
+ if(correct && !S.quiz.shown) S.quiz.correct++;
+ const opts=document.querySelectorAll('.opt');
+ opts.forEach((o,i)=>{
+  o.disabled=true;
+  o.classList.remove('sel');
+  if(i===q.ans) o.classList.add('ok');
+  else if(i===S.quiz.sel && !correct) o.classList.add('bad');
+ });
+ const fb=$('fb-box');
+ if(fb){
+  fb.className=`fb-box ${correct?'fb-ok':'fb-bad'} on`;
+  fb.textContent=correct?'✓ Correct! Great work!':'✗ Not quite. Review the highlighted answer.';
+ }
+ const cb=$('check-btn'); if(cb) cb.disabled=true;
+ const nb=$('next-btn'); if(nb) nb.style.display='';
+}
+
+function nextQuestion(){
+ S.quiz.q++; S.quiz.answered=false; S.quiz.sel=null; S.quiz.shown=false;
+ renderQuestion(LEVELS.find(l=>l.level===S.level));
+}
+
+function retryPractice(){
+ S.quiz={q:0,answered:false,sel:null,correct:0,shown:false};
+ renderQuestion(LEVELS.find(l=>l.level===S.level));
+}
+
+function nextLevel(){
+ const next=Math.min(S.level+1,11);
+ loadLevel(next);
+}
+
+// ==========================  TEACHER NOTES  ==========================
+function renderTeacher(lv){
+ const pane=$('pane-tn'); const tn=lv.tn;
+ pane.innerHTML=`<div class="tn-wrap">
+  <div class="sn sn-y">
+   <div class="sn-t">&#x1F4DA; Full Explanation</div>
+   <div class="sn-content">${tn.exp}</div>
+  </div>
+  ${makeCollapsible('sn-pk','&#x1F6A8; Common Student Mistakes',
+   '<ul>'+tn.mistakes.map(m=>`<li>${m}</li>`).join('')+'</ul>')}
+  ${makeCollapsible('sn-b','&#x1F4A1; Teaching Notes', `<p>${tn.teach}</p>`)}
+  ${makeCollapsible('sn-g','&#x270F; Similar Practice Sentences',
+   '<ul>'+tn.similar.map(s=>`<li>${s}</li>`).join('')+'</ul>')}
+  <div class="sn sn-o">
+   <div class="sn-t">&#x1F511; Answer Key</div>
+   <div class="ak">${tn.key}</div>
+  </div>
+ </div>`;
+}
+
+function makeCollapsible(cls, title, body){
+ const id='col'+Math.random().toString(36).slice(2,7);
+ return `<div>
+  <div class="col-hdr" onclick="toggleCol('${id}')">
+   <span>${title}</span><span class="col-arr" id="arr-${id}">▶</span>
+  </div>
+  <div class="col-body sn ${cls}" id="${id}">
+   <div class="sn-content">${body}</div>
+  </div>
+ </div>`;
+}
+
+function toggleCol(id){
+ const body=$(id); const arr=$('arr-'+id);
+ if(!body||!arr) return;
+ body.classList.toggle('open');
+ arr.classList.toggle('open');
+}
+
+// ==========================  TABS  ==========================
+function switchTab(name){
+ document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.tab===name));
+ document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id==='pane-'+name));
+}
+
+document.querySelectorAll('.tab').forEach(t=>{
+ t.addEventListener('click',()=>switchTab(t.dataset.tab));
+});
+
+// keyboard navigation for detective
+document.addEventListener('keydown', e=>{
+ const lv=LEVELS.find(l=>l.level===S.level);
+ const activePaneName=document.querySelector('.pane.on')?.id;
+ if(activePaneName==='pane-det'){
+  const words=lv.words.filter(w=>w.pos!=='punctuation');
+  let idx=S.activeWordIdx!==null?S.activeWordIdx:0;
+  if(e.key==='ArrowRight'){idx=Math.min(idx+1,lv.words.length-1);}
+  else if(e.key==='ArrowLeft'){idx=Math.max(idx-1,0);}
+  else return;
+  S.activeWordIdx=idx;
+  document.querySelectorAll('.tile').forEach(t=>t.classList.remove('lit'));
+  const tile=document.querySelector(`.tile[data-idx="${idx}"]`);
+  if(tile) tile.classList.add('lit');
+  renderDetective(lv.words[idx], lv);
+ }
+});
+
+// ==========================  WORD BANKS  ==========================
+const WB={
+ art:['The','A'],
+ adj_an:['brave','clever','curious','fierce','gentle','graceful','happy','hungry','lazy','lonely','mighty','nervous','proud','quiet','restless','shy','sleepy','tiny','wise','young','bold','daring','frantic','gloomy','hopeful','joyful','lively','mournful','noble','playful'],
+ adj_in:['ancient','bright','cold','dark','deep','dusty','enormous','fragile','golden','hollow','narrow','old','rusty','shiny','silent','steep','stormy','strange','tall','twisted','broken','crumbling','dazzling','eerie','faded','glowing','hidden','jagged','lofty','misty'],
+ noun_an:['artist','bear','bird','cat','chef','child','detective','dog','dragon','elephant','explorer','fox','frog','knight','lion','monkey','owl','parrot','pilot','rabbit','robot','scientist','student','teacher','wolf','wizard','sailor','ranger','scholar','merchant'],
+ noun_in:['book','bridge','candle','castle','clock','cloud','coin','door','flame','flower','hammer','island','lamp','map','mirror','path','river','stone','tower','tree','lantern','scroll','sword','chest','statue','compass','crystal','anchor','journal','shield'],
+ place_n:['cave','cliff','coast','desert','forest','garden','hill','island','lake','meadow','mountain','ocean','ruins','shore','swamp','tower','valley','village','woods','canyon'],
+ iv:['arrived','celebrated','danced','disappeared','escaped','flew','glowed','growled','hesitated','howled','jumped','laughed','rested','roared','sang','shivered','slept','smiled','swam','trembled','waited','wandered','whispered','galloped','soared','charged','marched','froze','sparkled','collapsed'],
+ tv:['admired','attacked','avoided','built','carried','caught','chased','crafted','destroyed','discovered','dragged','found','grabbed','guided','helped','lifted','noticed','opened','painted','protected','read','solved','taught','watched','balanced','captured','defended'],
+ dtv:['brought','gave','handed','lent','offered','passed','sent','showed','taught','told'],
+ lv:['appeared','became','felt','grew','looked','remained','seemed','sounded','stayed','turned'],
+ pa:['beautiful','breathtaking','brilliant','calm','confusing','dangerous','delightful','exhausted','fearless','fortunate','graceful','incredible','magnificent','mysterious','peaceful','powerful','remarkable','serene','spectacular','unstoppable','astonishing','captivating','electrifying','haunting','luminous','radiant','vibrant','whimsical','dazzling','sublime'],
+ pn:['a champion','a detective','a genius','a guardian','a hero','a leader','a legend','a master','a mystery','a pioneer','a scholar','a warrior'],
+ adv:['boldly','carefully','eagerly','fearlessly','frantically','gracefully','happily','nervously','patiently','proudly','quickly','quietly','reluctantly','silently','slowly','softly','suddenly','swiftly','thoughtfully','wearily','breathlessly','cleverly','desperately','elegantly','ferociously','gloriously','hesitantly','joyfully'],
+ prep:['above','behind','beneath','beside','between','in','near','on','through','under'],
+ intj:['Ahh','Amazing','Extraordinary','Incredible','No','Oh','Remarkable','Surprising','Wait','Wow','Yes','Brilliant'],
+ conj:['and','but','or','yet','so'],
+ names:['Alex','Blake','Cameron','Drew','Eli','Finn','Grace','Harper','Ivy','Jordan','Kai','Leo','Maya','Noah','Olivia','Parker','Quinn','Remi','Sam','Taylor']
+};
+
+// ==========================  GENERATOR HELPERS  ==========================
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function pickN(arr,n){
+ const a=[...arr].filter(x=>x!=null);
+ const out=[];
+ for(let i=0;i<n&&a.length>0;i++){
+  const j=Math.floor(Math.random()*a.length);
+  out.push(a.splice(j,1)[0]);
+ }
+ return out;
+}
+function shuffle(arr){
+ const a=[...arr];
+ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+ return a;
+}
+function makeQ(q,correct,wrongs,hint){
+ const unique=[...new Set(wrongs)].filter(w=>w!==correct&&w!=null);
+ const fallbacks=['Noun','Verb','Adjective','Adverb','Preposition','Conjunction'].filter(f=>f!==correct&&!unique.includes(f));
+ while(unique.length<3) unique.push(fallbacks.shift()||'none of the above');
+ const opts=shuffle([correct,unique[0],unique[1],unique[2]]);
+ return{q,opts,ans:opts.indexOf(correct),hint};
+}
+
+// ==========================  LEVEL GENERATORS  ==========================
+
+// LEVEL 1: Art + Adj + Noun + IntransVerb
+function gen1(diff){
+ const adj=pick([...WB.adj_an,...WB.adj_in]);
+ const noun=pick(WB.noun_an);
+ const verb=pick(WB.iv);
+ const sentence=`The ${adj} ${noun} ${verb}.`;
+ return{
+  id:'random',level:99,difficulty:diff,
+  title:'Build the Main Line',
+  sentence,
+  summary:`Every sentence needs a subject and a predicate on the main line. The article and adjective are modifiers — they hang below.`,
+  words:[
+   {w:'The',pos:'article',job:'modifier',mod:noun,exp:`'The' is a definite article signaling a specific ${noun}.`,tip:"'The' = specific thing. 'A/An' = any one thing."},
+   {w:adj,pos:'adjective',job:'modifier',mod:noun,exp:`Adjective describing the ${noun}. What kind of ${noun}?`,tip:`Adjective answers 'What kind?' — '${adj}' describes the ${noun}.`},
+   {w:noun,pos:'noun',job:'subject',mod:null,exp:`The subject — who or what the sentence is about.`,tip:`Who ${verb}s? The ${noun}!`},
+   {w:verb,pos:'verb',job:'predicate',mod:null,exp:`The action verb — what the subject does.`,tip:`'${verb}' = the action. Verb = Action!`},
+   {w:'.',pos:'punctuation',job:'end mark',mod:null,exp:'Period ends a declarative sentence.',tip:'Stop sign for sentences!'}
+  ],
+  zones:[
+   {id:'subj',label:'Subject',expected:[noun]},
+   {id:'verb',label:'Verb / Predicate',expected:[verb]}
+  ],
+  diagram:{
+   type:'simple',
+   main:[{w:noun},{div:'|'},{w:verb}],
+   mods:[{w:'The',under:noun},{w:adj,under:noun}],
+   clauses:[],popouts:[]
+  },
+  questions:[
+   makeQ(`What is the subject in "${sentence}"?`,noun,pickN(WB.noun_an.filter(n=>n!==noun),2).concat([verb]),'The subject is who or what performs the action.'),
+   makeQ(`What part of speech is '${adj}'?`,'Adjective',['Adverb','Noun','Verb'],'Adjectives describe nouns — they answer what kind, which one, or how many.'),
+   makeQ(`Which word is the predicate (verb)?`,verb,[noun,adj,'The'],'The predicate tells what the subject does.')
+  ],
+  tn:{
+   exp:`In traditional diagramming, a horizontal main line holds the subject ('${noun}') and predicate ('${verb}') separated by a vertical bar. The article 'The' and adjective '${adj}' hang below '${noun}' on diagonal lines.`,
+   mistakes:['Including adjectives on the main line — only the noun belongs there.','Forgetting that articles (the, a, an) count as adjectives in diagramming.'],
+   teach:`"Who? ${noun}. Does what? ${verb}. But wait — what kind of ${noun}? ${adj}! Where does THAT go? Below, on a slanted line."`,
+   similar:[`The ${pick(WB.adj_an)} ${pick(WB.noun_an)} ${pick(WB.iv)}.`,`A ${pick(WB.adj_an)} ${pick(WB.noun_an)} ${pick(WB.iv)}.`],
+   key:`Subject: ${noun} (modifiers: The, ${adj}) | Predicate: ${verb}`
+  }
+ };
+}
+
+// LEVEL 2: Art + Adj + Noun + Verb + Adv
+function gen2(diff){
+ const adj=pick([...WB.adj_an,...WB.adj_in]);
+ const noun=pick(WB.noun_an);
+ const verb=pick(WB.iv);
+ const adv=pick(WB.adv);
+ const sentence=`The ${adj} ${noun} ${verb} ${adv}.`;
+ return{
+  id:'random',level:99,difficulty:diff,
+  title:'Add Modifiers',
+  sentence,
+  summary:`Adjectives describe nouns; adverbs describe verbs. Modifiers hang below the words they describe on diagonal lines.`,
+  words:[
+   {w:'The',pos:'article',job:'modifier',mod:noun,exp:`Article signaling a specific ${noun}.`,tip:"'The' = specific thing."},
+   {w:adj,pos:'adjective',job:'modifier',mod:noun,exp:`Adjective describing '${noun}' — what kind of ${noun}?`,tip:`Adjective answers 'What kind?' Ask: what kind of ${noun}?`},
+   {w:noun,pos:'noun',job:'subject',mod:null,exp:`The subject — who ${verb}s.`,tip:'Who is doing the action?'},
+   {w:verb,pos:'verb',job:'predicate',mod:null,exp:`Action verb — what the ${noun} does.`,tip:'Verb = Action!'},
+   {w:adv,pos:'adverb',job:'modifier',mod:verb,exp:`Adverb modifying '${verb}' — HOW does the ${noun} ${verb}? ${adv}!`,tip:`Adverbs answer HOW? WHEN? WHERE? '${adv}' = HOW they ${verb}.`},
+   {w:'.',pos:'punctuation',job:'end mark',mod:null,exp:'Period.',tip:'Stop!'}
+  ],
+  zones:[
+   {id:'subj',label:'Subject',expected:[noun]},
+   {id:'verb',label:'Verb',expected:[verb]},
+   {id:'adj-mod',label:'Adjective Modifiers',expected:['The',adj],multi:true},
+   {id:'adv-mod',label:'Adverb Modifier',expected:[adv]}
+  ],
+  diagram:{
+   type:'modifiers',
+   main:[{w:noun},{div:'|'},{w:verb}],
+   mods:[{w:'The',under:noun},{w:adj,under:noun},{w:adv,under:verb}],
+   clauses:[],popouts:[]
+  },
+  questions:[
+   makeQ(`Which word is an adverb in "${sentence}"?`,adv,[adj,noun,'The'],'Adverbs often end in -ly and describe verbs. Ask: how?'),
+   makeQ(`What does '${adv}' modify?`,verb,[noun,adj,'The'],`Adverbs modify verbs. Ask: HOW does the ${noun} ${verb}?`),
+   makeQ(`What does the adjective '${adj}' modify?`,noun,[verb,adv,'The'],`Adjectives always modify nouns. Ask: what kind of ${noun}?`)
+  ],
+  tn:{
+   exp:`Subject '${noun}' carries two modifiers below it: the article 'The' and adjective '${adj}'. The verb '${verb}' carries the adverb '${adv}' below it.`,
+   mistakes:[`Placing the adverb '${adv}' below the noun instead of the verb.`,`Thinking '${adv}' describes '${adj}' — it describes '${verb}'.`],
+   teach:`"Action: '${verb}'. HOW? '${adv}' — under the verb! '${adj}'? Under the NOUN it describes."`,
+   similar:[`The ${pick(WB.adj_an)} ${pick(WB.noun_an)} ${pick(WB.iv)} ${pick(WB.adv)}.`,`A ${pick(WB.adj_an)} ${pick(WB.noun_an)} ${pick(WB.iv)} ${pick(WB.adv)}.`],
+   key:`Subject: ${noun} (The, ${adj}) | Predicate: ${verb} (modifier: ${adv})`
+  }
+ };
+}
+
+// LEVEL 3: Art + Adj + Noun + Verb + Prep + the + Adj + PlaceNoun
+function gen3(diff){
+ const adj=pick(WB.adj_an);
+ const noun=pick(WB.noun_an);
+ const verb=pick(WB.iv);
+ const prep=pick(WB.prep);
+ const padj=pick(WB.adj_in);
+ const placeN=pick(WB.place_n);
+ const sentence=`The ${adj} ${noun} ${verb} ${prep} the ${padj} ${placeN}.`;
+ return{
+  id:'random',level:99,difficulty:diff,
+  title:'Add Prepositional Phrases',
+  sentence,
+  summary:`A prepositional phrase = preposition + object (+ modifiers). Here it acts as an adverb telling WHERE the action happened.`,
+  words:[
+   {w:'The',pos:'article',job:'modifier',mod:noun,exp:`Article on '${noun}'.`,tip:'Specific!'},
+   {w:adj,pos:'adjective',job:'modifier',mod:noun,exp:`Describes '${noun}'.`,tip:`What kind of ${noun}?`},
+   {w:noun,pos:'noun',job:'subject',mod:null,exp:`Subject — who ${verb}s.`,tip:'Who is doing the action?'},
+   {w:verb,pos:'verb',job:'predicate',mod:null,exp:`Verb — what the ${noun} does.`,tip:'Action!'},
+   {w:prep,pos:'preposition',job:'preposition',mod:verb,exp:`Preposition showing WHERE the action happened.`,tip:`Prepositions: anywhere a mouse can go — in, on, under, above, behind...`},
+   {w:'the',pos:'article',job:'modifier',mod:placeN,exp:`Article on '${placeN}'.`,tip:'Specific place!'},
+   {w:padj,pos:'adjective',job:'modifier',mod:placeN,exp:`Adjective describing '${placeN}'.`,tip:`What kind of ${placeN}?`},
+   {w:placeN,pos:'noun',job:'object of preposition',mod:null,exp:`Object of the preposition — answers '${prep} WHAT?'`,tip:`Every preposition needs an object. '${prep} WHAT?' — the ${placeN}!`},
+   {w:'.',pos:'punctuation',job:'end mark',mod:null,exp:'Period.',tip:'Stop!'}
+  ],
+  zones:[
+   {id:'subj',label:'Subject',expected:[noun]},
+   {id:'verb',label:'Verb',expected:[verb]},
+   {id:'prep',label:'Preposition',expected:[prep]},
+   {id:'obj-prep',label:'Object of Prep',expected:[placeN]}
+  ],
+  diagram:{
+   type:'prepositional',
+   main:[{w:noun},{div:'|'},{w:verb}],
+   mods:[{w:'The',under:noun},{w:adj,under:noun}],
+   preps:[{prep,obj:placeN,obj_mods:['the',padj],attachedTo:verb}],
+   clauses:[],popouts:[]
+  },
+  questions:[
+   makeQ(`What is the preposition in "${sentence}"?`,prep,pickN(WB.prep.filter(p=>p!==prep),3),'Prepositions show relationships like location, time, or direction.'),
+   makeQ(`What is the object of the preposition '${prep}'?`,placeN,[noun,verb,padj],`Ask: '${prep} WHAT?' — that noun is the object.`),
+   makeQ(`The phrase '${prep} the ${padj} ${placeN}' acts as a:`,'Adverb (modifies the verb)',['Adjective (modifies the subject)','Noun (is the subject)','Conjunction'],`Ask: does the phrase tell us about a noun or a verb?`)
+  ],
+  tn:{
+   exp:`The phrase '${prep} the ${padj} ${placeN}' is drawn below '${verb}' on a diagonal. The preposition '${prep}' goes on the angled part; the object '${placeN}' on the horizontal part, with 'the' and '${padj}' hanging below it.`,
+   mistakes:[`Confusing the preposition '${prep}' with the object '${placeN}'.`,`Attaching the phrase below '${noun}' instead of '${verb}'.`],
+   teach:`"What's the preposition? '${prep}'. Now ask '${prep} WHAT?' — the ${placeN}! Everything between is a modifier of that object."`,
+   similar:[`The ${pick(WB.adj_an)} ${pick(WB.noun_an)} ${pick(WB.iv)} ${pick(WB.prep)} the ${pick(WB.adj_in)} ${pick(WB.place_n)}.`],
+   key:`Subject: ${noun} (The, ${adj}) | Predicate: ${verb} | Prep phrase: ${prep} (the, ${padj}) ${placeN}`
+  }
+ };
+}
+
+// LEVEL 4: Compound sentence with coordinating conjunction
+function gen4(diff){
+ const noun1=pick(WB.noun_an);
+ const noun2=pick(WB.noun_an.filter(n=>n!==noun1));
+ const verb1=pick(WB.iv);
+ const verb2=pick(WB.iv.filter(v=>v!==verb1));
+ const conj=pick(WB.conj);
+ const sentence=`The ${noun1} ${verb1} ${conj} the ${noun2} ${verb2}.`;
+ return{
+  id:'random',level:99,difficulty:diff,
+  title:'Connect Ideas',
+  sentence,
+  summary:`Coordinating conjunctions (FANBOYS) connect equal parts. Two independent clauses joined by a coordinating conjunction form a compound sentence.`,
+  words:[
+   {w:'The',pos:'article',job:'modifier',mod:noun1,exp:`Article on '${noun1}'.`,tip:'Specific!'},
+   {w:noun1,pos:'noun',job:'subject (clause 1)',mod:null,exp:`Subject of the first clause.`,tip:'First subject!'},
+   {w:verb1,pos:'verb',job:'predicate (clause 1)',mod:null,exp:`Verb of the first clause.`,tip:'First action!'},
+   {w:conj,pos:'conjunction',job:'coordinating conjunction',mod:null,exp:`Coordinating conjunction connecting two independent clauses.`,tip:`FANBOYS: For, And, Nor, But, Or, Yet, So — '${conj}' is one of them!`},
+   {w:'the',pos:'article',job:'modifier',mod:noun2,exp:`Article on '${noun2}'.`,tip:'Specific!'},
+   {w:noun2,pos:'noun',job:'subject (clause 2)',mod:null,exp:`Subject of the second clause.`,tip:'Second subject!'},
+   {w:verb2,pos:'verb',job:'predicate (clause 2)',mod:null,exp:`Verb of the second clause.`,tip:'Second action!'},
+   {w:'.',pos:'punctuation',job:'end mark',mod:null,exp:'Period.',tip:'Stop!'}
+  ],
+  zones:[
+   {id:'subj1',label:'Subject (clause 1)',expected:[noun1]},
+   {id:'verb1',label:'Verb (clause 1)',expected:[verb1]},
+   {id:'conj',label:'Conjunction',expected:[conj]},
+   {id:'subj2',label:'Subject (clause 2)',expected:[noun2]},
+   {id:'verb2',label:'Verb (clause 2)',expected:[verb2]}
+  ],
+  diagram:{
+   type:'compound',
+   main:[{w:`${noun1} / ${noun2}`},{div:'|'},{w:`${verb1} / ${verb2}`}],
+   mods:[],clauses:[],popouts:[],
+   note:`Two independent clauses joined by '${conj}'`
+  },
+  questions:[
+   makeQ(`What kind of conjunction is '${conj}'?`,'Coordinating',['Subordinating','Correlative','Conjunctive adverb'],'Remember FANBOYS: For, And, Nor, But, Or, Yet, So'),
+   makeQ(`The sentence "${sentence}" is a:`,'Compound sentence',['Simple sentence','Complex sentence','Compound-complex sentence'],`Two independent clauses joined by a coordinating conjunction = compound sentence.`),
+   makeQ(`Which of these is NOT one of the FANBOYS?`,'Because',['And','But','So'],'FANBOYS: For, And, Nor, But, Or, Yet, So — "Because" is a subordinating conjunction, not FANBOYS!')
+  ],
+  tn:{
+   exp:`This is a compound sentence: two independent clauses ('The ${noun1} ${verb1}' and 'the ${noun2} ${verb2}') joined by the coordinating conjunction '${conj}'. Each clause gets its own baseline in a diagram, connected by a dotted line with '${conj}' written on it.`,
+   mistakes:[`Thinking '${conj}' connects just words here — it connects full independent clauses.`,'Forgetting the comma before the conjunction in a longer compound sentence.'],
+   teach:`"Can 'The ${noun1} ${verb1}' stand alone as a sentence? Yes! Can 'the ${noun2} ${verb2}'? Yes! Two complete thoughts joined by '${conj}'."`,
+   similar:[`The ${pick(WB.noun_an)} ${pick(WB.iv)} ${pick(WB.conj)} the ${pick(WB.noun_an)} ${pick(WB.iv)}.`],
+   key:`Clause 1: ${noun1} | ${verb1} | Conj: ${conj} | Clause 2: ${noun2} | ${verb2}`
+  }
+ };
+}
+
+// LEVEL 5: Interjection + NDA + main sentence
+function gen5(diff){
+ const intj=pick(WB.intj);
+ const name=pick(WB.names);
+ const adj=pick(WB.adj_an);
+ const noun=pick(WB.noun_an);
+ const verb=pick(WB.iv);
+ const sentence=`${intj}, ${name}, the ${adj} ${noun} ${verb}!`;
+ return{
+  id:'random',level:99,difficulty:diff,
+  title:'Words That Pop Out',
+  sentence,
+  summary:`Interjections express emotion and have no grammatical connection to the sentence. Nouns of direct address name the person being spoken to. Both float above the main diagram.`,
+  words:[
+   {w:intj,pos:'interjection',job:'interjection',mod:null,exp:`An interjection expresses strong emotion. It has NO grammatical connection to the sentence.`,tip:`'${intj}' floats on its own line above the diagram — it belongs to no grammatical slot.`},
+   {w:name,pos:'noun',job:'noun of direct address',mod:null,exp:`Noun of direct address — names the person being spoken TO, set off by commas.`,tip:`We're talking TO ${name}, not about ${name}. The NDA pops out above the diagram.`},
+   {w:'the',pos:'article',job:'modifier',mod:noun,exp:`Article on '${noun}'.`,tip:'Specific!'},
+   {w:adj,pos:'adjective',job:'modifier',mod:noun,exp:`Adjective describing '${noun}'.`,tip:`What kind of ${noun}?`},
+   {w:noun,pos:'noun',job:'subject',mod:null,exp:`The subject of the main clause.`,tip:`Who ${verb}s?`},
+   {w:verb,pos:'verb',job:'predicate',mod:null,exp:`The verb — what the ${noun} does.`,tip:'Action!'},
+   {w:'!',pos:'punctuation',job:'end mark',mod:null,exp:'Exclamation mark shows strong emotion.',tip:'Exciting!'}
+  ],
+  zones:[
+   {id:'intj',label:'Interjection',expected:[intj]},
+   {id:'nda',label:'Direct Address',expected:[name]},
+   {id:'subj',label:'Subject',expected:[noun]},
+   {id:'verb',label:'Verb',expected:[verb]}
+  ],
+  diagram:{
+   type:'popout',
+   main:[{w:noun},{div:'|'},{w:verb}],
+   mods:[{w:'the',under:noun},{w:adj,under:noun}],
+   clauses:[],
+   popouts:[{w:intj,type:'interjection'},{w:name,type:'direct address'}]
+  },
+  questions:[
+   makeQ(`What is '${intj}' in "${sentence}"?`,'Interjection',['Noun','Verb','Adjective'],'It expresses emotion, is set off by a comma, and has no grammatical connection to the sentence.'),
+   makeQ(`What is '${name}' in this sentence?`,'Noun of direct address',['Subject','Object','Predicate noun'],`Is ${name} doing the action, or is someone talking TO ${name}?`),
+   makeQ(`Where do interjections go in a sentence diagram?`,'Above the diagram on floating lines',['On the main line before the subject','Below the diagram','Between the subject and verb'],'Interjections "pop out" — they have no grammatical connection to the main sentence.')
+  ],
+  tn:{
+   exp:`'${intj}' is an interjection — it floats above-left of the diagram. '${name}' is a noun of direct address — it floats above the subject. The main diagram is: ${noun} | ${verb}, with 'the' and '${adj}' hanging below '${noun}'.`,
+   mistakes:[`Making '${name}' the subject — the ${noun} is the subject, not ${name}.`,'Forgetting that interjections have NO grammatical connection to the sentence.'],
+   teach:`"I'm saying this TO ${name} — but ${name} isn't doing anything. The ${noun} is the star! '${intj}' is just an emotional outburst."`,
+   similar:[`Wow, ${pick(WB.names)}, the ${pick(WB.adj_an)} ${pick(WB.noun_an)} ${pick(WB.iv)}!`,`Oh, ${pick(WB.names)}, a ${pick(WB.adj_an)} ${pick(WB.noun_an)} ${pick(WB.iv)}!`],
+   key:`Interjection: ${intj} | NDA: ${name} | Subject: ${noun} (the, ${adj}) | Verb: ${verb}`
+  }
+ };
+}
+
+// LEVEL 6: Transitive verb with direct + indirect object
+function gen6(diff){
+ const subAdj=pick(WB.adj_an);
+ const subNoun=pick(WB.noun_an);
+ const verb=pick(WB.dtv);
+ const ioName=pick(WB.names);
+ const doAdj=pick(WB.adj_in);
+ const doNoun=pick(WB.noun_in);
+ const sentence=`The ${subAdj} ${subNoun} ${verb} ${ioName} a ${doAdj} ${doNoun}.`;
+ return{
+  id:'random',level:99,difficulty:diff,
+  title:'Action Receivers',
+  sentence,
+  summary:`Transitive verbs transfer action to receivers. The direct object answers WHAT was transferred; the indirect object answers TO WHOM.`,
+  words:[
+   {w:'The',pos:'article',job:'modifier',mod:subNoun,exp:`Article on '${subNoun}'.`,tip:'Specific!'},
+   {w:subAdj,pos:'adjective',job:'modifier',mod:subNoun,exp:`Adjective describing '${subNoun}'.`,tip:`What kind of ${subNoun}?`},
+   {w:subNoun,pos:'noun',job:'subject',mod:null,exp:`Subject — who performs the action.`,tip:`Who ${verb}s?`},
+   {w:verb,pos:'verb',job:'predicate (transitive)',mod:null,exp:`Transitive verb — transfers action to an object.`,tip:`'${verb}' needs something to receive the action!`},
+   {w:ioName,pos:'noun',job:'indirect object',mod:null,exp:`Indirect object — answers '${verb} TO WHOM?' ${ioName} receives the ${doNoun}.`,tip:`Test: '${verb} a ${doAdj} ${doNoun} TO ${ioName}' — same meaning! That confirms IO.`},
+   {w:'a',pos:'article',job:'modifier',mod:doNoun,exp:`Article on '${doNoun}'.`,tip:'One specific item.'},
+   {w:doAdj,pos:'adjective',job:'modifier',mod:doNoun,exp:`Adjective describing '${doNoun}'.`,tip:`What kind of ${doNoun}?`},
+   {w:doNoun,pos:'noun',job:'direct object',mod:null,exp:`Direct object — answers '${verb} WHAT?' The ${doNoun} is what was ${verb}n.`,tip:`DO = directly receives the action. Ask: '${subNoun} ${verb} WHAT?' — the ${doNoun}!`},
+   {w:'.',pos:'punctuation',job:'end mark',mod:null,exp:'Period.',tip:'Stop!'}
+  ],
+  zones:[
+   {id:'subj',label:'Subject',expected:[subNoun]},
+   {id:'verb',label:'Verb',expected:[verb]},
+   {id:'io',label:'Indirect Object',expected:[ioName]},
+   {id:'do',label:'Direct Object',expected:[doNoun]}
+  ],
+  diagram:{
+   type:'objects',
+   main:[{w:subNoun},{div:'|'},{w:verb},{div:'|'},{w:doNoun}],
+   mods:[{w:'The',under:subNoun},{w:subAdj,under:subNoun},{w:'a',under:doNoun},{w:doAdj,under:doNoun}],
+   clauses:[],popouts:[],
+   io:ioName
+  },
+  questions:[
+   makeQ(`What is the direct object in "${sentence}"?`,doNoun,[ioName,subNoun,verb],`Ask: The ${subNoun} ${verb} WHAT? The thing transferred is the DO.`),
+   makeQ(`What is '${ioName}' in this sentence?`,'Indirect object',['Subject','Direct object','Predicate noun'],`Ask: ${verb} WHAT to WHOM? ${ioName} is the TO WHOM part.`),
+   makeQ(`How can you test if '${ioName}' is an indirect object?`,`Rewrite as '${verb}...to ${ioName}' — same meaning confirms IO`,['Move it to the start of the sentence','Replace it with an adjective','Check if it ends in -ly'],'If you can rewrite with "to/for + noun" and keep the same meaning, it was an IO.')
+  ],
+  tn:{
+   exp:`Direct object '${doNoun}' goes on the main line after '${verb}', separated by a vertical bar. Indirect object '${ioName}' goes on a horizontal line below '${verb}', connected by a diagonal line.`,
+   mistakes:[`Swapping '${doNoun}' (DO) and '${ioName}' (IO).`,`Treating '${ioName}' as a prepositional object — only use IO when there's no 'to/for' word in the original sentence.`],
+   teach:`"The ${subNoun} ${verb} WHAT? A ${doAdj} ${doNoun} — that's the DO. To WHOM? ${ioName} — that's the IO."`,
+   similar:[`The ${pick(WB.adj_an)} ${pick(WB.noun_an)} ${pick(WB.dtv)} ${pick(WB.names)} a ${pick(WB.adj_in)} ${pick(WB.noun_in)}.`],
+   key:`Subject: ${subNoun} (The, ${subAdj}) | Verb: ${verb} | IO: ${ioName} | DO: ${doNoun} (a, ${doAdj})`
+  }
+ };
+}
+
+// LEVEL 7: Linking verb with predicate adj or predicate noun
+function gen7(diff){
+ const adj=pick(WB.adj_an);
+ const noun=pick(WB.noun_an);
+ const lv=pick(WB.lv);
+ const usePredNoun=Math.random()>0.55;
+ if(usePredNoun){
+  const pnFull=pick(WB.pn);
+  const pnArt=pnFull.split(' ')[0];
+  const pnWord=pnFull.replace(/^an? /,'');
+  const sentence=`The ${adj} ${noun} ${lv} ${pnFull}.`;
+  return{
+   id:'random',level:99,difficulty:diff,
+   title:'Linking and Passive Verbs',
+   sentence,
+   summary:`Linking verbs connect the subject to a complement. A predicate noun RENAMES the subject. A backward-slanting line (\\) shows it reflects back.`,
+   words:[
+    {w:'The',pos:'article',job:'modifier',mod:noun,exp:`Article on '${noun}'.`,tip:'Specific!'},
+    {w:adj,pos:'adjective',job:'modifier',mod:noun,exp:`Adjective describing '${noun}'.`,tip:`What kind of ${noun}?`},
+    {w:noun,pos:'noun',job:'subject',mod:null,exp:`Subject.`,tip:`What ${lv}?`},
+    {w:lv,pos:'verb',job:'linking verb',mod:null,exp:`Linking verb connecting '${noun}' to '${pnWord}'. Describes a state, not an action.`,tip:`Try substituting 'is/are' — if it still makes sense, '${lv}' is a linking verb!`},
+    {w:pnArt,pos:'article',job:'modifier',mod:pnWord,exp:`Article in the predicate noun.`,tip:`'${pnArt}' is part of the predicate noun phrase.`},
+    {w:pnWord,pos:'noun',job:'predicate noun',mod:noun,exp:`Predicate noun — follows a linking verb and RENAMES the subject. The ${noun} = ${pnFull}!`,tip:`PN renames the subject. Point back: '${noun}' ← '${pnWord}'`},
+    {w:'.',pos:'punctuation',job:'end mark',mod:null,exp:'Period.',tip:'Stop!'}
+   ],
+   zones:[
+    {id:'subj',label:'Subject',expected:[noun]},
+    {id:'lv',label:'Linking Verb',expected:[lv]},
+    {id:'pn',label:'Predicate Noun',expected:[pnWord]}
+   ],
+   diagram:{
+    type:'linking',
+    main:[{w:noun},{div:'|'},{w:lv},{div:'\\',slant:true},{w:pnWord}],
+    mods:[{w:'The',under:noun},{w:adj,under:noun},{w:pnArt,under:pnWord}],
+    clauses:[],popouts:[]
+   },
+   questions:[
+    makeQ(`What type of verb is '${lv}'?`,'Linking verb',['Action verb','Helping verb','Transitive verb'],`Try substituting 'is/are' — if it still makes sense, '${lv}' is a linking verb.`),
+    makeQ(`What is '${pnWord}' in "${sentence}"?`,'Predicate noun',['Direct object','Predicate adjective','Adverb'],`'${pnWord}' follows a linking verb and RENAMES the subject '${noun}'.`),
+    makeQ(`A predicate noun is separated from the linking verb in a diagram by:`,'A backward-slanting line (\\)',['A vertical bar (|)','A horizontal line','A dotted line'],'The backward slash points back to the subject, showing the PN renames it.')
+   ],
+   tn:{
+    exp:`'${pnWord}' is a predicate noun — it renames the subject '${noun}' (they refer to the same thing). The backward-slanting line (\\) separates '${lv}' from '${pnWord}', visually pointing back toward '${noun}'.`,
+    mistakes:[`Treating '${lv}' like an action verb and expecting a direct object.`,`Confusing predicate nouns (rename) with predicate adjectives (describe).`],
+    teach:`"The ${noun} IS ${pnFull}? Substitute 'is' — yes! '${lv}' links them. The backward slash shows '${pnWord}' renaming the ${noun}."`,
+    similar:[`The ${pick(WB.adj_an)} ${pick(WB.noun_an)} ${pick(WB.lv)} ${pick(WB.pn)}.`],
+    key:`Subject: ${noun} (The, ${adj}) | Linking Verb: ${lv} | Predicate Noun: ${pnWord} (${pnArt})`
+   }
+  };
+ } else {
+  const pa=pick(WB.pa);
+  const sentence=`The ${adj} ${noun} ${lv} ${pa}.`;
+  return{
+   id:'random',level:99,difficulty:diff,
+   title:'Linking and Passive Verbs',
+   sentence,
+   summary:`Linking verbs connect the subject to a complement. A predicate adjective DESCRIBES the subject. A backward-slanting line (\\) shows it reflects back to the subject.`,
+   words:[
+    {w:'The',pos:'article',job:'modifier',mod:noun,exp:`Article on '${noun}'.`,tip:'Specific!'},
+    {w:adj,pos:'adjective',job:'modifier',mod:noun,exp:`Adjective describing '${noun}'.`,tip:`What kind of ${noun}?`},
+    {w:noun,pos:'noun',job:'subject',mod:null,exp:`Subject.`,tip:`What ${lv}?`},
+    {w:lv,pos:'verb',job:'linking verb',mod:null,exp:`Linking verb connecting '${noun}' to '${pa}'. Describes a state, not an action.`,tip:`Try 'is/are' — if it still makes sense, '${lv}' is a linking verb!`},
+    {w:pa,pos:'adjective',job:'predicate adjective',mod:noun,exp:`Predicate adjective — follows a linking verb and DESCRIBES the subject. The ${noun} IS ${pa}!`,tip:`PA describes the subject. Point back: '${noun}' ← '${pa}'`},
+    {w:'.',pos:'punctuation',job:'end mark',mod:null,exp:'Period.',tip:'Stop!'}
+   ],
+   zones:[
+    {id:'subj',label:'Subject',expected:[noun]},
+    {id:'lv',label:'Linking Verb',expected:[lv]},
+    {id:'pa',label:'Predicate Adjective',expected:[pa]}
+   ],
+   diagram:{
+    type:'linking',
+    main:[{w:noun},{div:'|'},{w:lv},{div:'\\',slant:true},{w:pa}],
+    mods:[{w:'The',under:noun},{w:adj,under:noun}],
+    clauses:[],popouts:[]
+   },
+   questions:[
+    makeQ(`What type of verb is '${lv}'?`,'Linking verb',['Action verb','Helping verb','Transitive verb'],`Try substituting 'is/are' — if it still makes sense, '${lv}' is a linking verb.`),
+    makeQ(`What is '${pa}' in "${sentence}"?`,'Predicate adjective',['Direct object','Predicate noun','Adverb'],`'${pa}' follows a linking verb and DESCRIBES the subject '${noun}'.`),
+    makeQ(`In a diagram, a predicate adjective is separated from the linking verb by:`,'A backward-slanting line (\\)',['A vertical bar (|)','A horizontal line','A dotted line'],'The backward slash points back to the subject, showing the PA describes it.')
+   ],
+   tn:{
+    exp:`'${pa}' is a predicate adjective — it follows '${lv}' and describes the subject '${noun}'. The backward-slanting line (\\) in the diagram shows the complement reflects back to the subject.`,
+    mistakes:[`Treating '${lv}' like an action verb and adding a direct object.`,`Placing '${pa}' on a diagonal modifier line instead of the main line after the backward slash.`],
+    teach:`"The ${noun} IS ${pa}? Substitute 'is' — yes! '${lv}' links them. The backward slash shows '${pa}' describing the ${noun}."`,
+    similar:[`The ${pick(WB.adj_an)} ${pick(WB.noun_an)} ${pick(WB.lv)} ${pick(WB.pa)}.`],
+    key:`Subject: ${noun} (The, ${adj}) | Linking Verb: ${lv} | Predicate Adjective: ${pa}`
+   }
+  };
+ }
+}
+
+// ==========================  GENERATE + LOAD CUSTOM  ==========================
+const GENERATORS=[null,gen1,gen2,gen3,gen4,gen5,gen6,gen7];
+
+function generateRandom(){
+ const n=parseInt($('gen-level').value)||1;
+ const diff=$('gen-diff').value||'Beginner';
+ const fn=GENERATORS[n]||gen1;
+ const sentObj=fn(diff);
+ loadCustomLevel(sentObj);
+ const badge=$('gen-badge'); if(badge) badge.style.display='';
+}
+
+function loadCustomLevel(sentObj){
+ const idx=LEVELS.findIndex(l=>l.id==='random');
+ if(idx>=0) LEVELS.splice(idx,1);
+ LEVELS.push(sentObj);
+ S.level=99; S.placements={}; S.dragWord=null; S.dragIdx=null;
+ S.activeWordIdx=null; S.quiz={q:0,answered:false,sel:null,correct:0,shown:false};
+ renderSentence(sentObj);
+ renderTiles(sentObj);
+ renderWorkspace(sentObj);
+ renderDiagram(sentObj);
+ renderDetective(null,sentObj);
+ renderPractice(sentObj);
+ renderTeacher(sentObj);
+ switchTab('ws');
+ $('sent-area').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ==========================  INIT  ==========================
+renderLevelMap();
+loadLevel(1);
+</script>
+</body>
+</html>
