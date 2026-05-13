@@ -377,6 +377,7 @@
     }
 
     .concept-body .mini-viz {
+      display: none;
       background: #f8fafc;
       border: 1px dashed var(--border);
       border-radius: 8px;
@@ -1503,7 +1504,7 @@
             {
               id: "1a", name: "Points, Lines, Planes & Basic Figures", teks: "G.1A",
               explanation: "Points, lines, and planes are the undefined building blocks of geometry. A point has no size \u2014 just location. A line extends infinitely in two directions. A plane is a flat surface that extends infinitely. From these, we define segments (part of a line with two endpoints), rays (one endpoint, extends one direction), and angles (two rays sharing a common vertex).",
-              realWorld: "When you look at a school map of Lewisville High, every room corner is a point, every hallway wall is a segment, and every floor is a plane. The intersection where two hallways meet creates angles.",
+              realWorld: "<strong>The Scenario:</strong> You are looking at a blueprint for a new wing at Lewisville High School.<br><br><strong>The Conflict:</strong> The builders need exact instructions on where walls begin, where floors level out, and where corners meet, but casual language like \"over there\" isn't precise enough.<br><br><strong>The Resolution:</strong> By defining room corners as points, hallway walls as segments, and floors as planes, architects use the foundational language of geometry to build the school flawlessly.",
               prereqs: [],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> When you look at a school map of Lewisville High, every room corner is a point, every hallway wall is a segment, and every floor is a plane. The intersection where two hallways meet creates angles.</div>` },
@@ -1554,7 +1555,7 @@
             {
               id: "1b", name: "Segments, Midpoints & Distance", teks: "G.2B",
               explanation: "A segment is a part of a line with two endpoints. The midpoint divides a segment into two congruent segments. The distance formula calculates the length of a segment on a coordinate plane using the Pythagorean Theorem.",
-              realWorld: "In real life, city planners need to place a park exactly halfway between two schools (midpoint). GPS systems calculate the straight-line distance between two locations on a map using the distance formula.",
+              realWorld: "<strong>The Scenario:</strong> Two rival towns finally agree to build a shared community park between their high schools.<br><br><strong>The Conflict:</strong> If the park is closer to one school, the other town will protest, but there are only winding dirt roads between them, making it hard to find the middle.<br><br><strong>The Resolution:</strong> City planners map the schools on a coordinate grid and use the midpoint formula to find the exact center, and the distance formula to prove it's perfectly equidistant.",
               prereqs: ["1a"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Imagine a road connecting two cities. The midpoint is the exact halfway rest stop. Distance is how many miles you drive!</div>` },
@@ -1612,7 +1613,7 @@
             {
               id: "1c", name: "Angles & Angle Relationships", teks: "G.1A",
               explanation: "Angles are formed by two rays sharing a common endpoint called a vertex. Angle relationships include complementary (sum to 90), supplementary (sum to 180), vertical (opposite and equal), and linear pairs.",
-              realWorld: "Architects use specific angle measures when designing roof pitches. A vertical angle relationship ensures that the cross-braces of scaffolding remain stable.",
+              realWorld: "<strong>The Scenario:</strong> A construction crew is assembling a multi-story steel scaffolding.<br><br><strong>The Conflict:</strong> Heavy winds threaten to topple the entire structure, and single metal beams aren't enough to keep the frame rigid.<br><br><strong>The Resolution:</strong> Engineers install cross-braces that form vertical angles. Because vertical angles are always congruent, the forces are perfectly balanced, stabilizing the scaffolding against the wind.",
               prereqs: ["1b"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Acute angles are sharp like needles (< 90). Obtuse angles are wide open (> 90). Right angles form perfect corners (= 90).</div>` },
@@ -1668,7 +1669,7 @@
             {
               id: "1d", name: "Logical Reasoning & Conditional Statements", teks: "G.4B",
               explanation: "Conditional statements take the form 'If p, then q'. We can form the converse (If q, then p), inverse (If not p, then not q), and contrapositive (If not q, then not p).",
-              realWorld: "In computer programming, if-then statements are the building blocks of algorithms.",
+              realWorld: "<strong>The Scenario:</strong> A software engineer is programming the navigation system for a self-driving car.<br><br><strong>The Conflict:</strong> The car needs rules to safely navigate traffic, but if the logic is flawed, the car might stop for a green light or speed through a red one.<br><br><strong>The Resolution:</strong> The engineer uses conditional \"If-Then\" statements (If the light is red, then stop). By understanding contrapositives, they ensure the car's logic is foolproof in every scenario.",
               prereqs: ["1c"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> If it's raining, I need an umbrella. Converse: If I need an umbrella, it's raining. Note that converse isn't always true!</div>` },
@@ -1719,7 +1720,7 @@
             {
               id: "1e", name: "Inductive vs Deductive Reasoning", teks: "G.4A",
               explanation: "Inductive reasoning forms a hypothesis from patterns or examples. Deductive reasoning proves a conclusion using facts, definitions, and theorems.",
-              realWorld: "Scientists use inductive reasoning to form theories from data, while mathematicians use deductive reasoning to prove absolute theorems.",
+              realWorld: "<strong>The Scenario:</strong> A detective arrives at a complex crime scene with scattered clues.<br><br><strong>The Conflict:</strong> Finding fingerprints suggests a suspect was there (Inductive Reasoning), but a good lawyer can argue that the suspect visited earlier, introducing reasonable doubt.<br><br><strong>The Resolution:</strong> The detective uses video footage with a timestamp to logically eliminate all other possibilities (Deductive Reasoning), proving beyond a doubt that the suspect committed the crime.",
               prereqs: ["1d"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> 1, 3, 5, 7... the next is probably 9 (Inductive). All men are mortal. Socrates is a man. Therefore Socrates is mortal (Deductive).</div>` },
@@ -1770,7 +1771,7 @@
             {
               id: "1f", name: "Slope & Equations of Lines", teks: "G.4C",
               explanation: "Slope measures how steep a line is — it's the ratio of vertical change (rise) to horizontal change (run): m = (y₂−y₁)/(x₂−x₁) ...",
-              realWorld: "LISD architects designing a wheelchair-accessible ramp must keep slope ≤ 1/12 per ADA code.",
+              realWorld: "<strong>The Scenario:</strong> LISD architects are designing a new wheelchair-accessible entrance for the gymnasium.<br><br><strong>The Conflict:</strong> If the ramp is too steep, it will be unsafe and violate the ADA code; if it's too long, it won't fit in the courtyard.<br><br><strong>The Resolution:</strong> The architects calculate the precise slope (rise over run) to ensure the steepness is exactly 1/12, satisfying the safety code and fitting the design beautifully.",
               prereqs: ["1b"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Steepness and Direction</h4><div class="analogy-box"><strong>Think of it this way:</strong> Slope is the steepness of a hill. If your slope is 1/12, you walk sideways 12 feet for every 1 foot you go up. <br><br>If two train tracks have the exact same steepness and direction, they will never crash. These are <strong>Parallel Lines</strong>!</div><p>If two lines cross at a perfectly rigid, blocky 90&deg; angle, they are <strong>Perpendicular</strong>. Their slopes are total opposite extremes.</p>` },
@@ -1833,7 +1834,7 @@
             {
               id: "1g", name: "Counterexamples", teks: "G.4C",
               explanation: "A counterexample is a specific example that proves a conjecture is FALSE. No matter how convincing a pattern seems, a single counterexample destroys it completely. In geometry, counterexamples reveal that a conjecture about shapes or relationships is not universally true.",
-              realWorld: "In 1986, NASA assumed shuttle launches were always safe based on past successes — one failure disproved that belief forever. In geometry: 'All parallelograms are rectangles' seems plausible, but a rhombus (without right angles) is a perfect counterexample.",
+              realWorld: "<strong>The Scenario:</strong> In 1986, engineers believed that space shuttle launches were always safe because every previous launch had succeeded.<br><br><strong>The Conflict:</strong> This belief was an unchecked conjecture based on past patterns, leading to a false sense of security.<br><br><strong>The Resolution:</strong> The tragic failure of the Challenger was a single, devastating counterexample that instantly disproved the assumption, showing why mathematical certainty requires more than just observed patterns.",
               prereqs: ["1e"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts &amp; Analogies</h4><div class="analogy-box"><strong>The Disproof Power:</strong> Imagine your friend says "Every student at Lewisville High has a locker." You only need to find ONE student without a locker to completely destroy that claim — that's a counterexample!<br><br>In math, a conjecture is like a bold claim. One well-chosen counterexample is more powerful than a thousand supporting examples.</div>` },
@@ -1884,7 +1885,7 @@
             {
               id: "1h", name: "Euclidean vs. Spherical Geometry", teks: "G.4D",
               explanation: "Euclidean geometry describes the flat world you work in every day — lines extend infinitely, parallel lines never meet, and triangle angles always sum to exactly 180°. Spherical geometry describes shapes on curved surfaces like Earth, where 'straight lines' are great circles, parallel meridians meet at the poles, and triangle angles sum to MORE than 180°.",
-              realWorld: "When you use Google Maps on a flat screen, that's Euclidean geometry. But when an airplane flies from Dallas to Tokyo, the pilot follows a great circle route — spherical geometry — because it's the shortest path on Earth's curved surface, even though it looks curved on a flat map.",
+              realWorld: "<strong>The Scenario:</strong> An airline pilot is mapping out a flight from Dallas, Texas, to Tokyo, Japan.<br><br><strong>The Conflict:</strong> If the pilot draws a straight line on a flat map (Euclidean geometry), the plane will waste thousands of gallons of fuel flying a longer route.<br><br><strong>The Resolution:</strong> The pilot uses Spherical geometry to chart a \"great circle\" route over the curved surface of the Earth, curving north over Alaska to take the true shortest path.",
               prereqs: ["1a"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts &amp; Analogies</h4><div class="analogy-box"><strong>Flat Paper vs. Basketball:</strong> Imagine drawing two parallel lines on a flat piece of paper — they never meet. Now draw those same lines on a basketball (like lines of longitude on a globe). On the basketball they start out parallel but eventually crash into each other at the top and bottom!<br><br>Two trains on perfectly parallel tracks on a curved Earth would eventually collide. That's spherical geometry in action.</div>` },
@@ -1952,7 +1953,7 @@
             {
               id: "2a", name: "Translations, Reflections & Rotations", teks: "G.2A",
               explanation: "A translation slides every point of a figure the same distance and direction — think of it as a copy-paste shift. A reflection flips a figure over a line (mirror line), creating a mirror image. A rotation turns a figure around a fixed center point by a given angle. All three are rigid motions: they preserve size and shape!",
-              realWorld: "In video game design, translations move a character across the screen, reflections mirror sprites for left/right facing, and rotations spin objects like wheels or compass needles. Logo designers at LISD use reflections to create symmetric school emblems.",
+              realWorld: "<strong>The Scenario:</strong> A video game designer is programming a new level for a platformer.<br><br><strong>The Conflict:</strong> The character needs to slide across ice, look in a mirror, and flip through the air, but the designer doesn't want to redraw the character sprite for every single frame.<br><br><strong>The Resolution:</strong> They use rigid transformations: translations slide the character, reflections mirror the sprite, and rotations spin it, saving time while preserving the character's exact shape and size.",
               prereqs: ["1a", "1b"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> In video game design, translations move a character across the screen, reflections mirror sprites for left/right facing, and rotations spin objects like wheels or compass needles. Logo designers at LISD use reflections to create symmetric school emblems.</div>` },
@@ -2020,7 +2021,7 @@
             {
               id: "2b", name: "Symmetry", teks: "G.2B",
               explanation: "A figure has line symmetry (reflective symmetry) if you can fold it along a line and both halves match perfectly. It has rotational symmetry if you can rotate it less than 360\u00B0 about its center and it looks the same. The order of rotational symmetry tells you how many positions look identical during a full turn.",
-              realWorld: "The LISD school logo uses line symmetry to look balanced and professional. A basketball has infinite rotational symmetry. A stop sign has 8 lines of symmetry and rotational symmetry of order 8. Tile patterns in the school hallways repeat through both types of symmetry.",
+              realWorld: "<strong>The Scenario:</strong> LISD's design team is creating a new logo for the school district.<br><br><strong>The Conflict:</strong> An asymmetrical logo looks chaotic and off-balance on t-shirts and letterheads, making the district look unprofessional.<br><br><strong>The Resolution:</strong> The designers use line symmetry to ensure the left and right halves perfectly mirror each other, and rotational symmetry so the logo looks perfect from multiple angles, creating a balanced, iconic emblem.",
               prereqs: ["2a"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> The LISD school logo uses line symmetry to look balanced and professional. A basketball has infinite rotational symmetry. A stop sign has 8 lines of symmetry and rotational symmetry of order 8. Tile patterns in the school hallways repeat through both types of symmetry.</div>` },
@@ -2075,7 +2076,7 @@
             {
               id: "2c", name: "Congruent Figures & Triangle Congruence Criteria", teks: "G.5A",
               explanation: "Two figures are congruent if one can be mapped onto the other using rigid motions (translations, reflections, rotations). For triangles, we don\u2019t need to check all 6 parts \u2014 specific shortcut criteria guarantee congruence: SSS (three pairs of sides equal), SAS (two sides and the included angle), ASA (two angles and the included side), AAS (two angles and a non-included side), and HL (hypotenuse-leg for right triangles). But beware: SSA (or ASS) is NOT a valid criterion!",
-              realWorld: "When engineers build bridge trusses near Lewisville Lake, they need identical triangular supports. They use SSS measurements to verify each triangular brace is congruent to the template \u2014 even a small deviation could weaken the structure.",
+              realWorld: "<strong>The Scenario:</strong> Engineers are building a heavy-duty steel bridge over Lewisville Lake.<br><br><strong>The Conflict:</strong> If the triangular steel trusses aren't exactly identical, the weight distribution will be uneven, causing the bridge to warp or collapse.<br><br><strong>The Resolution:</strong> Instead of measuring all six parts (sides and angles) of every single triangle, they use the SSS (Side-Side-Side) shortcut to quickly and perfectly guarantee every truss is completely congruent.",
               prereqs: ["2a", "1c"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> When engineers build bridge trusses near Lewisville Lake, they need identical triangular supports. They use SSS measurements to verify each triangular brace is congruent to the template \u2014 even a small deviation could weaken the structure.</div>` },
@@ -2130,7 +2131,7 @@
             {
               id: "2d", name: "Introductory Proofs & Justifications", teks: "G.5C",
               explanation: "A geometric proof is a logical argument that uses definitions, postulates, and previously proven theorems to demonstrate that a statement is true. In two-column proofs, each step has a statement and a reason. Flow proofs use arrows to show the logical flow. Paragraph proofs explain the reasoning in complete sentences. The key skill: every claim must be justified!",
-              realWorld: "Lawyers build cases step by step, just like geometric proofs \u2014 every claim needs evidence (a reason). When an architect in the Lewisville area designs a building, they must justify every structural choice with engineering principles. Proofs teach the same disciplined reasoning.",
+              realWorld: "<strong>The Scenario:</strong> A lawyer is presenting a major case in front of a strict judge.<br><br><strong>The Conflict:</strong> The lawyer knows their client is innocent, but just saying \"it's obvious\" won't win the case; the judge will throw it out without a logical chain of evidence.<br><br><strong>The Resolution:</strong> The lawyer builds a step-by-step argument where every single claim is backed by a specific piece of evidence—exactly how geometric proofs use postulates and theorems to justify every line of logic.",
               prereqs: ["1d", "1e", "2c"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Lawyers build cases step by step, just like geometric proofs \u2014 every claim needs evidence (a reason). When an architect in the Lewisville area designs a building, they must justify every structural choice with engineering principles. Proofs teach the same disciplined reasoning.</div>` },
@@ -2181,7 +2182,7 @@
             {
               id: "2e", name: "Dilations", teks: "G.2D",
               explanation: "A dilation is a transformation that resizes a figure without changing its shape — it's the 'zoom in/out' of geometry. Every point moves away from (or toward) a fixed center of dilation by the same scale factor k. If k > 1, the figure enlarges; if 0 < k < 1, it shrinks. On the coordinate plane with center at the origin: (x, y) → (kx, ky). Key insight: dilations are NOT rigid motions — they change size. But they do preserve angle measures and produce similar figures. Misconception: dilations don't always originate from the origin — the center can be any point!",
-              realWorld: "When you pinch-zoom on Google Maps of Lewisville, every road, park and building scales proportionally from the center of your screen — that's a dilation. Architects produce scale drawings where 1 cm = 10 ft, a dilation with k = 1/120.",
+              realWorld: "<strong>The Scenario:</strong> You are using a map app on your phone to find a restaurant in Lewisville.<br><br><strong>The Conflict:</strong> The map shows the whole city, so the streets are too small to read. When you pinch to zoom, you need the streets to get bigger without changing the actual layout of the city.<br><br><strong>The Resolution:</strong> The app applies a mathematical dilation. Every road and building scales up proportionally from the center of your screen, changing the size but perfectly preserving the shape and angles of the city.",
               prereqs: ["2a", "4a"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> When you pinch-zoom on Google Maps of Lewisville, every road, park and building scales proportionally from the center of your screen — that's a dilation. Architects produce scale drawings where 1 cm = 10 ft, a dilation with k = 1/120.</div>` },
@@ -2242,7 +2243,7 @@
             {
               id: "2f", name: "Compositions of Transformations", teks: "G.2E",
               explanation: "A composition applies two or more transformations one after the other, using the output of the first as the input of the second. Notation: T₂ ∘ T₁ means 'apply T₁ first, then T₂.' A glide reflection is a composition of a translation (the glide) followed by a reflection over a line parallel to the glide direction — footprints in sand show this pattern! Important theorem: every rigid motion (isometry) can be expressed as a composition of at most three reflections. The order of transformations matters — T₂ ∘ T₁ ≠ T₁ ∘ T₂ in general.",
-              realWorld: "A basketball player's footwork when executing a crossover step follows a glide reflection pattern. Animation studios like those that make games played in Lewisville arcades use composition of rotations and translations to animate characters moving through scenes.",
+              realWorld: "<strong>The Scenario:</strong> An animator is drawing a character walking down a long, sandy beach.<br><br><strong>The Conflict:</strong> Drawing each left and right footprint individually is tedious and often leads to unnatural, uneven spacing.<br><br><strong>The Resolution:</strong> The animator uses a composition of transformations called a \"glide reflection.\" By translating a footprint forward (glide) and reflecting it over the path's center line, they create a perfect, mathematically precise walking pattern.",
               prereqs: ["2a", "2b"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> A basketball player's footwork when executing a crossover step follows a glide reflection pattern. Animation studios like those that make games played in Lewisville arcades use composition of rotations and translations to animate characters moving through scenes.</div>` },
@@ -2302,7 +2303,7 @@
             {
               id: "2g", name: "CPCTC", teks: "G.5B",
               explanation: "CPCTC — Corresponding Parts of Congruent Triangles are Congruent — is the logical step that follows after you've proven two triangles are congruent. Think of it like a legal ruling: once a judge (congruence criterion) rules two triangles identical, you can claim any matching part is equal without re-measuring. The key is sequence: first prove the triangles congruent (SSS, SAS, ASA, AAS, or HL), then invoke CPCTC to conclude individual sides or angles are equal. Misconception: CPCTC is a reason, not a method — you can't use it before establishing congruence.",
-              realWorld: "Bridge engineers at the Lewisville Lake bridge verify that every triangular truss section is congruent to the template (using SSS). CPCTC then guarantees every matching bolt hole, angle brace, and weld point aligns perfectly — saving costly rework.",
+              realWorld: "<strong>The Scenario:</strong> An aerospace engineer is designing symmetrical wings for a new airplane.<br><br><strong>The Conflict:</strong> They proved the triangular frames of both wings are congruent, but the manufacturing team still needs exact angle measurements to cut the metal joints.<br><br><strong>The Resolution:</strong> Because the triangles are already proven congruent, the engineer invokes CPCTC to instantly guarantee that all corresponding angles are equal, bypassing the need for redundant calculations.",
               prereqs: ["2c", "2d"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Bridge engineers at the Lewisville Lake bridge verify that every triangular truss section is congruent to the template (using SSS). CPCTC then guarantees every matching bolt hole, angle brace, and weld point aligns perfectly — saving costly rework.</div>` },
@@ -2353,7 +2354,7 @@
             {
               id: "2h", name: "Isosceles & Equilateral Triangle Properties", teks: "G.6D",
               explanation: "An isosceles triangle has two equal sides (legs) and a base. The Isosceles Triangle Theorem states that the base angles — the angles opposite the equal sides — are always congruent. The converse is equally powerful: if two angles of a triangle are congruent, then the sides opposite them are equal. An equilateral triangle takes this further: all three sides equal means all three angles equal 60°. These theorems are provable directly using CPCTC.",
-              realWorld: "The classic A-frame cabin design — popular in the Texas Hill Country — is an isosceles triangle from the front. Structural engineers know both base angles are equal without measuring them, which helps them design symmetric roof loads. The Eiffel Tower's cross-section and many suspension bridge towers use isosceles triangle geometry.",
+              realWorld: "<strong>The Scenario:</strong> An architect is designing a classic A-frame cabin in the Texas Hill Country.<br><br><strong>The Conflict:</strong> To ensure the roof doesn't collapse under heavy rain, the left and right slopes of the roof must have the exact same steepness (angle), but measuring massive roof angles in mid-air is difficult.<br><br><strong>The Resolution:</strong> The architect simply ensures the two side beams are the exact same length (an isosceles triangle). The Isosceles Triangle Theorem guarantees that if the sides are equal, the base angles are automatically equal, ensuring a perfectly stable roof.",
               prereqs: ["2g"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts &amp; Analogies</h4><div class="analogy-box"><strong>The Seesaw Principle:</strong> If two sides of a triangle are equal (like two equal arms on a seesaw), the angles they push against are forced to be equal too. Pull one side longer and that corner's angle squishes — equal sides keep equal angles perfectly balanced.<br><br>Equilateral triangle = the perfect triangle: all sides equal, all angles equal 60°. No matter how you rotate it, it always looks the same — it has 3 lines of symmetry and rotational symmetry of order 3.</div>` },
@@ -2434,7 +2435,7 @@
             {
               id: "3a", name: "Parallel Lines & Transversals", teks: "G.6A",
               explanation: "When a transversal crosses two parallel lines, it creates 8 angles with special relationships. Corresponding angles are in the same position at each intersection and are congruent. Alternate interior angles are on opposite sides of the transversal, between the parallels, and are congruent. Alternate exterior angles are on opposite sides, outside the parallels, and are congruent. Co-interior (same-side interior) angles are supplementary (add to 180\u00B0).",
-              realWorld: "Look at the railroad tracks near Lewisville \u2014 the rails are parallel lines and the wooden ties are transversals. Street intersections where a diagonal road crosses two parallel streets create all these angle pairs. The angled supports on a highway overpass bridge follow the same geometry.",
+              realWorld: "<strong>The Scenario:</strong> A city planner is designing a grid where a diagonal avenue cuts across parallel streets.<br><br><strong>The Conflict:</strong> To synchronize the traffic lights, the angles of every intersection must be exactly known, but measuring each one individually across the whole city takes too much time.<br><br><strong>The Resolution:</strong> Because the streets are parallel, the planner uses transversal angle relationships. By measuring just one intersection, they instantly know the corresponding, alternate, and co-interior angles for the entire avenue.",
               prereqs: ["1c"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Look at the railroad tracks near Lewisville \u2014 the rails are parallel lines and the wooden ties are transversals. Street intersections where a diagonal road crosses two parallel streets create all these angle pairs. The angled supports on a highway overpass bridge follow the same geometry.</div>` },
@@ -2492,7 +2493,7 @@
             {
               id: "3b", name: "Triangle Angle Sum", teks: "G.6B",
               explanation: "The three interior angles of any triangle always add up to exactly 180\u00B0. This is the Triangle Angle Sum Theorem \u2014 one of the most important facts in all of geometry. You can prove it using parallel lines: draw a line through one vertex parallel to the opposite side, and the angles formed show the sum is 180\u00B0.",
-              realWorld: "When a structural engineer designs a triangular roof truss for a house in Lewisville, they must ensure all three angles account for the 180\u00B0 total. If two angles are fixed by the design, the third is automatically determined. This constraint makes triangles the most rigid and stable geometric shape \u2014 that\u2019s why bridges, towers, and roofs use them!",
+              realWorld: "<strong>The Scenario:</strong> A structural engineer is designing a triangular roof truss for a house in Lewisville.<br><br><strong>The Conflict:</strong> If the angles at the joints don't perfectly align, the roof will be unstable and could collapse under heavy weather.<br><br><strong>The Resolution:</strong> The engineer relies on the Triangle Angle Sum Theorem. By setting two angles based on the roof's slope, the third angle is mathematically locked to ensure the three angles sum to exactly 180\u00B0, creating perfect stability.",
               prereqs: ["3a", "1c"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> When a structural engineer designs a triangular roof truss for a house in Lewisville, they must ensure all three angles account for the 180\u00B0 total. If two angles are fixed by the design, the third is automatically determined. This constraint makes triangles the most rigid and stable geometric shape \u2014 that\u2019s why bridges, towers, and roofs use them!</div>` },
@@ -2552,7 +2553,7 @@
             {
               id: "3c", name: "Exterior Angle Theorem", teks: "G.6C",
               explanation: "An exterior angle of a triangle is formed by extending one side. The Exterior Angle Theorem says: the measure of an exterior angle equals the sum of the two non-adjacent interior angles (the remote interior angles). This is because the exterior angle and its adjacent interior angle are supplementary (180\u00B0), and the three interior angles also sum to 180\u00B0.",
-              realWorld: "When a ramp extends past a platform at a Lewisville skate park, the angle it makes with the ground beyond the platform is the exterior angle. Knowing two angles of the supporting triangle automatically tells you the angle of the ramp extension \u2014 no measuring needed!",
+              realWorld: "<strong>The Scenario:</strong> A builder is constructing a concrete ramp that extends past a loading dock platform.<br><br><strong>The Conflict:</strong> The builder needs to know the exact angle where the ramp hits the ground outside, but measuring it accurately on uneven dirt is nearly impossible.<br><br><strong>The Resolution:</strong> By knowing the two interior angles of the platform's support frame, the builder uses the Exterior Angle Theorem. The outside angle is simply the sum of the two remote interior angles\u2014no ground measurement needed!",
               prereqs: ["3b"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> When a ramp extends past a platform at a Lewisville skate park, the angle it makes with the ground beyond the platform is the exterior angle. Knowing two angles of the supporting triangle automatically tells you the angle of the ramp extension \u2014 no measuring needed!</div>` },
@@ -2610,7 +2611,7 @@
             {
               id: "3d", name: "Triangle Inequality", teks: "G.6C",
               explanation: "The Triangle Inequality Theorem says the sum of any two side lengths must be greater than the third side. If a + b \u2264 c for any combination, no triangle can be formed. Also, in a triangle, the longest side is opposite the largest angle, and the shortest side is opposite the smallest angle. These relationships let you reason about side lengths from angle information and vice versa.",
-              realWorld: "If you\u2019re building a triangular garden frame with three boards of lengths 3 ft, 4 ft, and 10 ft, can you form a triangle? No! 3 + 4 = 7 < 10. You\u2019d need to swap a board. Hikers near Lewisville Lake know the shortest path between two points is a straight line \u2014 any detour through a third point is longer (triangle inequality in action!).",
+              realWorld: "<strong>The Scenario:</strong> A landscaper is using three wooden beams to build a triangular garden frame.<br><br><strong>The Conflict:</strong> They have beams that are 3 feet, 4 feet, and 10 feet long, but no matter how they arrange them, the two shorter beams can't reach each other to close the triangle.<br><br><strong>The Resolution:</strong> They realize the Triangle Inequality Theorem is at play: the sum of the two shorter sides (3 + 4 = 7) must be greater than the longest side (10). They swap the 10-foot beam for a 6-foot one, and the frame fits perfectly.",
               prereqs: ["3b"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> If you\u2019re building a triangular garden frame with three boards of lengths 3 ft, 4 ft, and 10 ft, can you form a triangle? No! 3 + 4 = 7 < 10. You\u2019d need to swap a board. Hikers near Lewisville Lake know the shortest path between two points is a straight line \u2014 any detour through a third point is longer (triangle inequality in action!).</div>` },
@@ -2673,7 +2674,7 @@
             {
               id: "3e", name: "Perpendicular & Angle Bisector Theorems", teks: "G.3B, G.3C",
               explanation: "The Perpendicular Bisector Theorem states: any point on the perpendicular bisector of a segment is equidistant from the segment's two endpoints — and conversely, if a point is equidistant from both endpoints, it lies on the perpendicular bisector. The Angle Bisector Theorem mirrors this: any point on the angle bisector is equidistant from both sides of the angle (measuring perpendicular distance to each ray). These theorems lead to triangle's circumcenter (where all three perpendicular bisectors meet — equidistant from all vertices) and incenter (where all three angle bisectors meet — equidistant from all sides). Misconception: the bisector passes through the midpoint of the segment but the circumcenter is NOT always inside the triangle (it's outside for obtuse triangles).",
-              realWorld: "Cell phone towers in Lewisville are placed at the circumcenter of triangular coverage zones so all three neighborhood corners get equal signal strength. Emergency dispatch centers find the location equidistant from multiple fire stations using the perpendicular bisector principle.",
+              realWorld: "<strong>The Scenario:</strong> Emergency dispatchers need to place a new fire station in a triangular district.<br><br><strong>The Conflict:</strong> If the station is closer to one neighborhood than the others, response times will be dangerously unequal.<br><br><strong>The Resolution:</strong> They use the Perpendicular Bisector Theorem to find the circumcenter. Because the circumcenter is perfectly equidistant from all three vertices of the district, every neighborhood gets the exact same rapid response time.",
               prereqs: ["1b", "1c", "3b"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts &amp; Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Cell phone towers in Lewisville are placed at the circumcenter of triangular coverage zones so all three neighborhood corners get equal signal strength. Emergency dispatch centers find the location equidistant from multiple fire stations using the perpendicular bisector principle.</div>` },
@@ -2728,7 +2729,7 @@
             {
               id: "3f", name: "Triangle Centers", teks: "G.3C, G.3D",
               explanation: "Every triangle has four classical centers, each built from a different set of special lines. The circumcenter (C) is where perpendicular bisectors meet — it's equidistant from all three vertices and is the center of the circumscribed circle. The incenter (I) is where angle bisectors meet — equidistant from all three sides, center of the inscribed circle. The centroid (G) is where medians (vertex-to-midpoint lines) meet — it's the triangle's center of mass, always inside, and divides each median in a 2:1 ratio. The orthocenter (H) is where altitudes meet — it can be outside the triangle for obtuse triangles. Memory trick: 'All Captains In Combat' = Angle bisectors→incenter, Circumcenter, medians→centroid, altitudes→orthocenter.",
-              realWorld: "The centroid is exactly where you'd balance a triangle-shaped piece of cardboard on your fingertip — it's the physical center of mass. Structural engineers place support columns at the centroid of triangular floors. The incenter determines the largest circle that fits inside a triangular park in Lewisville's city planning.",
+              realWorld: "<strong>The Scenario:</strong> An artist is creating a massive triangular mobile sculpture to hang from the ceiling of a museum.<br><br><strong>The Conflict:</strong> If they attach the suspension wire in the wrong spot, the triangle will tilt, slide, and fall to the ground.<br><br><strong>The Resolution:</strong> They draw the medians from each corner to find the centroid. Because the centroid is the exact center of mass, the sculpture balances perfectly flat on a single point of suspension.",
               prereqs: ["3b", "3c", "3e"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> The centroid is exactly where you'd balance a triangle-shaped piece of cardboard on your fingertip — it's the physical center of mass. Structural engineers place support columns at the centroid of triangular floors. The incenter determines the largest circle that fits inside a triangular park in Lewisville's city planning.</div>` },
@@ -2785,7 +2786,7 @@
             {
               id: "3g", name: "Proving Lines Parallel", teks: "G.6A",
               explanation: "The Converse of the Parallel Line Theorems lets us PROVE that two lines are parallel when we\u2019re given angle information. Converse of Corresponding Angles Postulate: if corresponding angles are congruent, the lines are parallel. Converse of Alternate Interior Angles Theorem: if alternate interior angles are congruent, the lines are parallel. Converse of Co-Interior Angles Theorem: if same-side interior angles are supplementary, the lines are parallel. These converses are essential tools in geometric proofs.",
-              realWorld: "A carpenter installing crown molding checks that ceiling and wall lines are truly parallel by measuring the angles the molding makes at both joints. If the corresponding angles at both junctions match, the surfaces are parallel. Laser leveling tools used on Lewisville construction sites use this principle to verify parallel surfaces without physically measuring the gap.",
+              realWorld: "<strong>The Scenario:</strong> A carpenter is installing crown molding along a ceiling and a wall.<br><br><strong>The Conflict:</strong> The house is old, and they suspect the ceiling might be sagging. If the ceiling and floor aren't perfectly parallel, the molding will look crooked.<br><br><strong>The Resolution:</strong> The carpenter measures the angles the molding makes at both the floor and ceiling joints. Using the Converse of the Corresponding Angles Postulate, they prove that because the angles match exactly, the ceiling and floor are truly parallel.",
               prereqs: ["3a", "1d"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts &amp; Analogies</h4><div class="analogy-box"><strong>How Do You KNOW Lines Are Parallel?</strong> Looking at railroad tracks near Lewisville, you can't measure that rails extend to infinity. But you CAN measure the angles that each wooden tie makes with both rails. If the angles match, the rails are parallel — guaranteed.<br><br>This is the CONVERSE direction: instead of "parallel lines &rarr; equal angles," we use "equal angles &rarr; parallel lines." It's the reverse logical switch from Unit 1 conditional statements!</div>` },
@@ -2860,7 +2861,7 @@
             {
               id: "4a", name: "Similar Figures & Scale Factors", teks: "G.7A",
               explanation: "Two figures are similar (~) when they have the same shape but not necessarily the same size. All corresponding angles are congruent and all corresponding sides are proportional. The ratio of corresponding side lengths is called the scale factor. If the scale factor is k, then the ratio of their areas is k\u00B2 and the ratio of their volumes is k\u00B3.",
-              realWorld: "When you zoom in on Google Maps of Lewisville, you\u2019re seeing a similar figure with a different scale factor. Architects scale blueprint drawings to build real buildings using the same principle.",
+              realWorld: "<strong>The Scenario:</strong> An architect is designing a new library building in Lewisville based on a small blueprint.<br><br><strong>The Conflict:</strong> The construction crew needs to know the exact dimensions and floor area for the real building, but measuring every single line on the blueprint and multiplying it is tedious and prone to error.<br><br><strong>The Resolution:</strong> The architect uses scale factors. By knowing the scale factor <em>k</em>, they instantly multiply any blueprint side by <em>k</em> to get the real length, and multiply the blueprint's area by <em>k²</em> to order the exact amount of flooring needed.",
               prereqs: ["1a"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> When you zoom in on Google Maps of Lewisville, you\u2019re seeing a similar figure with a different scale factor. Architects scale blueprint drawings to build real buildings using the same principle.</div>` },
@@ -2920,7 +2921,7 @@
             {
               id: "4b", name: "Triangle Similarity Criteria (AA, SSS~, SAS~)", teks: "G.7B",
               explanation: "To prove two triangles similar, you don\u2019t need to check every angle and side. Three shortcut criteria exist: AA (Angle-Angle) \u2014 two pairs of congruent angles guarantees similarity (the third pair is forced by the Triangle Angle Sum). SSS~ \u2014 all three pairs of corresponding sides are proportional. SAS~ \u2014 two pairs of proportional sides with the included angle congruent.",
-              realWorld: "Engineers use AA similarity when they measure shadows to find the height of a building in Lewisville. If the sun angle is the same for a stick and the building, the triangles formed are similar by AA.",
+              realWorld: "<strong>The Scenario:</strong> An engineer needs to determine the height of a towering oak tree in a Lewisville park without climbing it.<br><br><strong>The Conflict:</strong> Measuring the tree directly is impossible, and they only have a tape measure and a small 3-foot stick.<br><br><strong>The Resolution:</strong> They stand the stick straight up and measure both its shadow and the tree's shadow. Because the sun hits both at the exact same angle (creating AA similarity), the engineer sets up a simple proportion to calculate the tree's exact height from the ground.",
               prereqs: ["1a", "3b"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Engineers use AA similarity when they measure shadows to find the height of a building in Lewisville. If the sun angle is the same for a stick and the building, the triangles formed are similar by AA.</div>` },
@@ -2978,7 +2979,7 @@
             {
               id: "4c", name: "Pythagorean Theorem & Its Converse", teks: "G.9B",
               explanation: "In a right triangle, the square of the hypotenuse (the side opposite the right angle) equals the sum of the squares of the other two sides: a\u00B2 + b\u00B2 = c\u00B2. The converse is also true: if a\u00B2 + b\u00B2 = c\u00B2 for three side lengths, the triangle MUST be a right triangle. If a\u00B2 + b\u00B2 > c\u00B2, it\u2019s acute. If a\u00B2 + b\u00B2 < c\u00B2, it\u2019s obtuse.",
-              realWorld: "Carpenters in Lewisville use the 3-4-5 rule to check if a corner is a true right angle. Surveyors use the Pythagorean Theorem to calculate distances across Lake Lewisville without crossing it.",
+              realWorld: "<strong>The Scenario:</strong> A surveyor needs to measure the straight-line distance across Lake Lewisville for a new bridge.<br><br><strong>The Conflict:</strong> They cannot walk across the water to measure the distance directly.<br><br><strong>The Resolution:</strong> The surveyor walks south along the shore, then east, forming a giant right triangle on land. By measuring those two easily accessible land distances (the legs), they use the Pythagorean Theorem to instantly calculate the exact distance across the lake (the hypotenuse).",
               prereqs: ["1b"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Carpenters in Lewisville use the 3-4-5 rule to check if a corner is a true right angle. Surveyors use the Pythagorean Theorem to calculate distances across Lake Lewisville without crossing it.</div>` },
@@ -3043,7 +3044,7 @@
             {
               id: "4d", name: "Special Right Triangles (45-45-90 & 30-60-90)", teks: "G.9A",
               explanation: "Two special right triangles have side ratios you should memorize. 45-45-90: the legs are equal and the hypotenuse is leg \u00D7 \u221A2. Side ratio is 1 : 1 : \u221A2. 30-60-90: the side opposite 30\u00B0 is the shortest, opposite 60\u00B0 is short \u00D7 \u221A3, and the hypotenuse is 2 \u00D7 short. Side ratio is 1 : \u221A3 : 2.",
-              realWorld: "The 30-60-90 triangle appears naturally in hexagonal floor tiles and honeycomb patterns. The 45-45-90 shows up when you cut a square diagonally \u2014 like cutting sandwich bread corner-to-corner!",
+              realWorld: "<strong>The Scenario:</strong> A manufacturer is cutting square pieces of glass diagonally to make triangular corner shelves.<br><br><strong>The Conflict:</strong> They need to know the exact length of the diagonal cut to frame the front edge, but measuring each cut individually slows down production.<br><br><strong>The Resolution:</strong> They realize that cutting a square diagonally always creates a 45-45-90 triangle. Instead of measuring, they simply multiply the side length by \u221A2 to get the precise diagonal length every single time.",
               prereqs: ["4c"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> The 30-60-90 triangle appears naturally in hexagonal floor tiles and honeycomb patterns. The 45-45-90 shows up when you cut a square diagonally \u2014 like cutting sandwich bread corner-to-corner!</div>` },
@@ -3102,7 +3103,7 @@
             {
               id: "4e", name: "Trigonometric Ratios (Sine, Cosine, Tangent)", teks: "G.9A",
               explanation: "In a right triangle, the three primary trig ratios relate an acute angle to side lengths. SOH-CAH-TOA: Sin(\u03B8) = Opposite / Hypotenuse. Cos(\u03B8) = Adjacent / Hypotenuse. Tan(\u03B8) = Opposite / Adjacent. These ratios let you find missing sides or angles in any right triangle when you know at least one side and one acute angle.",
-              realWorld: "Surveyors measuring heights of buildings, pilots calculating descent angles at DFW airport, and engineers designing ramps for Lewisville skate parks all use trig ratios to solve right-triangle problems without measuring every side directly.",
+              realWorld: "<strong>The Scenario:</strong> A pilot is descending toward DFW airport and needs to start their landing glide.<br><br><strong>The Conflict:</strong> The plane is 10,000 feet in the air, and for a smooth landing, the descent angle must be exactly 3 degrees, but the pilot needs to know exactly how far away from the runway to start the descent.<br><br><strong>The Resolution:</strong> The pilot's computer uses the tangent ratio (Opposite / Adjacent). Knowing the height (Opposite = 10,000 ft) and the required angle (3\u00B0), it instantly calculates the exact ground distance (Adjacent) needed to begin the perfect glide.",
               prereqs: ["4c", "4d"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Surveyors measuring heights of buildings, pilots calculating descent angles at DFW airport, and engineers designing ramps for Lewisville skate parks all use trig ratios to solve right-triangle problems without measuring every side directly.</div>` },
@@ -3170,7 +3171,7 @@
             {
               id: "4f", name: "Triangle Midsegment Theorem", teks: "G.7C",
               explanation: "The Triangle Midsegment Theorem is a hidden superpower of triangles: the segment connecting the midpoints of any two sides is called a midsegment. It is always (1) parallel to the third side, and (2) exactly half the length of the third side. This creates a smaller triangle similar to the original with scale factor 1/2 — and area 1/4 of the original! There are three midsegments in any triangle, dividing it into four congruent smaller triangles. Analogy: imagine folding a triangular sandwich diagonally — the fold line across two sides is the midsegment: parallel to the crust and half as long.",
-              realWorld: "Lewisville bridge engineers use midsegment calculations when designing trusses: the inner cross-supports are exactly half the length of the main beams they parallel. Surveyors measuring inaccessible land boundaries use the midsegment theorem to calculate distances indirectly.",
+              realWorld: "<strong>The Scenario:</strong> A city engineer is designing a triangular truss bridge over Lewisville Lake.<br><br><strong>The Conflict:</strong> They need to install a horizontal cross-beam exactly halfway up the triangular frame, but calculating the precise load-bearing length and angle for this beam is complex.<br><br><strong>The Resolution:</strong> The engineer uses the Triangle Midsegment Theorem. By connecting the midpoints of the two angled sides, they instantly know the cross-beam is perfectly parallel to the base and exactly half its length, ensuring perfect structural balance.",
               prereqs: ["4a", "4b", "1b"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Lewisville bridge engineers use midsegment calculations when designing trusses: the inner cross-supports are exactly half the length of the main beams they parallel. Surveyors measuring inaccessible land boundaries use the midsegment theorem to calculate distances indirectly.</div>` },
@@ -3229,7 +3230,7 @@
             {
               id: "4g", name: "Proportional Parts in Triangles", teks: "G.7D",
               explanation: "The Triangle Proportionality Theorem: if a line is drawn parallel to one side of a triangle and intersects the other two sides, it divides those sides proportionally — meaning the ratios of the cut segments are equal. Side Splitter: if DE ∥ BC in △ABC with D on AB and E on AC, then AD/DB = AE/EC. The Angle Bisector Theorem (for triangles): the bisector of an angle divides the opposite side in the same ratio as the two adjacent sides — if BD bisects ∠B, then AD/DC = AB/BC. Analogy: imagine stretching a rubber band tied between two sides of a triangle — a cross-thread parallel to the base always divides both sides proportionally.",
-              realWorld: "When a Lewisville surveyor can't measure across a river, they create a triangular setup where a measurable parallel line divides two sides proportionally — then use the Triangle Proportionality Theorem to find the inaccessible distance. Architects use the Angle Bisector Theorem to place doors optimally in triangular corner spaces.",
+              realWorld: "<strong>The Scenario:</strong> A surveyor is mapping a large triangular plot of land that is bisected by a new road parallel to one of its borders.<br><br><strong>The Conflict:</strong> The road cuts through the property lines, and the surveyor needs to figure out the exact lengths of the newly split property edges without walking through thick brush.<br><br><strong>The Resolution:</strong> Using the Triangle Proportionality Theorem, the surveyor sets up a simple ratio. Because the road is parallel to the border, it divides the two sides proportionally, allowing them to calculate the exact distances on paper.",
               prereqs: ["4a", "4b", "3a"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> When a Lewisville surveyor can't measure across a river, they create a triangular setup where a measurable parallel line divides two sides proportionally — then use the Triangle Proportionality Theorem to find the inaccessible distance. Architects use the Angle Bisector Theorem to place doors optimally in triangular corner spaces.</div>` },
@@ -3290,7 +3291,7 @@
             {
               id: "4h", name: "Law of Sines & Law of Cosines", teks: "G.9C",
               explanation: "The Pythagorean Theorem only works for right triangles — but real-world triangles are rarely right. The Law of Sines extends trig to ANY triangle: a/sin(A) = b/sin(B) = c/sin(C). Use it when you have AAS, ASA, or SSA. The Law of Cosines is the Pythagorean Theorem's bigger cousin: c² = a² + b² − 2ab·cos(C). Use it for SAS (find the missing side) or SSS (find a missing angle). Memory trick: 'Sines share ratios, Cosines correct the Pythagorean gap.' Note: the Law of Cosines reduces to the Pythagorean Theorem when C = 90°, since cos(90°) = 0.",
-              realWorld: "GPS in Lewisville uses the Law of Cosines to triangulate your position from three cell towers — it solves the triangle formed by your location and two known tower positions. Surveyors use Law of Sines to measure land across rivers and ravines where direct measurement is impossible.",
+              realWorld: "<strong>The Scenario:</strong> A search and rescue team in a helicopter is trying to locate a lost hiker using two cell towers.<br><br><strong>The Conflict:</strong> They know the distance from each tower to the hiker's phone, but they don't know the exact angle to fly or the distance between the towers to form a search grid.<br><br><strong>The Resolution:</strong> Using the Law of Cosines, the helicopter's computer takes the three known side lengths (SSS) and instantly calculates the exact angles of the triangle, pinpointing the quickest flight path to the hiker.",
               prereqs: ["4c", "4d", "4e"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> GPS in Lewisville uses the Law of Cosines to triangulate your position from three cell towers — it solves the triangle formed by your location and two known tower positions. Surveyors use Law of Sines to measure land across rivers and ravines where direct measurement is impossible.</div>` },
@@ -3354,7 +3355,7 @@
             {
               id: "4i", name: "Geometric Mean in Right Triangles", teks: "G.8B",
               explanation: "When an altitude is drawn from the right angle to the hypotenuse of a right triangle, it creates three similar triangles. Two key relationships result: (1) Geometric Mean \u2014 Altitude: the altitude is the geometric mean of the two hypotenuse segments it creates: h\u00B2 = p\u00B7q, where p and q are the two segments. (2) Geometric Mean \u2014 Leg: each leg is the geometric mean of the whole hypotenuse and the hypotenuse segment adjacent to that leg: leg\u00B2 = (adjacent segment) \u00D7 (whole hypotenuse).",
-              realWorld: "Architects calculating the height of a triangular roof peak above its base, and civil engineers designing drainage slopes, use the geometric mean altitude relationship. If you know the two base segments a rafter creates on the ridge, you can calculate the exact height of the peak.",
+              realWorld: "<strong>The Scenario:</strong> A civil engineer is designing a sloped drainage system under a massive right-angled highway interchange.<br><br><strong>The Conflict:</strong> To prevent flooding, they must install a vertical drainage pipe from the right-angled corner straight down to the hypotenuse base, but they can't measure the drop height from the busy highway above.<br><br><strong>The Resolution:</strong> By measuring just the two segments of the base where the pipe will hit, they use the Geometric Mean (Altitude) theorem. The required pipe length is simply the square root of the two base segments multiplied together.",
               prereqs: ["4c", "4b"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts &amp; Analogies</h4><div class="analogy-box"><strong>The Big Idea:</strong> Draw an altitude from the right angle of a right triangle to the hypotenuse. You now have <em>three similar triangles</em> nested inside each other. This similarity creates two powerful "geometric mean" shortcuts.\u2003<br><br><strong>Analogy:</strong> Imagine a perfectly symmetric hill. The altitude is the peak height. The two base segments are the left and right run of the hill. The peak height squared = left run \u00D7 right run. It\u2019s the fairness principle \u2014 the altitude is the \u201Cperfect middle\u201D between the two unequal segments.<br><br><strong>Visual setup:</strong> In \u25B3ABC with right angle at C, altitude CD meets AB at D. Segment AD = p, DB = q, hypotenuse AB = p+q.<br>\u2022 h\u00B2 = p\u00B7q (altitude geometric mean)<br>\u2022 a\u00B2 = q\u00B7(p+q) (leg CB adjacent to q)<br>\u2022 b\u00B2 = p\u00B7(p+q) (leg CA adjacent to p)</div>` },
@@ -3439,7 +3440,7 @@
             {
               id: "5a", name: "Classifying Quadrilaterals", teks: "G.3A",
               explanation: "A quadrilateral is any four-sided polygon. Special quadrilaterals form a hierarchy: a square is a rectangle is a parallelogram. Parallelograms have two pairs of parallel sides, opposite sides congruent, and opposite angles congruent. Rectangles add four right angles. Rhombi add four congruent sides. Squares are both rectangles AND rhombi. Trapezoids have exactly one pair of parallel sides. Kites have two pairs of consecutive congruent sides.",
-              realWorld: "Look at the buildings around Lewisville \u2014 windows are rectangles, some rooftops form trapezoids, decorative tiles use rhombi and kites, and stop signs are regular octagons built from quadrilateral understanding.",
+              realWorld: "<strong>The Scenario:</strong> A Lewisville city inspector is reviewing blueprints for a new park featuring differently shaped gazebos and playgrounds.<br><br><strong>The Conflict:</strong> The blueprints only list the coordinate points of the structures, and the inspector must quickly verify if the safety railings form the required squares, rectangles, or kites without measuring every angle.<br><br><strong>The Resolution:</strong> Using the quadrilateral hierarchy, the inspector checks just a few key properties\u2014like parallel sides and congruent diagonals\u2014to instantly classify each shape and approve the safety specs.",
               prereqs: ["1a"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Look at the buildings around Lewisville \u2014 windows are rectangles, some rooftops form trapezoids, decorative tiles use rhombi and kites, and stop signs are regular octagons built from quadrilateral understanding.</div>` },
@@ -3498,7 +3499,7 @@
             {
               id: "5b", name: "Polygon Angle Sums", teks: "G.10A",
               explanation: "The sum of interior angles of any n-sided polygon is (n \u2212 2) \u00D7 180\u00B0. For a regular polygon (all sides and angles equal), each interior angle = (n \u2212 2) \u00D7 180\u00B0 / n. The sum of exterior angles of ANY convex polygon is always 360\u00B0, so each exterior angle of a regular polygon = 360\u00B0 / n.",
-              realWorld: "The Pentagon building in Washington DC is a regular pentagon \u2014 each interior angle is 108\u00B0. Hexagonal bolts, octagonal stop signs, and the tile patterns at Lewisville Town Hall all rely on polygon angle sums.",
+              realWorld: "<strong>The Scenario:</strong> An architect is designing a massive custom octagonal skylight for the new Lewisville Town Hall.<br><br><strong>The Conflict:</strong> The glass manufacturer needs the exact angle at which to cut each pane of glass so they fit together perfectly, but guessing could waste thousands of dollars of materials.<br><br><strong>The Resolution:</strong> The architect uses the Polygon Angle Sum formula. By knowing it's an 8-sided regular polygon, they instantly calculate that each interior angle must be exactly 135 degrees, ensuring a flawless fit.",
               prereqs: ["3b"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> The Pentagon building in Washington DC is a regular pentagon \u2014 each interior angle is 108\u00B0. Hexagonal bolts, octagonal stop signs, and the tile patterns at Lewisville Town Hall all rely on polygon angle sums.</div>` },
@@ -3559,7 +3560,7 @@
             {
               id: "5c", name: "Properties of Parallelograms & Special Quadrilaterals", teks: "G.3A",
               explanation: "Parallelogram properties: opposite sides are parallel and congruent, opposite angles are congruent, consecutive angles are supplementary (sum to 180\u00B0), and diagonals bisect each other. Rectangles add: diagonals are congruent. Rhombi add: diagonals are perpendicular and bisect the vertex angles. Squares inherit ALL of these properties.",
-              realWorld: "Picture frames are rectangles (diagonals equal for squareness check). Diamond shapes on baseball fields are squares. The LISD logo uses parallelogram-based designs for visual balance.",
+              realWorld: "<strong>The Scenario:</strong> A carpenter is building a custom rectangular door frame for a historic house.<br><br><strong>The Conflict:</strong> After assembling the four sides, the frame looks rectangular, but if it's slightly skewed into a parallelogram, the door won't close properly.<br><br><strong>The Resolution:</strong> The carpenter uses a special property of rectangles: they measure the two diagonals. Because the diagonals of a true rectangle are exactly congruent, they simply adjust the frame until both measurements match perfectly.",
               prereqs: ["5a"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Picture frames are rectangles (diagonals equal for squareness check). Diamond shapes on baseball fields are squares. The LISD logo uses parallelogram-based designs for visual balance.</div>` },
@@ -3626,7 +3627,7 @@
             {
               id: "5d", name: "Coordinate Geometry Proofs", teks: "G.10B",
               explanation: "Coordinate geometry lets you prove properties algebraically. Use the distance formula to show sides are congruent, the midpoint formula to show diagonals bisect each other, and the slope formula to show sides are parallel (equal slopes) or perpendicular (slopes are negative reciprocals). To prove a shape is a specific quadrilateral, combine these tools strategically.",
-              realWorld: "City planners in Lewisville use coordinate grids to verify that proposed park boundaries form the correct shapes. GPS systems use coordinate geometry to calculate distances and verify property boundaries.",
+              realWorld: "<strong>The Scenario:</strong> A surveyor is tasked with proving that a plot of land in Lewisville is a perfect rhombus for a legal property dispute.<br><br><strong>The Conflict:</strong> They cannot physically stretch a tape measure across the entire property to check the angles, and visual estimates aren't legally binding.<br><br><strong>The Resolution:</strong> The surveyor uses GPS coordinate geometry. By calculating the distances between the four corner coordinates, they mathematically prove all four sides are equal, settling the dispute with undeniable algebraic proof.",
               prereqs: ["1b", "5a"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> City planners in Lewisville use coordinate grids to verify that proposed park boundaries form the correct shapes. GPS systems use coordinate geometry to calculate distances and verify property boundaries.</div>` },
@@ -3685,7 +3686,7 @@
             {
               id: "5e", name: "Geometric Constructions", teks: "G.3B, G.3C, G.3D",
               explanation: "Geometric constructions use only two tools — a compass and a straightedge (no ruler for measuring!) — to create exact geometric figures. Key constructions: (1) Perpendicular bisector of a segment: open the compass wider than half the segment, draw arcs from each endpoint, connect the two arc intersections. (2) Angle bisector: mark equal arcs on both rays from the vertex, then find the intersection of equal arcs from those marks. (3) Copy a segment or angle. (4) Construct a perpendicular to a line through a point. (5) Construct parallel lines using the Corresponding Angles Postulate — copy an angle at the new point. The power of constructions: they prove what's geometrically possible with pure logic, no numbers.",
-              realWorld: "Ancient Greek mathematicians (Euclid, 300 BC) discovered that many shapes can be constructed with just a compass and straightedge — and that some cannot (like trisecting an angle). Modern CAD software in architectural firms like those designing Lewisville's new developments uses the same geometric principles, just digitally.",
+              realWorld: "<strong>The Scenario:</strong> A machinist needs to drill a hole exactly in the center of a circular metal plate.<br><br><strong>The Conflict:</strong> They don't know the exact diameter, and guessing the center would ruin the expensive part.<br><br><strong>The Resolution:</strong> Using ancient geometric construction techniques\u2014just a compass and straightedge\u2014they draw two chords and construct their perpendicular bisectors. The exact point where the bisectors intersect is the perfect center.",
               prereqs: ["1c", "3e", "2d"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Ancient Greek mathematicians (Euclid, 300 BC) discovered that many shapes can be constructed with just a compass and straightedge — and that some cannot (like trisecting an angle). Modern CAD software in architectural firms like those designing Lewisville's new developments uses the same geometric principles, just digitally.</div>` },
@@ -3736,7 +3737,7 @@
             {
               id: "5f", name: "Area of Regular Polygons", teks: "G.10C",
               explanation: "A regular polygon has all sides and angles equal. Its area formula uses a special measurement called the apothem — the perpendicular distance from the center to the midpoint of any side. Area = (1/2) × perimeter × apothem, or equivalently Area = (1/2) × n × s × a, where n = number of sides, s = side length, a = apothem. The apothem can be found with right-triangle trig: split the polygon into n isosceles triangles from the center; the apothem is one leg, half a side is the other. Memory trick: 'Half Perimeter times Apothem — like the area of a triangle with base=perimeter and height=apothem!'",
-              realWorld: "The Lewisville ISD school board approved a regular hexagonal gazebo for a new park. Landscapers use the area formula with apothem to calculate how much turf goes inside. Honeycomb cells are regular hexagons — bees use the minimum wax (perimeter) for maximum honey storage (area), which is exactly what the apothem formula optimizes.",
+              realWorld: "<strong>The Scenario:</strong> A landscaper needs to order custom turf for a massive regular hexagonal courtyard at a Lewisville high school.<br><br><strong>The Conflict:</strong> Turf is expensive, and ordering too much or too little is a problem, but measuring the entire area by hand is nearly impossible.<br><br><strong>The Resolution:</strong> They measure just one outer side and the distance from the center to the edge (the apothem). Using the regular polygon area formula, they quickly and perfectly calculate the exact square footage needed.",
               prereqs: ["5b", "4e", "6c"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> The Lewisville ISD school board approved a regular hexagonal gazebo for a new park. Landscapers use the area formula with apothem to calculate how much turf goes inside. Honeycomb cells are regular hexagons — bees use the minimum wax (perimeter) for maximum honey storage (area), which is exactly what the apothem formula optimizes.</div>` },
@@ -3801,7 +3802,7 @@
             {
               id: "5g", name: "Slope Criteria & Coordinate Proofs", teks: "G.4C",
               explanation: "Slope is the language of parallelism and perpendicularity on the coordinate plane. Two lines are parallel if and only if they have equal slopes (or are both vertical). Two lines are perpendicular if and only if their slopes multiply to −1 (negative reciprocals). On the coordinate plane, you can classify quadrilaterals by calculating slopes: parallel opposite sides → parallelogram; all four right angles (adjacent slopes = neg. reciprocals) → rectangle; all sides equal (use distance formula) → rhombus; both conditions → square. This transforms geometry from visual guessing into algebraic proof. Misconception: horizontal and vertical lines are perpendicular (slope 0 and undefined) — but 0 × undefined ≠ −1, so we treat this as a special case.",
-              realWorld: "City planners in Lewisville use coordinate geometry to prove that new road grids are truly perpendicular (for legal purposes, streets must meet at right angles). Engineers verify that solar panel arrays on Lewisville schools are perfectly parallel using GPS coordinates and slope calculations.",
+              realWorld: "<strong>The Scenario:</strong> A civil engineer is verifying that a newly laid grid of streets in a Lewisville subdivision meets city code.<br><br><strong>The Conflict:</strong> The city requires all intersecting main streets to be perfectly perpendicular to prevent traffic accidents, but small measurement errors on the ground are hard to detect visually.<br><br><strong>The Resolution:</strong> By mapping the streets to a coordinate plane and calculating the slopes of the roads, the engineer checks if their slopes are negative reciprocals. This mathematical proof guarantees the roads meet at perfect 90-degree angles.",
               prereqs: ["1b", "1f", "5a", "5b", "5c", "5d"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> City planners in Lewisville use coordinate geometry to prove that new road grids are truly perpendicular (for legal purposes, streets must meet at right angles). Engineers verify that solar panel arrays on Lewisville schools are perfectly parallel using GPS coordinates and slope calculations.</div>` },
@@ -3872,7 +3873,7 @@
             {
               id: "6a", name: "Parts of a Circle", teks: "G.11A",
               explanation: "A circle is the set of all points equidistant from a center. Key parts: the radius connects center to edge; a diameter passes through the center (diameter = 2r). A chord connects two points on the circle. A secant is a line that intersects the circle at two points. A tangent touches the circle at exactly one point and is perpendicular to the radius at that point. An arc is a portion of the circle; a minor arc is less than 180\u00B0 and a major arc is greater than 180\u00B0.",
-              realWorld: "The roundabout at Valley Ridge Blvd in Lewisville is a circle \u2014 each entry road is a secant, lane markings are arcs, and the center island\u2019s edge is the circle itself. Pizza slices are sectors!",
+              realWorld: "<strong>The Scenario:</strong> A civil engineer is designing a new traffic roundabout for Valley Ridge Blvd in Lewisville.<br><br><strong>The Conflict:</strong> The construction crew doesn't understand the exact boundaries of the roundabout and keeps confusing the entry roads with the central island.<br><br><strong>The Resolution:</strong> By clearly defining the parts of a circle\u2014identifying the center island as the circle, the entry roads as secants, and the driving lanes as arcs\u2014the engineer precisely communicates the design so the crew builds it flawlessly.",
               prereqs: ["1a"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> The roundabout at Valley Ridge Blvd in Lewisville is a circle \u2014 each entry road is a secant, lane markings are arcs, and the center island\u2019s edge is the circle itself. Pizza slices are sectors!</div>` },
@@ -3936,7 +3937,7 @@
             {
               id: "6b", name: "Central & Inscribed Angles", teks: "G.12A",
               explanation: "A central angle has its vertex at the center of the circle; its measure equals the intercepted arc. An inscribed angle has its vertex ON the circle; its measure is HALF the intercepted arc. Key theorems: (1) Inscribed angle = \u00BD \u00D7 intercepted arc. (2) Inscribed angles that intercept the same arc are congruent. (3) An inscribed angle that intercepts a semicircle (diameter) is always 90\u00B0.",
-              realWorld: "Stadium seating at Lewisville\u2019s football field uses inscribed angle principles \u2014 no matter where you sit along an arc, your viewing angle to the goalposts stays the same!",
+              realWorld: "<strong>The Scenario:</strong> An architect is designing a new curved stadium seating section for the Lewisville High School football field.<br><br><strong>The Conflict:</strong> They need to guarantee that every seat along the curved section has the exact same viewing angle of the goalposts, so no ticket buyer complains about a bad view.<br><br><strong>The Resolution:</strong> Using the inscribed angle theorem, they position the seats along a circular arc. Because all seats (inscribed angles) intercept the exact same arc (the goalposts), every fan gets the exact same viewing angle.",
               prereqs: ["6a"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Stadium seating at Lewisville\u2019s football field uses inscribed angle principles \u2014 no matter where you sit along an arc, your viewing angle to the goalposts stays the same!</div>` },
@@ -3991,7 +3992,7 @@
             {
               id: "6c", name: "Arc Length & Sector Area", teks: "G.12B",
               explanation: "An arc length is a fraction of the circumference: Arc length = (\u03B8/360) \u00D7 2\u03C0r, where \u03B8 is the central angle in degrees. A sector is the \u201Cpie slice\u201D region between two radii and an arc. Sector area = (\u03B8/360) \u00D7 \u03C0r\u00B2. Both formulas use the same fraction \u03B8/360 to find what portion of the full circle is covered.",
-              realWorld: "A sprinkler in a Lewisville park that rotates 90\u00B0 waters a sector of the lawn. The arc length tells you the curved edge of the watered area; the sector area tells you how much grass gets water.",
+              realWorld: "<strong>The Scenario:</strong> A landscaper is installing an automated sprinkler system in a new Lewisville park.<br><br><strong>The Conflict:</strong> They need to know exactly how much curved garden edging to buy for the border and how much grass seed to buy for the area being watered, but the sprinkler only covers a 90-degree slice.<br><br><strong>The Resolution:</strong> Using the formulas for arc length (for the border) and sector area (for the grass), the landscaper perfectly calculates the materials needed for that specific slice without wasting money.",
               prereqs: ["6a", "6b"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> A sprinkler in a Lewisville park that rotates 90\u00B0 waters a sector of the lawn. The arc length tells you the curved edge of the watered area; the sector area tells you how much grass gets water.</div>` },
@@ -4054,7 +4055,7 @@
             {
               id: "6d", name: "Equation of a Circle", teks: "G.12B",
               explanation: "The standard form of a circle\u2019s equation is (x \u2212 h)\u00B2 + (y \u2212 k)\u00B2 = r\u00B2, where (h, k) is the center and r is the radius. To find the equation, identify the center and radius. To go from general form (x\u00B2 + y\u00B2 + Dx + Ey + F = 0) to standard form, complete the square for both x and y.",
-              realWorld: "GPS systems model Earth as circles/spheres. When a cellphone tower in Lewisville broadcasts with a certain range, the coverage boundary is a circle described by this equation.",
+              realWorld: "<strong>The Scenario:</strong> A telecom company is installing a new cellphone tower in Lewisville.<br><br><strong>The Conflict:</strong> They need to legally define the exact coverage zone of the tower on a city map so they don't overlap with competitor territories.<br><br><strong>The Resolution:</strong> By setting the tower's location as the center (h, k) and its broadcast range as the radius (r), they write the standard equation of a circle. This algebraic proof instantly verifies whether any given house is inside or outside their service area.",
               prereqs: ["1b", "6a"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> GPS systems model Earth as circles/spheres. When a cellphone tower in Lewisville broadcasts with a certain range, the coverage boundary is a circle described by this equation.</div>` },
@@ -4119,7 +4120,7 @@
             {
               id: "6e", name: "Tangent Lines & Circles", teks: "G.11B",
               explanation: "A tangent line touches a circle at exactly one point — the point of tangency — and never crosses inside the circle. The most important theorem: a tangent is always perpendicular to the radius drawn to the point of tangency. This creates a right angle you can use with the Pythagorean Theorem! From an external point, two tangent segments to the same circle are always equal in length — this is the Two-Tangent Theorem. A tangent-chord angle equals half the intercepted arc. Analogy: imagine a ball rolling on a flat surface — the floor is a tangent to the ball, and the line from the ball's center to the contact point is always perpendicular to the floor.",
-              realWorld: "The smooth curve where a highway on-ramp meets the circular loop of an interchange is a tangent — the road never cuts inside the curve but meets it at exactly one point. Satellite dishes in Lewisville are aimed tangentially to Earth's curvature to receive signal at the horizon.",
+              realWorld: "<strong>The Scenario:</strong> A civil engineer is designing a new highway on-ramp that must merge smoothly into a circular interchange loop.<br><br><strong>The Conflict:</strong> If the straight ramp cuts into the loop (a secant), cars will crash. If it misses the loop, they can't merge. It must touch at exactly one point.<br><br><strong>The Resolution:</strong> The engineer designs the straight road as a tangent line. By mathematically proving it is perfectly perpendicular to the circle's radius at the exact merge point, they guarantee a flawless and safe transition.",
               prereqs: ["6a", "6b", "4c"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> The smooth curve where a highway on-ramp meets the circular loop of an interchange is a tangent — the road never cuts inside the curve but meets it at exactly one point. Satellite dishes in Lewisville are aimed tangentially to Earth's curvature to receive signal at the horizon.</div>` },
@@ -4175,7 +4176,7 @@
             {
               id: "6f", name: "Chord Properties & Arc Relationships", teks: "G.11C",
               explanation: "Chords connect two points on a circle and reveal deep properties. Key theorems: (1) The perpendicular bisector of any chord passes through the circle's center. (2) Congruent chords are equidistant from the center — and chords equidistant from the center are congruent. (3) Chord-Chord Angle: when two chords intersect inside a circle, the angle formed = half the sum of the intercepted arcs. (4) Chord-Chord Product: when chords AC and BD intersect at E, then AE × EC = BE × ED. (5) Secant-Tangent: from an external point, (whole secant) × (external part) = (tangent)². These power-of-a-point theorems are unified by one elegant idea: the product of signed distances from the intersection point to the circle is constant.",
-              realWorld: "When city engineers in Lewisville design the layout of a circular roundabout, they use chord properties to determine the positions of entry/exit roads (which are secants). Circular pizza cutters use the chord-chord product to estimate how pieces relate in size.",
+              realWorld: "<strong>The Scenario:</strong> Archaeologists discover a broken piece of a circular ancient plate in a Lewisville excavation.<br><br><strong>The Conflict:</strong> They only have a small fragment, but they need to know the exact original size of the entire plate to reconstruct it.<br><br><strong>The Resolution:</strong> They draw two intersecting chords on the fragment. By applying the intersecting chords theorem, they mathematically calculate the missing lengths and determine the exact diameter of the original ancient plate.",
               prereqs: ["6a", "6b", "6c"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> When city engineers in Lewisville design the layout of a circular roundabout, they use chord properties to determine the positions of entry/exit roads (which are secants). Circular pizza cutters use the chord-chord product to estimate how pieces relate in size.</div>` },
@@ -4246,7 +4247,7 @@
             {
               id: "7a", name: "Area of Composite 2D Figures", teks: "G.13A",
               explanation: "To find the area of a composite (irregular) figure, break it into simpler shapes you know \u2014 rectangles, triangles, circles, trapezoids \u2014 then add or subtract their areas. Common strategies: (1) Decompose into non-overlapping pieces and add. (2) Surround with a rectangle and subtract the extra. Key formulas: rectangle = lw, triangle = \u00BDbh, circle = \u03C0r\u00B2, trapezoid = \u00BD(b\u2081+b\u2082)h.",
-              realWorld: "When Lewisville city planners design parks with curved paths and irregular plots, they break the land into rectangles, triangles, and semicircles to calculate total area for landscaping budgets.",
+              realWorld: "<strong>The Scenario:</strong> The Lewisville Parks Department is designing a new community garden featuring winding paths and uniquely shaped flower beds.<br><br><strong>The Conflict:</strong> They must order the exact amount of soil and mulch to stay under budget, but the garden beds are strange, irregular shapes that don't match any standard geometry formulas.<br><br><strong>The Resolution:</strong> By breaking the complex beds down into a composite of basic rectangles, triangles, and semicircles, they calculate the exact total area and confidently order the perfect amount of landscaping materials.",
               prereqs: ["6c"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> When Lewisville city planners design parks with curved paths and irregular plots, they break the land into rectangles, triangles, and semicircles to calculate total area for landscaping budgets.</div>` },
@@ -4306,7 +4307,7 @@
             {
               id: "7b", name: "Surface Area of 3D Solids", teks: "G.13B",
               explanation: "Surface area (SA) is the total area of all faces/surfaces of a 3D solid. Prism: SA = 2B + Ph (B = base area, P = base perimeter, h = height). Cylinder: SA = 2\u03C0r\u00B2 + 2\u03C0rh. Pyramid: SA = B + \u00BDPl (l = slant height). Cone: SA = \u03C0r\u00B2 + \u03C0rl. Sphere: SA = 4\u03C0r\u00B2.",
-              realWorld: "When you wrap a gift box (rectangular prism), you need to know its surface area. Painting the exterior of Lewisville water towers (cylinders) requires calculating the lateral surface area to buy the right amount of paint.",
+              realWorld: "<strong>The Scenario:</strong> A city maintenance crew is tasked with repainting one of the iconic Lewisville water towers.<br><br><strong>The Conflict:</strong> Industrial paint is extremely expensive, and buying too much wastes taxpayer money, but buying too little leaves the tower half-painted and exposed to rust.<br><br><strong>The Resolution:</strong> By modeling the water tower as a cylinder and calculating its lateral surface area, the crew determines the exact square footage to be painted, ensuring they purchase the precise number of gallons needed.",
               prereqs: ["7a"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> When you wrap a gift box (rectangular prism), you need to know its surface area. Painting the exterior of Lewisville water towers (cylinders) requires calculating the lateral surface area to buy the right amount of paint.</div>` },
@@ -4369,7 +4370,7 @@
             {
               id: "7c", name: "Volume of 3D Solids", teks: "G.13C",
               explanation: "Volume measures the space inside a 3D solid. Prism/Cylinder: V = Bh (base area \u00D7 height). Pyramid/Cone: V = \u2153Bh (one-third of the prism/cylinder with same base and height). Sphere: V = (4/3)\u03C0r\u00B3. Remember: pyramids and cones are exactly \u2153 of their prism/cylinder counterparts.",
-              realWorld: "Filling the Lewisville community pool (rectangular prism) requires calculating volume in gallons. Ice cream cones are literal cones \u2014 you can calculate how much ice cream fits inside using V = \u2153\u03C0r\u00B2h!",
+              realWorld: "<strong>The Scenario:</strong> The city of Lewisville is preparing to fill its large rectangular community swimming pool for the summer season.<br><br><strong>The Conflict:</strong> Water is billed by the gallon, and the city manager needs an exact cost estimate before turning on the pumps, but the pool is currently completely empty.<br><br><strong>The Resolution:</strong> By measuring the pool's 3D dimensions and calculating its total volume, they determine exactly how much space exists inside. They then convert cubic feet to gallons and generate an accurate cost report for the city.",
               prereqs: ["7a"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Filling the Lewisville community pool (rectangular prism) requires calculating volume in gallons. Ice cream cones are literal cones \u2014 you can calculate how much ice cream fits inside using V = \u2153\u03C0r\u00B2h!</div>` },
@@ -4430,7 +4431,7 @@
             {
               id: "7d", name: "Effects of Dimensional Changes", teks: "G.13B, G.13C",
               explanation: "When you scale a figure by factor k: lengths \u00D7 k, areas \u00D7 k\u00B2, volumes \u00D7 k\u00B3. This is the dimensional analysis principle. Double every dimension? Perimeter doubles (k=2 \u2192 \u00D72), area quadruples (\u00D74), volume octuples (\u00D78). Triple? Perimeter \u00D73, area \u00D79, volume \u00D727. This applies to ALL shapes uniformly.",
-              realWorld: "When LISD builds a scale model of the new school at 1:50, the model\u2019s floor area is 1/2500 of the real building and its volume is 1/125000. Architects must account for these scaling effects in materials budgets.",
+              realWorld: "<strong>The Scenario:</strong> LISD hires an architectural firm to build a 1:50 scale model of a proposed new high school.<br><br><strong>The Conflict:</strong> The school board wants to estimate the total floor tile cost for the real building based purely on the miniature model, but multiplying the model's area by 50 gives an answer that is way too small.<br><br><strong>The Resolution:</strong> The architect explains dimensional changes: while lengths scale by 50, area scales by the square of the factor (50², or 2500). By applying the correct dimensional exponent, they perfectly calculate the real building's area and budget.",
               prereqs: ["4a", "7b", "7c"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> When LISD builds a scale model of the new school at 1:50, the model\u2019s floor area is 1/2500 of the real building and its volume is 1/125000. Architects must account for these scaling effects in materials budgets.</div>` },
@@ -4487,7 +4488,7 @@
             {
               id: "7e", name: "Cross-Sections & Nets of 3D Solids", teks: "G.13B",
               explanation: "A cross-section is the 2D shape you get when you slice a 3D solid with a flat plane. The shape of the cross-section depends on the solid AND the direction of the cut. A vertical slice of a cylinder gives a rectangle; a horizontal slice gives a circle. A diagonal slice of a cube gives a rectangle or even a hexagon. A net is the flat, unfolded version of a 3D solid — lay it flat and it becomes the shape you'd cut out and fold to make the solid. Nets are used to find surface area (they show every face). Key solids and cross-sections: sphere → always a circle; cone → circle (horizontal), triangle (through apex), ellipse (diagonal); prism → rectangles (vertical), base shape (horizontal).",
-              realWorld: "MRI and CT scan machines in hospitals slice through a patient's body cross-sectionally — each scan image is a geometric cross-section. Lewisville architects unfold building designs into nets to calculate how much material is needed for walls, roof panels, and flooring.",
+              realWorld: "<strong>The Scenario:</strong> A medical technician at a Lewisville hospital is trying to locate a tiny tumor inside a patient's body using an MRI machine.<br><br><strong>The Conflict:</strong> The human body is a complex 3D object, and a doctor cannot easily see inside the solid form to pinpoint the exact location and shape of the mass.<br><br><strong>The Resolution:</strong> The MRI machine takes hundreds of 2D cross-sections (slices) of the patient. By analyzing these flat geometric slices, the doctors can visualize the 3D interior and accurately plan a safe surgical path.",
               prereqs: ["7b", "7c"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> MRI and CT scan machines in hospitals slice through a patient's body cross-sectionally — each scan image is a geometric cross-section. Lewisville architects unfold building designs into nets to calculate how much material is needed for walls, roof panels, and flooring.</div>` },
@@ -4556,7 +4557,7 @@
             {
               id: "8a", name: "Geometric Probability", teks: "G.14A",
               explanation: "Geometric probability uses lengths or areas to find the probability of an event. The probability that a randomly chosen point lands in a target region is: P = (area of target) / (area of total region). Similarly, for a number line: P = (length of target) / (total length). This connects probability to geometry beautifully \u2014 bigger regions = higher probability.",
-              realWorld: "Imagine throwing a dart at a square dartboard in the Lewisville rec center. The bullseye is a small circle in the center. The probability of hitting the bullseye = circle area / square area. Fair games use equal areas!",
+              realWorld: "<strong>The Scenario:</strong> A carnival game at the Lewisville Western Days festival invites players to throw a dart at a large square board with a small circular bullseye to win a prize.<br><br><strong>The Conflict:</strong> The carnival owner wants to guarantee they make a profit, but if the bullseye is too big, too many people win; if it's too small, no one plays.<br><br><strong>The Resolution:</strong> Using geometric probability, the owner calculates the exact area of the circular bullseye divided by the total area of the square board. They size the circle so the probability of winning is precisely 5%, perfectly balancing fun and profit.",
               prereqs: ["6c", "7a"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Imagine throwing a dart at a square dartboard in the Lewisville rec center. The bullseye is a small circle in the center. The probability of hitting the bullseye = circle area / square area. Fair games use equal areas!</div>` },
@@ -4622,7 +4623,7 @@
             {
               id: "8b", name: "Geometric Modeling & Design", teks: "G.14B",
               explanation: "Geometric modeling applies shapes, measurements, and spatial reasoning to solve real-world problems. This includes: choosing the best shape for a purpose (e.g., most area for a given perimeter), optimizing dimensions (e.g., maximize volume for minimum material), and using geometry to plan, build, or analyze real objects. It brings together area, perimeter, volume, surface area, and spatial reasoning.",
-              realWorld: "Lewisville city engineers model water tank sizes (cylinders), park layouts (composite figures), road intersections (angles and arcs), and building footprints (polygons) to plan the city\u2019s growth efficiently.",
+              realWorld: "<strong>The Scenario:</strong> Lewisville city engineers are tasked with designing a new water storage tower to support a growing neighborhood.<br><br><strong>The Conflict:</strong> They have a strict budget for sheet metal (surface area) but need the tank to hold a massive required amount of water (volume).<br><br><strong>The Resolution:</strong> Through geometric modeling, they test various cylinder dimensions. They optimize the radius and height to maximize the volume while keeping the surface area exactly within the metal budget, solving the city's water needs.",
               prereqs: ["5b", "7a", "7b", "7c"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Lewisville city engineers model water tank sizes (cylinders), park layouts (composite figures), road intersections (angles and arcs), and building footprints (polygons) to plan the city\u2019s growth efficiently.</div>` },
@@ -4685,7 +4686,7 @@
             {
               id: "8c", name: "Density & Population Geometry", teks: "G.14A",
               explanation: "Density connects geometry to real-world data: density = quantity / area (or volume). Population density = people / area. You can also work backwards: if you know density and area, quantity = density \u00D7 area. This applies to population, material density (mass/volume), and resource distribution. Units matter: people per sq mile, kg per cu meter, etc.",
-              realWorld: "Lewisville\u2019s population density is about 3,000 people per sq mile. City planners use this to decide where new schools, parks, and roads are needed as neighborhoods grow.",
+              realWorld: "<strong>The Scenario:</strong> The Lewisville school board is deciding where to build a new elementary school.<br><br><strong>The Conflict:</strong> They have a map showing where all students live, but just looking at dots on a map doesn't clearly reveal the optimal location that minimizes travel time for the most families.<br><br><strong>The Resolution:</strong> They divide the map into square-mile grids and calculate the population density of students per square mile. The area with the highest geometric density reveals the perfect location for the new school.",
               prereqs: ["7a", "7c"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Lewisville\u2019s population density is about 3,000 people per sq mile. City planners use this to decide where new schools, parks, and roads are needed as neighborhoods grow.</div>` },
@@ -4746,7 +4747,7 @@
             {
               id: "8d", name: "Multi-Step Geometric Applications", teks: "G.14B",
               explanation: "These problems combine multiple geometry skills in one problem \u2014 just like the real world. You might need to use the Pythagorean Theorem to find a missing length, then use that length to calculate area, then multiply by cost per sq ft. The key is breaking the problem into steps: identify what you know, what you need, and which formulas connect them.",
-              realWorld: "When LISD builds a new school, architects combine coordinate geometry (plot layout), area formulas (floor plans), volume (HVAC sizing), and trigonometry (roof pitch) \u2014 all in one project. Real problems don\u2019t come labeled by chapter!",
+              realWorld: "<strong>The Scenario:</strong> LISD hires a contractor to build a new outdoor sports complex, featuring turf fields, a running track, and stadium seating.<br><br><strong>The Conflict:</strong> The contractor receives a massive, confusing list of requirements: fencing perimeters, turf area, concrete volume, and structural angle specifications.<br><br><strong>The Resolution:</strong> By breaking the massive project into multi-step geometric applications, they use coordinate geometry for the layout, area formulas for the turf, volume for the concrete, and trigonometry for the seating pitch, bringing the complex design to life.",
               prereqs: ["4c", "5d", "6c", "7c"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> When LISD builds a new school, architects combine coordinate geometry (plot layout), area formulas (floor plans), volume (HVAC sizing), and trigonometry (roof pitch) \u2014 all in one project. Real problems don\u2019t come labeled by chapter!</div>` },
@@ -4814,7 +4815,7 @@
             {
               id: "8e", name: "Conditional Probability & Independence", teks: "G.14C",
               explanation: "Conditional probability asks: 'What's the probability of event A, given that event B already happened?' Written P(A|B) = P(A and B) / P(B). Two events are independent if knowing one happened doesn't change the probability of the other: P(A|B) = P(A), or equivalently P(A and B) = P(A)×P(B). In geometric contexts, area models make conditional probability visual — the 'given' condition shrinks your sample space to a region, and you find what fraction of THAT region contains your event. Misconception: 'mutually exclusive' and 'independent' are NOT the same thing! Mutually exclusive events (can't both happen) are actually dependent.",
-              realWorld: "Lewisville HS tracks which students play sports AND are in honors classes. 'What fraction of athletes are in honors?' is a conditional probability: P(Honors | Athlete). Insurance companies use geometric probability models (area diagrams) to set premiums — the 'given' condition is your age bracket or ZIP code region.",
+              realWorld: "<strong>The Scenario:</strong> An insurance company is setting car insurance rates for drivers in the Lewisville area.<br><br><strong>The Conflict:</strong> They know that 10% of all drivers get into accidents, but charging everyone the exact same high premium is unfair to safe drivers and causes them to leave for competitors.<br><br><strong>The Resolution:</strong> They use conditional probability to analyze their data. By calculating the probability of an accident <em>given</em> that a driver took a defensive driving course\u2014represented geometrically as a smaller, safer subset area\u2014they confidently offer those drivers a massive discount.",
               prereqs: ["8a", "8b"],
               levels: [
                 { title: "Intuition", time: "~2 min", html: `<h4>Concepts & Analogies</h4><div class="analogy-box"><strong>Real-World Connection:</strong> Lewisville HS tracks which students play sports AND are in honors classes. 'What fraction of athletes are in honors?' is a conditional probability: P(Honors | Athlete). Insurance companies use geometric probability models (area diagrams) to set premiums — the 'given' condition is your age bracket or ZIP code region.</div>` },
@@ -5123,18 +5124,26 @@
           var lvls = c.levels || [];
           html += '<div class="concept-card" data-cid="' + c.id + '" id="concept-' + c.id + '">' +
             '<div class="concept-hdr" tabindex="0" role="button" aria-expanded="false">' +
-            '<span>' + c.name + ' <span class="teks-tag">' + c.teks + '</span></span>' +
+            '<span><strong>Concept ' + c.id.toUpperCase() + ':</strong> ' + c.name + ' <span class="teks-tag">' + c.teks + '</span></span>' +
             '<span class="arrow">&#9654;</span>' +
             '</div>' +
             '<div class="concept-body">';
           if (lvls.length) {
+            var augLvls = lvls.slice();
+            if (c.realWorld) {
+              augLvls.push({
+                title: "Why Learn This?",
+                time: "Real World",
+                html: '<h4>The Real-World Connection</h4><div class="rw-example" style="font-size:.95rem;line-height:1.6;margin-top:12px;padding:16px;background:#f0fdfa;border-left:4px solid #0d9488;border-radius:0 8px 8px 0;color:#115e59;"><strong>Why do we care?</strong><br><br>' + c.realWorld + '</div>'
+              });
+            }
             html += '<div class="level-toggle-bar" data-concept="' + c.id + '">';
-            lvls.forEach(function (lv, li) {
+            augLvls.forEach(function (lv, li) {
               html += '<button class="level-btn' + (li === 0 ? ' active' : '') + '" data-level="' + li + '" aria-label="' + lv.title + ' level">' +
-                lv.title + '<span class="lvl-time">' + lv.time + '</span></button>';
+                lv.title + '<span class="lvl-time">' + (lv.time || '') + '</span></button>';
             });
             html += '</div>';
-            lvls.forEach(function (lv, li) {
+            augLvls.forEach(function (lv, li) {
               html += '<div class="level-content" data-concept="' + c.id + '" data-level="' + li + '" style="' + (li > 0 ? 'display:none' : '') + '">';
               html += lv.html;
               html += '</div>';
@@ -5144,7 +5153,7 @@
             var rwText = c.realWorld || (c.generate(1).stem.substring(0, 60) + "...");
             html += '<div class="rw-example"><strong>Context:</strong> ' + rwText + '</div>';
           }
-          html += '<div class="mini-viz" id="viz-' + c.id + '">Loading visualization...</div>';
+          html += '<div class="mini-viz" id="viz-' + c.id + '"></div>';
           if (i < u.concepts.length - 1) {
             html += '<button class="next-concept-btn" data-next="' + u.concepts[i + 1].id + '">I get it — next concept &#8594;</button>';
           }
@@ -5212,7 +5221,7 @@
       function renderMiniViz(cid) {
         var container = $("viz-" + cid);
         if (!container || container.dataset.drawn) return;
-        container.dataset.drawn = "1";
+        var initialHTML = container.innerHTML;
 
         if (cid === "1a") {
           // Basic figures diagram
@@ -7236,6 +7245,11 @@
           }
           draw8e();
           $("pbSlide8e").oninput = $("pabSlide8e").oninput = draw8e;
+        }
+        
+        if (container.innerHTML !== initialHTML) {
+          container.style.display = "block";
+          container.dataset.drawn = "1";
         }
       }
 
