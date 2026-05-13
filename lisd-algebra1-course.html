@@ -287,7 +287,6 @@ canvas{display:block;max-width:100%}
 </style>
 </head>
 <body>
-<a href="index.html" style="position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border:1.5px solid #e2e8f0;color:#1e293b;font-family:system-ui,sans-serif;font-size:.82rem;font-weight:600;padding:7px 14px;border-radius:100px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.12);" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,.2)';this.style.background='#fff'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,.12)';this.style.background='rgba(255,255,255,.92)'">&#8592; Home</a>
 <a href="#main" class="skip">Skip to content</a>
 
 <!-- ═══ HEADER ═══ -->
@@ -354,7 +353,7 @@ const LEVEL_TEXT=["#1d4ed8","#4338ca","#92400e","#be185d","#dc2626"];
 const UNITS=[
 {
   id:1,name:"Linear Equations & Inequalities",
-  teks:"TEKS A.2A, A.5C",locked:false,
+  teks:"TEKS A.5A, A.5B, A.12E",locked:false,
   eq:"How can we find an unknown value when we know the relationship between quantities?",
   eu:"An equation is a balance — whatever we do to one side, we must do to the other to keep it true.",
   objectives:[
@@ -544,7 +543,7 @@ const UNITS=[
     }
   },
   {
-    id:"1d",name:"Writing Equations from Situations",teks:"A.2A",
+    id:"1d",name:"Writing Equations from Situations",teks:"A.5A",
     explanation:"Translating words into math is a superpower! Look for key phrases: 'total' means the answer, 'per' or 'each' means multiplication, 'more than' means addition, 'less than' means subtraction. Set up the equation, then solve.",
     realWorld:"Your school fundraiser sells candles at $8 each. The class has a $50 head start from donations. They need $210 total. How many candles must they sell? Equation: 8c + 50 = 210.",
     prereqs:["1b"],
@@ -669,13 +668,73 @@ const UNITS=[
       }
       return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"1e",level:level};
     }
+  },
+  {
+    id:"1f",name:"Literal Equations",teks:"A.12E",
+    explanation:"A literal equation is a formula with mostly letters (variables) instead of numbers. To solve for a specific letter, you use the exact same inverse operations as normal equations! It's just rearranging the furniture — moving pieces across the equals sign to isolate the target variable.",
+    realWorld:"The perimeter of a rectangle is P = 2L + 2W. If you have 100 feet of fencing (P) and want the length to be 30 feet, what is the width? Instead of solving it every time, you can rearrange the formula to W = (P - 2L) / 2 and just plug the numbers in once!",
+    prereqs:["1b"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Rearranging the Furniture</h4><div class="analogy-box"><strong>Think of it this way:</strong> Imagine you are packing a suitcase. You put your shoes in first, then your shirts on top.<br><br>To get your shoes back out, you have to undo what you did in reverse order: take the shirts out first, then grab the shoes.<br><br>Literal equations are the same! If your target variable is $y$, and the formula says $2x + y = 10$, someone added $2x$ to your $y$. To get $y$ by itself, just do the reverse: subtract $2x$ from both sides!</div><p>Treat the other variables just like regular numbers. You can add them, subtract them, divide by them — they just don\'t combine into a single number.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Standard Form to Slope-Intercept Form</h4><p>The most common literal equation in Algebra 1 is converting $Ax + By = C$ into $y = mx + b$.</p><div class="math-box"><strong>Goal: Isolate y</strong><br>Example: 3x + 2y = 12</div><ol class="step-list"><li><strong>Find y.</strong> What\'s happening to it? It\'s multiplied by 2, and 3x is added to it.</li><li><strong>Undo addition/subtraction.</strong> Move the $x$-term to the other side by subtracting $3x$.<br>2y = &minus;3x + 12</li><li><strong>Undo multiplication/division.</strong> Divide EVERYTHING by 2.<br>y = &minus;&#189;x + 6</li></ol><p>Notice we couldn\'t combine &minus;3x and 12 into 9x because they aren\'t like terms. We just write them side-by-side!</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Tricky Formulas &amp; STAAR Strategies</h4><p>You\'ll also have to rearrange science and geometry formulas.</p><div class="math-box"><strong>Example:</strong> Solve A = &frac12;bh for h.<br><br>1. The fraction is annoying. Multiply both sides by 2 to clear it.<br>2A = bh<br>2. We want h. It\'s multiplied by b, so divide both sides by b.<br><strong>h = 2A / b</strong></div><p><strong>Watch the signs:</strong> If you have $x &minus; y = 5$ and you want $y$, subtracting $x$ leaves you with <strong>&minus;y = &minus;x + 5</strong>. You must divide everything by &minus;1 to get $y = x &minus; 5$.</p><div class="staar-box"><strong>STAAR Tip:</strong> Literal equations look intimidating because there are no numbers to calculate. Don\'t panic! Highlight the letter you are solving for. Treat every other letter like the number 5. If it\'s glued to your letter (multiplied), divide it away. If it\'s added, subtract it away.</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:{
+          var a=rInt(2,6), c=rInt(10,30);
+          stem="Solve for y: "+a+"x + y = "+c;
+          correct="y = -"+a+"x + "+c;
+          choices=shuffle(["y = -"+a+"x + "+c, "y = "+a+"x + "+c, "y = "+c+"x - "+a, "y = -x + "+(c-a)]);
+          explain="To isolate y, subtract "+a+"x from both sides. This gives y = -"+a+"x + "+c+".";
+          hints=["What is being added to y?", ""+a+"x is added, so subtract it from both sides.", "y = -"+a+"x + "+c];
+          break;
+        }
+        case 1:{
+          var a=rInt(2,5), b=rInt(2,5), c=a*b*rInt(1,4);
+          stem="Solve for y: "+a+"x + "+b+"y = "+c;
+          var intercept = c/b;
+          var slopeStr = "-"+a+"/"+b;
+          correct="y = "+slopeStr+"x + "+intercept;
+          choices=shuffle(["y = "+slopeStr+"x + "+intercept, "y = "+a+"/"+b+"x + "+intercept, "y = -"+a+"x + "+intercept, "y = "+slopeStr+"x + "+c]);
+          explain="Subtract "+a+"x: "+b+"y = -"+a+"x + "+c+". Divide by "+b+": y = -"+a+"/"+b+"x + "+intercept+".";
+          hints=["First, subtract the x-term to move it to the right.", "Then divide EVERY term by the number in front of y ("+b+").", "y = -"+a+"/"+b+"x + "+intercept];
+          break;
+        }
+        case 2:{
+          stem="Solve the formula for width (W): P = 2L + 2W";
+          correct="W = (P - 2L) / 2";
+          choices=shuffle(["W = (P - 2L) / 2", "W = P - 2L", "W = (P - L) / 2", "W = 2P - L"]);
+          explain="Subtract 2L from both sides: P - 2L = 2W. Then divide both sides by 2 to get W = (P - 2L) / 2.";
+          hints=["Think of 2L as a single chunk. How do you move it?", "Subtract 2L first.", "Then divide by 2 to get W by itself."];
+          break;
+        }
+        case 3:{
+          stem="Solve the formula for h: V = ½bh";
+          correct="h = 2V / b";
+          choices=shuffle(["h = 2V / b", "h = V / 2b", "h = 2V - b", "h = ½V / b"]);
+          explain="Multiply both sides by 2 to clear the fraction: 2V = bh. Divide by b to isolate h: h = 2V / b.";
+          hints=["First, get rid of the fraction by multiplying both sides by 2.", "2V = bh. Now isolate h.", "Divide by b."];
+          break;
+        }
+        default:{
+          stem="STAAR: Which equation is equivalent to 3x - 4y = 12 solved for y?";
+          correct="y = ¾x - 3";
+          choices=shuffle(["y = ¾x - 3", "y = -¾x - 3", "y = ¾x + 3", "y = -¾x + 12"]);
+          explain="Subtract 3x: -4y = -3x + 12. Divide ALL terms by -4 to get y = ¾x - 3. Watch the double negative!";
+          hints=["Subtract 3x to get -4y = -3x + 12.", "Divide everything by -4.", "A negative divided by a negative is a positive slope."];
+        }
+      }
+      return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"1f",level:level};
+    }
   }
   ]// end concepts
 },
 // ── Units 2-6 placeholders ──
 {
   id:2,name:"Systems of Equations",
-  teks:"TEKS A.2A, A.5C",locked:false,
+  teks:"TEKS A.2I, A.3F, A.3G, A.5C",locked:false,
   eq:"How can we find the point where two relationships meet?",
   eu:"A system of equations represents two constraints at once — the solution is the point that satisfies both simultaneously.",
   objectives:[
@@ -687,7 +746,7 @@ const UNITS=[
   ],
   concepts:[
   {
-    id:"2a",name:"Solving Systems by Graphing",teks:"A.2A",
+    id:"2a",name:"Solving Systems by Graphing",teks:"A.3F",
     explanation:"A system of equations is two equations with two unknowns. When you graph both equations on the same coordinate plane, the point where the lines cross is the solution — it's the (x, y) that makes BOTH equations true at the same time.",
     realWorld:"Two taco trucks are parked near your school in Lewisville. Truck A charges $2 per taco plus a $3 plate fee (y = 2x + 3). Truck B charges $3 per taco with no fee (y = 3x). At how many tacos do they cost the same? Graph both lines — the intersection is your answer!",
     prereqs:["1b"],
@@ -885,7 +944,7 @@ const UNITS=[
     }
   },
   {
-    id:"2d",name:"Applications of Systems",teks:"A.2A",
+    id:"2d",name:"Applications of Systems",teks:"A.2I",
     explanation:"Systems of equations pop up whenever two relationships share the same unknowns. The key is identifying what your variables represent, writing two equations from the given information, then choosing the best method to solve. Real life rarely gives you neat equations — you have to build them yourself!",
     realWorld:"Two pizza delivery services in Flower Mound: Sal's charges $8 per pizza plus $5 delivery, Marco's charges $6 per pizza plus $11 delivery. How many pizzas make them the same price? System: y = 8x + 5, y = 6x + 11.",
     prereqs:["2b","2c"],
@@ -950,12 +1009,68 @@ const UNITS=[
       }
       return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"2d",level:level};
     }
+  },
+  {
+    id:"2e",name:"Number of Solutions",teks:"A.5C",
+    explanation:"Not all systems have just one crossing point! If you look at the slopes and y-intercepts of the two lines, you can instantly tell how many solutions exist. Different slopes mean they must cross once. Same slope but different intercepts means they are parallel (no solution). Same slope and same intercepts means they are the exact same line (infinitely many solutions).",
+    realWorld:"Two runner friends start a race. Friend A gets a 10-foot head start but runs 5 ft/sec. You start at 0 but run 5 ft/sec. Will you ever catch them? No! You have the same 'slope' (speed) but different 'intercepts' (starts). That system has NO solution.",
+    prereqs:["2a"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Will They Ever Meet?</h4><div class="analogy-box"><strong>Case 1:</strong> You and a friend are walking on paths that aren\'t parallel. Eventually, you will bump into each other. (<strong>One Solution</strong>)<br><br><strong>Case 2:</strong> You are driving on northbound I-35, and your friend is driving on the northbound access road right next to you. You are parallel. You will <em>never</em> intersect. (<strong>No Solution</strong>)<br><br><strong>Case 3:</strong> You are in the passenger seat of your friend\'s car. You are on the exact same path. You are <em>always</em> intersecting! (<strong>Infinitely Many Solutions</strong>)</div><p>All you have to do is look at the <strong>slope (m)</strong> and <strong>y-intercept (b)</strong> in y = mx + b.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>The Three Rules</h4><div class="math-box"><strong>Look at the equations:</strong><br><br><strong>1. Different Slopes (m₁ &ne; m₂)</strong><br>&bull; Example: y = 2x + 1 and y = 3x - 5<br>&bull; The lines will definitely cross exactly once.<br>&bull; <strong>One Solution</strong><br><br><strong>2. Same Slope, Different Intercepts (m₁ = m₂, b₁ &ne; b₂)</strong><br>&bull; Example: y = 4x + 7 and y = 4x - 2<br>&bull; The lines are parallel. They never cross.<br>&bull; <strong>No Solution</strong><br><br><strong>3. Same Slope, Same Intercept (m₁ = m₂, b₁ = b₂)</strong><br>&bull; Example: y = 0.5x + 3 and 2y = x + 6<br>&bull; They are the exact same line disguised!<br>&bull; <strong>Infinitely Many Solutions</strong></div>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Disguised Equations &amp; STAAR Strategies</h4><p>Equations are often hiding in Standard Form (Ax + By = C). You must convert them to y = mx + b <em>first</em> before you compare slopes!</p><div class="math-box"><strong>Example:</strong> How many solutions for:<br>2x + y = 5<br>4x + 2y = 10<br><br>1. Solve Eq 1 for y: <strong>y = -2x + 5</strong><br>2. Solve Eq 2 for y: 2y = -4x + 10 &rarr; <strong>y = -2x + 5</strong><br><br>They are identical! <strong>Infinitely Many Solutions</strong>.</div><div class="staar-box"><strong>STAAR Tip:</strong> If a system has NO solution, an algebraic method (like substitution) will result in a false statement like <strong>0 = 5</strong>. If it has INFINITE solutions, the math cancels out to a true statement like <strong>0 = 0</strong> or <strong>5 = 5</strong>. If you get x = 0, that is ONE solution perfectly fine: (0, y).</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:{
+          stem="The lines y = 5x + 2 and y = 5x - 4 have the same slope but different y-intercepts. How many solutions does this system have?";
+          correct="No solution";
+          choices=shuffle(["No solution","One solution","Infinitely many solutions","Two solutions"]);
+          explain="Lines with the same slope but different intercepts are parallel. Parallel lines never intersect, so there is no solution.";
+          hints=["Same slope means the lines are parallel.","Do parallel lines ever cross?","No crossover means no solution."];
+          break;
+        }
+        case 1:{
+          stem="A system has equations y = 2x + 8 and y = -3x + 8. How many solutions does this system have?";
+          correct="One solution";
+          choices=shuffle(["One solution","No solution","Infinitely many solutions","Zero solutions"]);
+          explain="The slopes are 2 and -3. Because the slopes are different, the lines must cross exactly once.";
+          hints=["Look at the slopes: 2 and -3.","Are they the same or different?","Different slopes always mean exactly one intersection."];
+          break;
+        }
+        case 2:{
+          stem="Without graphing, determine the number of solutions for: 3x - y = 4 and 6x - 2y = 8.";
+          correct="Infinitely many solutions";
+          choices=shuffle(["Infinitely many solutions","One solution","No solution","Two solutions"]);
+          explain="Solve both for y. Eq 1: -y = -3x + 4 → y = 3x - 4. Eq 2: -2y = -6x + 8 → y = 3x - 4. They are the exact same line, so they overlap everywhere.";
+          hints=["Convert both to y = mx + b.","Eq 1 is y = 3x - 4. What is Eq 2?","They are identical. So they intersect infinitely."];
+          break;
+        }
+        case 3:{
+          stem="When solving a system by substitution, you get the final step '4 = 4'. What does this mean about the graphs of the two lines?";
+          correct="They are the exact same line.";
+          choices=shuffle(["They are the exact same line.","They are parallel.","They intersect at (4, 4).","They intersect at (0, 0)."]);
+          explain="A true statement like 4 = 4 means all variables canceled out because the two equations were mathematically identical. They form the same line (infinitely many solutions).";
+          hints=["If all variables disappear and the statement is TRUE, what does it mean?","It means it works for EVERY x.","The lines are lying right on top of each other."];
+          break;
+        }
+        default:{
+          stem="STAAR: Which of the following systems has no solution?";
+          correct="y = 4x + 1 and y = 4x - 9";
+          choices=shuffle(["y = 4x + 1 and y = 4x - 9","y = -4x + 1 and y = 4x + 1","y = 2x + 5 and 2y = 4x + 10","x + y = 5 and x - y = 5"]);
+          explain="No solution means the lines must be parallel (same slope, different y-intercept). Only y = 4x + 1 and y = 4x - 9 fit this rule.";
+          hints=["No solution = parallel lines.","Parallel lines have the SAME slope but DIFFERENT y-intercepts.","Look for matching 'm' but different 'b'."];
+        }
+      }
+      return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"2e",level:level};
+    }
   }
   ]// end concepts
 },
 {
   id:3,name:"Exponential Functions",
-  teks:"TEKS A.7C, A.12B",locked:false,
+  teks:"TEKS A.9A-E",locked:false,
   eq:"How do quantities change when they grow or shrink by the same percentage repeatedly?",
   eu:"Exponential functions model situations where a quantity multiplies by a constant factor in equal time intervals — they grow (or decay) faster than any linear function eventually.",
   objectives:[
@@ -966,7 +1081,7 @@ const UNITS=[
   ],
   concepts:[
   {
-    id:"3a",name:"Exponential Growth",teks:"A.7C",
+    id:"3a",name:"Exponential Growth",teks:"A.9C",
     explanation:"Exponential growth happens when a quantity is multiplied by the same factor greater than 1 over equal time periods. The general form is y = a · bˣ where a is the starting amount and b is the growth factor (b > 1). Unlike linear growth that adds the same amount each time, exponential growth multiplies — so it starts slow but eventually skyrockets!",
     realWorld:"A viral TikTok video gets 500 views on day 1, and the views triple every day. Day 1: 500, Day 2: 1,500, Day 3: 4,500 … By day 7 that's over 500,000 views! The equation is y = 500 · 3ˣ.",
     prereqs:["1b"],
@@ -1037,7 +1152,7 @@ const UNITS=[
     }
   },
   {
-    id:"3b",name:"Exponential Decay",teks:"A.7C",
+    id:"3b",name:"Exponential Decay",teks:"A.9C",
     explanation:"Exponential decay is the opposite of growth — the quantity is multiplied by a factor between 0 and 1 each time period. The form is still y = a · bˣ, but now 0 < b < 1. Common examples include radioactive decay, depreciation of a car's value, and medicine leaving your body.",
     realWorld:"You buy a used car in Dallas for $12,000. It loses 15% of its value each year. After 1 year it's worth $10,200, after 2 years $8,670 … The equation is y = 12000 · 0.85ˣ.",
     prereqs:["3a"],
@@ -1102,7 +1217,7 @@ const UNITS=[
     }
   },
   {
-    id:"3c",name:"Exponential vs. Linear",teks:"A.12B",
+    id:"3c",name:"Exponential vs. Linear",teks:"A.9C",
     explanation:"Linear functions add the same amount each step (constant rate of change). Exponential functions multiply by the same factor each step (constant ratio). In a table, check: are the differences constant? That's linear. Are the ratios constant? That's exponential. On a graph, linear = straight line, exponential = curve that gets steeper (or flatter).",
     realWorld:"Job offer A pays $40,000/year with $2,000 raises each year (linear). Job offer B pays $35,000/year with 6% raises (exponential). Early on A pays more, but after about 9 years B overtakes A — and the gap keeps widening!",
     prereqs:["3a","3b"],
@@ -1169,7 +1284,7 @@ const UNITS=[
     }
   },
   {
-    id:"3d",name:"Interpreting Exponential Models",teks:"A.12B",
+    id:"3d",name:"Interpreting Exponential Models",teks:"A.9B",
     explanation:"When you see y = a · bˣ in context, 'a' is the initial amount (the value when x = 0) and 'b' is the growth/decay factor. If b > 1 it's growth; if 0 < b < 1 it's decay. The percent change is (b - 1) × 100 for growth, or (1 - b) × 100 for decay. Being able to read these values from an equation is a key STAAR skill!",
     realWorld:"Texas population model: P = 29,000,000 · 1.017ᵗ. The 29 million is the starting population and 1.017 means 1.7% growth per year. By plugging in t = 10, you can predict Texas will have about 34.3 million people in 10 years.",
     prereqs:["3a","3b"],
@@ -1238,12 +1353,186 @@ const UNITS=[
       }
       return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"3d",level:level};
     }
+  },
+  {
+    id:"3e",name:"Graphing & Asymptotes",teks:"A.9D",
+    explanation:"Graphing an exponential function reveals a curve that rapidly steepens on one side and flattens out on the other. This flat line that the graph approaches but never touches is called an asymptote (for y = abˣ, the asymptote is the x-axis, y = 0). The y-intercept is 'a' (the starting value).",
+    realWorld:"Imagine a car braking. Its speed drops in half every second. It approaches 0 mph (the asymptote) very quickly, but mathematically, taking half of a speed forever means you never hit exactly 0.",
+    prereqs:["3a","3b"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>The Invisible Barrier</h4><div class="analogy-box"><strong>Picture this:</strong> Walk halfway to the wall. Stop. Walk halfway to the wall again. Stop. Walk halfway again...<br><br>Will you ever actually touch the wall?<br>In reality, eventually you bump it. But mathematically? There is always a tiny distance left to cut in half. You get closer and closer, but <strong>never touch it</strong>.</div><p>That wall is an <strong>asymptote</strong>. For basic exponential functions like y = 2(0.5)<sup>x</sup>, the x-axis (y = 0) is that invisible barrier.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Key Features of the Graph</h4><div class="math-box"><strong>Equation:</strong> y = a &middot; b<sup>x</sup><br>&bull; <strong>y-intercept:</strong> The value of \'a\' (where x = 0)<br>&bull; <strong>Asymptote:</strong> The line y = 0 (the x-axis)<br>&bull; <strong>Domain:</strong> All real numbers (-&infin; &lt; x &lt; &infin;)<br>&bull; <strong>Range:</strong> y &gt; 0 (it never drops below the asymptote!)</div><p><strong>Worked example:</strong> Graph y = 3(2)<sup>x</sup></p><ol class="step-list"><li>y-intercept: a = 3, so plot (0, 3)</li><li>Growth factor: b = 2, so to move right, multiply by 2 (plot (1, 6))</li><li>To move left, divide by 2 (plot (-1, 1.5))</li><li>Draw a smooth curve connecting them, hovering just above the x-axis</li></ol>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Transformations &amp; STAAR Strategies</h4><div class="math-box"><strong>What if we add a number at the end?</strong><br>Like y = 3(2)<sup>x</sup> <strong>+ 4</strong> ?<br><br>This shifts the ENTIRE graph up by 4 units.<br>&bull; New asymptote: <strong>y = 4</strong><br>&bull; New y-intercept: 3 + 4 = <strong>7</strong></div><p>Always identify the asymptote first when matching graphs. If a function has a "+ 5" at the end, the graph MUST flatten out at y = 5. You can eliminate wrong choices instantly!</p><div class="staar-box"><strong>STAAR Tip:</strong> For any standard exponential function y = ab<sup>x</sup>, the asymptote is always <strong>y = 0</strong>. The function will never equal exactly 0, and the range is strictly y &gt; 0 (not &ge;).</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:{
+          stem="What is the horizontal asymptote of the function f(x) = 5(1.5)ˣ?";
+          correct="y = 0";
+          choices=shuffle(["y = 0","x = 0","y = 5","x = 5"]);
+          explain="The basic exponential function f(x) = abˣ always has a horizontal asymptote at y = 0 (the x-axis).";
+          hints=["Does the function have any vertical shifts (+ or - at the end)?","No shift means it levels off at 0.","The line is y = 0."];
+          break;
+        }
+        case 1:{
+          var a=rInt(2,6);
+          stem="Identify the y-intercept and asymptote of g(x) = "+a+"(0.8)ˣ.";
+          correct="y-intercept = "+a+", asymptote y = 0";
+          choices=shuffle(["y-intercept = "+a+", asymptote y = 0","y-intercept = 0.8, asymptote y = "+a+"","y-intercept = "+a+", asymptote x = 0","y-intercept = 0, asymptote y = "+a]);
+          explain="Plug in x=0: "+a+"(0.8)⁰ = "+a+"(1) = "+a+". The standard exponential form abˣ has an asymptote at y = 0.";
+          hints=["y-intercept is the 'a' value.","Asymptote is the horizontal line it approaches.","a="+a+", so y-intercept is "+a+"."];
+          break;
+        }
+        case 2:{
+          var shift=rInt(2,7);
+          stem="The function f(x) = 2(3)ˣ is shifted UP by "+shift+" units to create g(x). What is the equation of the asymptote for g(x)?";
+          correct="y = "+shift;
+          choices=shuffle(["y = "+shift,"y = 0","x = "+shift,"y = "+(2+shift)]);
+          explain="Shifting the graph up by "+shift+" moves the asymptote from y = 0 to y = "+shift+".";
+          hints=["The original asymptote is y = 0.","Move it up by "+shift+".","The new line is y = "+shift+"."];
+          break;
+        }
+        case 3:{
+          stem="Which of the following points lies on the graph of y = 4(0.5)ˣ ?";
+          correct="(-1, 8)";
+          choices=shuffle(["(-1, 8)","(1, 4)","(2, 2)","(0, 0.5)"]);
+          explain="Plug in x = -1: y = 4(0.5)⁻¹ = 4(1/0.5) = 4(2) = 8. So (-1, 8) is on the graph.";
+          hints=["Plug in the x-values from the choices.","If x = -1, 4 * (1/2)⁻¹ = 4 * 2 = 8.","So (-1, 8) works!"];
+          break;
+        }
+        default:{
+          var a=rInt(3,6);
+          stem="STAAR: Which statement about the graph of y = "+a+"(0.25)ˣ is true?";
+          correct="The equation of the asymptote is y = 0.";
+          choices=shuffle(["The equation of the asymptote is y = 0.","The graph crosses the y-axis at (0, 0.25).","The graph increases from left to right.","The graph has a vertical asymptote at x = 0."]);
+          explain="The graph is exponential decay (base 0.25 < 1, so it decreases). The y-intercept is "+a+". The horizontal asymptote is y = 0.";
+          hints=["Check the y-intercept. Is it 0.25? No, it's "+a+".","Does it increase or decrease? Base is 0.25, so it decreases.","Standard exponential functions level off at y = 0."];
+        }
+      }
+      return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"3e",level:level};
+    }
+  },
+  {
+    id:"3f",name:"Domain and Range",teks:"A.9A",
+    explanation:"For exponential functions like y = abˣ, the domain (x-values) is always All Real Numbers because you can plug any number into an exponent. The range (y-values) is restricted by the asymptote. If a > 0, the graph sits above the x-axis, so the range is strictly y > 0. In real-world problems, time or population can't be negative, which limits the practical domain and range.",
+    realWorld:"A bacteria population starts at 50 and triples every hour: y = 50(3)ˣ. Mathematically, the domain is all real numbers. But practically, time starts at 0, so domain is x ≥ 0, and population starts at 50 and grows, so range is y ≥ 50.",
+    prereqs:["3e"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Scanning Left to Right, Bottom to Top</h4><div class="analogy-box"><strong>Think of it this way:</strong><br>&bull; <strong>Domain</strong> (x-axis): Does the graph go forever to the left? Yes. Forever to the right? Yes. You can raise a number to a negative power (like 2<sup>-3</sup>) and a positive power. So Domain = <strong>All Real Numbers</strong>.<br><br>&bull; <strong>Range</strong> (y-axis): Does it go forever up? Yes. Does it go forever down? No! It crashes into the invisible asymptote wall at y = 0 and stops.</div><p>So for y = ab<sup>x</sup>, Range = <strong>y &gt; 0</strong>.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Determining Range Algebraically</h4><div class="math-box"><strong>Why is y &gt; 0 ?</strong><br>Think about y = 2<sup>x</sup>.<br>If x = 10, y = 1024.<br>If x = -10, y = 2<sup>-10</sup> = 1/1024 (a tiny fraction).<br><br>No matter what x you plug in, 2<sup>x</sup> will <strong>never</strong> be exactly 0, and it will <strong>never</strong> be negative.</div><p><strong>Worked example:</strong> Find the range of f(x) = 5(0.4)<sup>x</sup></p><ol class="step-list"><li>Identify the asymptote: y = 0</li><li>Does it open up or down? Since a = 5 (positive), it stays above the asymptote.</li><li>Range: <strong>y &gt; 0</strong></li></ol><p><em>Note: We use strictly greater than (&gt;), not greater than or equal to (&ge;), because it never touches the asymptote!</em></p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Real-World Limits &amp; STAAR Strategies</h4><p>Just like quadratics, word problems impose "practical" limits on domain and range!</p><div class="math-box"><strong>Example:</strong> Car value V = 20000(0.85)<sup>t</sup> from purchase (t=0) until it\'s worth $500.<br><br>&bull; <strong>Domain (Time):</strong> Starts at t = 0. So x &ge; 0.<br>&bull; <strong>Range (Value):</strong> Max value is $20,000. Min value is $500. So 500 &le; y &le; 20000.</div><div class="staar-box"><strong>STAAR Tip:</strong> If the question asks for the mathematical range of y = 4(2)<sup>x</sup>, choose "y &gt; 0". If it asks for the range of a situation (like a contagious virus starting with 4 people), choose "y &ge; 4" because you can\'t have fractions of people and it starts at 4!</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:{
+          stem="What is the domain of f(x) = 8(0.75)ˣ ?";
+          correct="All real numbers";
+          choices=shuffle(["All real numbers","x > 0","x ≥ 8","y > 0"]);
+          explain="For standard exponential functions, there is no restriction on what you can plug in for the exponent. Domain is all real numbers.";
+          hints=["Domain means x-values.","Can you raise a power to a negative number? Yes. Positive? Yes.","All real numbers."];
+          break;
+        }
+        case 1:{
+          var a=rInt(2,10);
+          stem="What is the range of f(x) = "+a+"(3)ˣ ?";
+          correct="y > 0";
+          choices=shuffle(["y > 0","y ≥ "+a,"All real numbers","y < 0"]);
+          explain="The graph has a horizontal asymptote at y = 0 and sits above it (because "+a+" > 0). It never touches 0, so y > 0.";
+          hints=["Range means y-values.","The graph approaches the x-axis but never touches it.","y is always strictly greater than 0."];
+          break;
+        }
+        case 2:{
+          stem="A cell culture starts with 10 cells and doubles every day: c = 10(2)ᵈ. What is the practical range of this function?";
+          correct="y ≥ 10";
+          choices=shuffle(["y ≥ 10","y > 0","All real numbers","y ≥ 0"]);
+          explain="Practically, the cells start at 10 and only go up from there. You can\'t have fewer than 10 cells based on the problem timeline.";
+          hints=["What is the starting amount at day 0?","It starts at 10 and grows.","So the range is y ≥ 10."];
+          break;
+        }
+        case 3:{
+          stem="A $10,000 boat depreciates 10% each year: V = 10000(0.9)ᵗ. If the owner keeps it for exactly 5 years, what is the domain?";
+          correct="0 ≤ t ≤ 5";
+          choices=shuffle(["0 ≤ t ≤ 5","All real numbers","t ≥ 0","5904 ≤ V ≤ 10000"]);
+          explain="Domain is the input t (time). The time starts at 0 and ends at 5 years, so 0 ≤ t ≤ 5.";
+          hints=["Domain relates to the input variable (time).","When does the time start and end?","From 0 to 5."];
+          break;
+        }
+        default:{
+          stem="STAAR: Which statement best describes the range of y = 2.5(1.8)ˣ ?";
+          correct="y > 0";
+          choices=shuffle(["y > 0","y ≥ 2.5","x > 0","All real numbers"]);
+          explain="The function y = abˣ has an asymptote at y = 0. Since a=2.5 (positive), the graph stays completely above the x-axis, so y > 0.";
+          hints=["Range means y-values.","Does the graph touch the asymptote y=0? No.","y > 0."];
+        }
+      }
+      return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"3f",level:level};
+    }
+  },
+  {
+    id:"3g",name:"Exponential Regression",teks:"A.9E",
+    explanation:"Sometimes real-world data isn't perfectly linear. If it grows or shrinks at a percentage rate (like population or cooling coffee), an exponential curve might fit best! We use technology (like a calculator's ExpReg feature) to find the exact equation y = abˣ that curves right through the scatter plot dots.",
+    realWorld:"A biologist measures the span of an algae bloom in a lake each week. The data points curve upwards fast. By running an exponential regression, they create a formula to predict if the lake will be completely covered next month.",
+    prereqs:["3e"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Curves vs. Lines</h4><div class="analogy-box"><strong>Think of it this way:</strong> If you track your height from age 5 to 10, it looks like a straight line. But if you track a virus spreading in a city, a line is a terrible fit! The dots curve upwards like a skateboard ramp.</div><p>Calculators can find the "Line of Best Fit" (Linear Regression: y = mx + b). But they can also find the "Curve of Best Fit" (<strong>Exponential Regression</strong>: y = a &middot; b<sup>x</sup>).</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Using Technology</h4><div class="math-box"><strong>How to find it on a TI-84:</strong><br>1. Press <strong>STAT</strong> &rarr; Edit... type x-values in L1, y-values in L2<br>2. Press <strong>STAT</strong> &rarr; Calc &rarr; <strong>0: ExpReg</strong><br>3. Hit Enter! It gives you \'a\' and \'b\'</div><p><strong>Example output:</strong><br>y = a*b^x<br>a = 150.2<br>b = 1.045</p><p>This means your equation is <strong>y = 150.2(1.045)<sup>x</sup></strong>. You can now plug in any \'x\' to predict future data!</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Choosing the Right Model &amp; R&sup2;</h4><p>How do you know if you should use Linear (LinReg) or Exponential (ExpReg)?</p><ul style="margin:6px 0 6px 18px;font-size:.9rem;line-height:1.7"><li><strong>Look at the scatter plot:</strong> Is it straight, or does it curve up/down?</li><li><strong>Look at the table:</strong> Are the differences roughly the same? (Linear). Or are they multiplying? (Exponential).</li><li><strong>Check the R&sup2; value:</strong> The closer R&sup2; is to 1, the better the fit. If ExpReg gives R&sup2; = 0.99 and LinReg gives R&sup2; = 0.85, the exponential model is the clear winner!</li></ul><div class="staar-box"><strong>STAAR Tip:</strong> You don\'t calculate regressions by hand. Treat this as a technology skill! On test day, carefully type the table into your calculator. <strong>Double-check your typing</strong> — one wrong decimal ruins the model. Write down a and b exactly as shown before rounding to match the answer choices.</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:{
+          stem="A scatter plot of data curves upwards rapidly. Which type of regression should you use to model it?";
+          correct="Exponential";
+          choices=shuffle(["Exponential","Linear","Quadratic","None"]);
+          explain="Data that curves upwards rapidly (like a skateboard ramp) is best modeled by an exponential function.";
+          hints=["Linear data forms a straight line.","What shape does exponential data make?","A curve that gets steeper and steeper."];
+          break;
+        }
+        case 1:{
+          var a=rInt(10,50), b=(1+rInt(2,9)/10).toFixed(2);
+          stem="A calculator's ExpReg gives: y = a*b^x, a = "+a+", b = "+b+". Write the equation.";
+          correct="y = "+a+"("+b+")ˣ";
+          choices=shuffle(["y = "+a+"("+b+")ˣ","y = "+b+"("+a+")ˣ","y = "+a+"x + "+b,"y = "+b+"x + "+a]);
+          explain="The format is y = a·bˣ. Plug in a="+a+" and b="+b+" to get y = "+a+"("+b+")ˣ.";
+          hints=["Look at the format: y = a*b^x.","Substitute the values given for a and b.","y = "+a+"("+b+")ˣ."];
+          break;
+        }
+        case 2:{
+          stem="For a dataset, LinReg gives R² = 0.78 and ExpReg gives R² = 0.98. Which model is better and why?";
+          correct="Exponential, because R² is closer to 1";
+          choices=shuffle(["Exponential, because R² is closer to 1","Linear, because R² is lower","Exponential, because 0.98 is almost 100%","Both are equally bad"]);
+          explain="The R² value (coefficient of determination) measures how well the curve fits the dots. The closer to 1 (or 100%), the better the fit.";
+          hints=["What does the R² value tell you?","Closer to 1 = better fit.","0.98 > 0.78."];
+          break;
+        }
+        case 3:{
+          stem="An exponential regression equation for population is y = 300(1.06)ˣ, where x is years since 2010. What is the predicted population in 2020?";
+          var ans=Math.round(300*Math.pow(1.06,10));
+          correct="~"+ans;
+          choices=shuffle(["~"+ans,"~537","~318","~1000"]);
+          explain="2020 is 10 years since 2010, so x = 10. y = 300(1.06)¹⁰ ≈ "+ans+".";
+          hints=["How many years is 2020 since 2010?","x = 10.","Plug 10 into the exponent: 300(1.06)¹⁰."];
+          break;
+        }
+        default:{
+          stem="STAAR: A scientist records data: (1, 10), (2, 30), (3, 90), (4, 270). If they run ExpReg, what will 'b' be?";
+          correct="3";
+          choices=shuffle(["3","10","30","0.33"]);
+          explain="The y-values are multiplying by 3 each time (10×3=30, 30×3=90). Therefore, the growth factor 'b' is 3.";
+          hints=["Look at the y-values.","What are they multiplying by each step?","10 * ? = 30."];
+        }
+      }
+      return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"3g",level:level};
+    }
   }
   ]// end concepts
 },
 {
   id:4,name:"Quadratic Functions",
-  teks:"TEKS A.6A, A.7C",locked:false,
+  teks:"TEKS A.6A-C, A.7A-C, A.8A-B",locked:false,
   eq:"What shape does a thrown football, a fountain arc, or a rocket's path trace — and how can an equation describe it?",
   eu:"Quadratic functions model situations where the rate of change itself is changing. Their U-shaped graph (parabola) reveals a maximum or minimum that is often the most important value in a real-world context.",
   objectives:[
@@ -1255,7 +1544,7 @@ const UNITS=[
   ],
   concepts:[
   {
-    id:"4a",name:"Anatomy of a Parabola",teks:"A.6A",
+    id:"4a",name:"Anatomy of a Parabola",teks:"A.7A",
     explanation:"A quadratic function f(x) = ax² + bx + c graphs as a parabola — a smooth U-shape. If a > 0 it opens up (happy face) and the vertex is a minimum. If a < 0 it opens down (sad face) and the vertex is a maximum. The axis of symmetry is the vertical line through the vertex: x = -b/(2a). The y-intercept is c.",
     realWorld:"When a Dallas Cowboys punter kicks a football, the ball's height over time traces a downward-opening parabola. The vertex tells you the maximum height, and the x-intercepts tell you when it hits the ground.",
     prereqs:["1b"],
@@ -1377,7 +1666,7 @@ const UNITS=[
     }
   },
   {
-    id:"4c",name:"Solving Quadratics by Factoring",teks:"A.7C",
+    id:"4c",name:"Solving Quadratics by Factoring",teks:"A.8A",
     explanation:"To solve ax² + bx + c = 0 by factoring: (1) look for a GCF first, (2) factor the trinomial into two binomials, (3) set each factor equal to zero (Zero Product Property), (4) solve each mini-equation. This only works when the quadratic factors neatly — otherwise you need the quadratic formula!",
     realWorld:"You're designing a rectangular Texas-shaped garden bed. The length is (x + 5) feet and the width is (x + 2) feet. If the area must be 40 sq ft, you solve (x+5)(x+2) = 40, which leads to a quadratic equation.",
     prereqs:["4a","1b"],
@@ -1453,7 +1742,7 @@ const UNITS=[
     }
   },
   {
-    id:"4d",name:"The Quadratic Formula",teks:"A.7C",
+    id:"4d",name:"The Quadratic Formula",teks:"A.8A",
     explanation:"When factoring doesn't work, the quadratic formula always does: x = (-b ± √(b² - 4ac)) / (2a). The discriminant (b² - 4ac) tells you how many solutions: positive → 2 real solutions, zero → 1 repeated solution, negative → no real solutions. Memorize this formula — it's your safety net!",
     realWorld:"An archer at a Renaissance fair in Texas shoots an arrow. Its height is h = -16t² + 40t + 5. When does it hit the ground? Set h = 0 and use the quadratic formula since the numbers don't factor neatly.",
     prereqs:["4c"],
@@ -1519,6 +1808,300 @@ const UNITS=[
       }
       return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"4d",level:level};
     }
+  },
+  {
+    id:"4e",name:"Domain and Range of Quadratics",teks:"A.6A",
+    explanation:"The domain of a quadratic function is all real numbers, because you can square any number. The range depends on the vertex and direction. If it opens up, range is y ≥ k. If it opens down, range is y ≤ k (where k is the y-value of the vertex).",
+    realWorld:"When you throw a ball, time (x) only goes forward (domain restricted to x ≥ 0) and height (y) is bounded by the ground and the peak of the throw.",
+    prereqs:["4a"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Shadows on the Wall</h4><div class="analogy-box"><strong>Think of it this way:</strong> If you shine a light from above a parabola down to the x-axis, its "shadow" covers the whole line. The domain is <strong>All Real Numbers</strong>.<br><br>But if you shine a light sideways onto the y-axis, the shadow starts at the vertex and goes up (or down). It doesn\'t cover the whole y-axis!</div><p>Range is simply the possible y-values. Find the vertex, determine if it\'s a max or min, and write your inequality.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Finding the Bounds</h4><div class="math-box"><strong>Domain (x-values):</strong> Almost always All Real Numbers.<br><strong>Range (y-values):</strong><br>&bull; Opens UP (a &gt; 0): y &ge; minimum value<br>&bull; Opens DOWN (a &lt; 0): y &le; maximum value</div><p><strong>Worked example:</strong> f(x) = (x &minus; 3)&sup2; + 2</p><ol class="step-list"><li>Domain: All real numbers</li><li>Vertex is (3, 2). The y-value is 2.</li><li>a = 1 (positive) &rarr; opens UP (minimum).</li><li>Range: <strong>y &ge; 2</strong></li></ol>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Real-World Restrictions</h4><div class="math-box"><strong>Context matters!</strong> In word problems, the math domain might be "all reals," but the <em>practical</em> domain is limited.<br>&bull; Time can\'t be negative (x &ge; 0)<br>&bull; Height can\'t be negative before it hits the ground (y &ge; 0)</div><p>If a rocket is launched from 10 feet, hits a peak of 150 feet at 3 seconds, and lands at 6 seconds:</p><ul style="margin:6px 0 6px 18px;font-size:.9rem;line-height:1.7"><li><strong>Domain:</strong> 0 &le; x &le; 6 (from launch to landing)</li><li><strong>Range:</strong> 0 &le; y &le; 150 (from ground to peak)</li></ul>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:{
+          var a=[-1,1][rInt(0,1)];
+          var k=rInt(-5,5);
+          stem="What is the range of y = "+a+"(x - 2)² "+(k>=0?"+ "+k:"- "+Math.abs(k))+"?";
+          correct=a>0?"y ≥ "+k:"y ≤ "+k;
+          choices=shuffle(["All real numbers",a>0?"y ≥ "+k:"y ≤ "+k,a>0?"y ≤ "+k:"y ≥ "+k,"y ≥ 2"]);
+          explain="The vertex is at y = "+k+". Since a = "+a+" ("+(a>0?"opens up":"opens down")+"), the range is "+correct+".";
+          hints=["Find the y-coordinate of the vertex.","The vertex y is "+k+".",a>0?"Opens up, so y is greater than or equal to "+k+".":"Opens down, so y is less than or equal to "+k+"."];
+          break;
+        }
+        case 1:{
+          var h=rInt(-4,4), k=rInt(1,8);
+          stem="f(x) has a vertex at ("+h+", "+k+") and opens downward. What is the domain and range?";
+          correct="Domain: All real numbers, Range: y ≤ "+k;
+          choices=shuffle(["Domain: All real numbers, Range: y ≤ "+k,"Domain: All real numbers, Range: y ≥ "+k,"Domain: x ≤ "+h+", Range: All real numbers","Domain: All real numbers, Range: y ≤ "+h]);
+          explain="The domain of a standard quadratic is always all real numbers. Since it opens downward, the vertex is a maximum, so y ≤ "+k+".";
+          hints=["Domain is the x-values. For quadratics, it's usually all real numbers.","Vertex y is "+k+".","Opens downward means maximum, so y ≤ "+k+"."];
+          break;
+        }
+        case 2:{
+          stem="A ball is thrown from 5 feet. It reaches a max height of 25 feet after 1 second, and hits the ground at 2.2 seconds. What is the practical range of the ball's height?";
+          correct="0 ≤ y ≤ 25";
+          choices=shuffle(["0 ≤ y ≤ 25","5 ≤ y ≤ 25","y ≤ 25","0 ≤ x ≤ 2.2"]);
+          explain="The range is the possible y-values (height). The lowest point is the ground (0), and the highest is the peak (25).";
+          hints=["Range means y-values!","What is the minimum height? The ground (0).","What is the max height? 25. So 0 ≤ y ≤ 25."];
+          break;
+        }
+        case 3:{
+          var c=rInt(1,10);
+          stem="Find the range of y = x² + "+c+".";
+          correct="y ≥ "+c;
+          choices=shuffle(["y ≥ "+c,"y ≤ "+c,"All real numbers","y ≥ 0"]);
+          explain="The lowest value x² can be is 0. So the lowest value of x² + "+c+" is 0 + "+c+" = "+c+". Range is y ≥ "+c+".";
+          hints=["What is the smallest value x² can have?","x² is always ≥ 0.","So x² + "+c+" is always ≥ "+c+"."];
+          break;
+        }
+        default:{
+          stem="STAAR: What is the domain of f(x) = 3(x - 4)² - 7?";
+          correct="All real numbers";
+          choices=shuffle(["All real numbers","x ≥ 4","y ≥ -7","x ≥ -7"]);
+          explain="The domain of any quadratic function without real-world restrictions is all real numbers. You can plug in any x value.";
+          hints=["Domain = x-values.","Are there any numbers you can't square? No.","All real numbers."];
+        }
+      }
+      return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"4e",level:level};
+    }
+  },
+  {
+    id:"4f",name:"Writing Quadratic Equations",teks:"A.6B",
+    explanation:"You can write a quadratic equation if you are given the vertex and a point, or the x-intercepts. If given the vertex (h, k), start with y = a(x - h)² + k, plug in the other point for x and y, and solve for 'a'. If you have roots, start with y = a(x - r1)(x - r2).",
+    realWorld:"If you know a launched firework reaches a peak of 200 feet after 4 seconds (vertex: 4, 200) and it was launched from the ground at 0 seconds (point: 0, 0), you can build the exact quadratic formula that models its flight.",
+    prereqs:["4b"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Connecting the Dots</h4><div class="analogy-box"><strong>Think of it this way:</strong> If I just give you a vertex (say, the top of an arch), there are infinitely many parabolas that could fit &mdash; some wide, some narrow. I have to give you <strong>one more point</strong> to pin it down to a specific curve!</div><p>This is why we just set up our template (vertex form) and use the extra point to find out how "wide" or "narrow" the parabola is &mdash; which is finding the value of <strong>a</strong>.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>From Vertex and Point to Equation</h4><div class="math-box"><strong>The blueprint:</strong> y = a(x &minus; h)&sup2; + k</div><ol class="step-list"><li>Plug the vertex into (h, k)</li><li>Plug the other point into (x, y)</li><li>Solve for <strong>a</strong></li><li>Write the final equation leaving x and y as variables</li></ol><p><strong>Worked example:</strong> Vertex (2, 5), passes through (4, 13)</p><ol class="step-list"><li>y = a(x &minus; 2)&sup2; + 5</li><li>13 = a(4 &minus; 2)&sup2; + 5</li><li>13 = a(2)&sup2; + 5 &rarr; 13 = 4a + 5</li><li>8 = 4a &rarr; <strong>a = 2</strong></li><li>Final: <strong>y = 2(x &minus; 2)&sup2; + 5</strong></li></ol>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Standard form &amp; Factored form</h4><p>Sometimes you need standard form (y = ax&sup2; + bx + c). What do you do? Expand vertex form!</p><div class="math-box"><strong>y = 2(x &minus; 2)&sup2; + 5</strong><br>&bull; Square the binomial: 2(x&sup2; &minus; 4x + 4) + 5<br>&bull; Distribute: 2x&sup2; &minus; 8x + 8 + 5<br>&bull; Combine: <strong>y = 2x&sup2; &minus; 8x + 13</strong></div><p><strong>Writing from Roots:</strong> If you know the roots are 3 and 5, use factored form: <strong>y = a(x &minus; 3)(x &minus; 5)</strong>. Again, use a point to find a!</p><div class="staar-box"><strong>STAAR Tip:</strong> Given a graph and asked for the equation? Find the vertex (h,k) immediately to eliminate wrong choices. If two choices have the same vertex, plug in the y-intercept or another clear point to see which one creates a true statement.</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:{
+          var h=rInt(1,5),k=rInt(1,5),a=rInt(2,4);
+          var x=h+1, y=a*Math.pow(x-h,2)+k;
+          stem="Write the equation in vertex form: Vertex ("+h+", "+k+"), passing through ("+x+", "+y+").";
+          correct="y = "+a+"(x - "+h+")² + "+k;
+          choices=shuffle([correct,"y = "+(a+1)+"(x - "+h+")² + "+k,"y = "+a+"(x + "+h+")² + "+k,"y = (x - "+h+")² + "+k]);
+          explain="y = a(x - "+h+")² + "+k+". Plug in x="+x+", y="+y+": "+y+" = a("+x+" - "+h+")² + "+k+" → "+y+" = a(1)² + "+k+" → a = "+a+".";
+          hints=["Start with y = a(x - h)² + k.","Plug in h="+h+", k="+k+".","Plug in x="+x+" and y="+y+" to solve for a."];
+          break;
+        }
+        case 1:{
+          var r1=rInt(1,4),r2=rInt(5,8);
+          stem="Write the quadratic equation (let a=1) with roots x = "+r1+" and x = "+r2+".";
+          correct="y = (x - "+r1+")(x - "+r2+")";
+          choices=shuffle([correct,"y = (x + "+r1+")(x + "+r2+")","y = (x - "+r1+")(x + "+r2+")","y = x² + "+(r1+r2)+"x + "+(r1*r2)]);
+          explain="If the roots are r1 and r2, factors are (x - r1) and (x - r2). So y = (x - "+r1+")(x - "+r2+").";
+          hints=["Roots give factors: x = r gives factor (x - r).","Roots are "+r1+" and "+r2+".","Factors are (x - "+r1+") and (x - "+r2+")."];
+          break;
+        }
+        case 2:{
+          stem="A parabola has vertex (3, 4) and passes through (1, 0). Find the equation in standard form.";
+          correct="y = -x² + 6x - 5";
+          var bad1="y = x² - 6x + 9",bad2="y = -x² - 6x - 5",bad3="y = -x² + 6x + 5";
+          choices=shuffle([correct,bad1,bad2,bad3]);
+          explain="y = a(x-3)² + 4. Plug in (1,0): 0 = a(-2)² + 4 → a = -1. y = -(x-3)² + 4 = -(x²-6x+9) + 4 = -x² + 6x - 5.";
+          hints=["Find a: use vertex form y = a(x-3)² + 4 and plug in (1,0).","a = -1. So y = -(x-3)² + 4.","Expand (x-3)², distribute the negative, and add 4."];
+          break;
+        }
+        case 3:{
+          stem="A graph has x-intercepts at -2 and 4, and a y-intercept at -16. Write the equation.";
+          correct="y = 2x² - 4x - 16";
+          choices=shuffle([correct,"y = x² - 2x - 16","y = 2x² + 4x - 16","y = -2x² - 4x - 16"]);
+          explain="Roots at -2 and 4 mean y = a(x+2)(x-4). Plug in (0,-16): -16 = a(2)(-4) = -8a → a=2. Equation: 2(x+2)(x-4) = 2x² - 4x - 16.";
+          hints=["Use factored form: y = a(x-r1)(x-r2).","y = a(x+2)(x-4). Plug in (0, -16) to find a.","a = 2. Now distribute."];
+          break;
+        }
+        default:{
+          stem="STAAR: Which equation represents a parabola with vertex (1, -3) that passes through (2, 1)?";
+          correct="y = 4(x - 1)² - 3";
+          choices=shuffle(["y = 4(x - 1)² - 3","y = -4(x - 1)² - 3","y = 2(x - 1)² - 3","y = (x - 1)² - 3"]);
+          explain="y = a(x - 1)² - 3. Plug in (2, 1): 1 = a(2 - 1)² - 3 → 1 = a(1) - 3 → a = 4.";
+          hints=["Start with y = a(x - 1)² - 3.","Plug in x = 2, y = 1.","Solve for a."];
+        }
+      }
+      return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"4f",level:level};
+    }
+  },
+  {
+    id:"4g",name:"Quadratic Transformations",teks:"A.7C",
+    explanation:"You can transform the parent function f(x) = x² by changing numbers in the equation. Multiplying by 'a' stretches or compresses the graph vertically (and flips it if negative). Adding or subtracting moves it up/down or left/right.",
+    realWorld:"Imagine adjusting a water fountain jet. Increasing 'a' makes the water shoot higher and steeper. Changing 'h' or 'k' physically moves the nozzle to a different spot on the wall.",
+    prereqs:["4b"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Stretching and Shifting</h4><div class="analogy-box"><strong>Think of it this way:</strong> Take a standard U-shape drawn on a rubber sheet. <br>&bull; Pull it up and down? It gets <strong>narrower</strong> (vertical stretch).<br>&bull; Squish it flat? It gets <strong>wider</strong> (vertical compression).<br>&bull; Move the whole sheet? That\'s a <strong>translation</strong> (shift).</div><p>Everything starts from the "parent" function: <strong>f(x) = x&sup2;</strong>. We apply changes to it to get any other parabola.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>The Transformation Rules</h4><div class="math-box"><strong>Given y = a(x &minus; h)&sup2; + k</strong></div><ul style="margin:8px 0 8px 18px;font-size:.9rem;line-height:1.7"><li><strong>a &lt; 0</strong>: Reflects over the x-axis (flips upside down)</li><li><strong>|a| &gt; 1</strong>: Vertical stretch (graph looks narrower)</li><li><strong>0 &lt; |a| &lt; 1</strong>: Vertical compression (graph looks wider/flatter)</li><li><strong>h</strong>: Horizontal shift (inside parentheses is opposite: x-3 means RIGHT 3)</li><li><strong>k</strong>: Vertical shift (outside parentheses: +4 means UP 4)</li></ul><p><strong>Worked example:</strong> g(x) = &minus;1/2(x + 4)&sup2; &minus; 5</p><p>Compared to f(x) = x&sup2;:<br>1. Reflected over x-axis (&minus;)<br>2. Vertically compressed by 1/2 (wider)<br>3. Shifted LEFT 4<br>4. Shifted DOWN 5</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Transforming from Other Functions</h4><p>Sometimes you aren\'t transforming from x&sup2;, but from an already existing function!</p><div class="math-box"><strong>Problem:</strong> Let f(x) = x&sup2; + 3. What is g(x) = f(x &minus; 2)?<br><br>Replace x with (x &minus; 2):<br>g(x) = (x &minus; 2)&sup2; + 3<br>This shifts the original graph RIGHT by 2 units.</div><p><strong>Horizontal Stretch/Compression (bx):</strong> If x is multiplied inside, like f(bx):<br>&bull; |b| &gt; 1: Horizontal compression (squished sideways)<br>&bull; 0 &lt; |b| &lt; 1: Horizontal stretch (pulled sideways)</p><div class="staar-box"><strong>STAAR Tip:</strong> Learn the rule "Inside opposite, outside same." Inside the parentheses affects the x-axis left/right and operates inversely (e.g., x-2 means +2 right). Outside affects the y-axis up/down and acts normally (+5 means 5 up).</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:{
+          var a=rInt(2,5);
+          stem="How does g(x) = "+a+"x² compare to the parent function f(x) = x²?";
+          correct="It is vertically stretched (narrower)";
+          choices=shuffle(["It is vertically stretched (narrower)","It is vertically compressed (wider)","It is shifted up "+a+" units","It is shifted right "+a+" units"]);
+          explain="Because "+a+" > 1, the graph is stretched vertically by a factor of "+a+", which makes it look narrower compared to x².";
+          hints=["Look at the number multiplying x².","It's outside and greater than 1.","Multiplication by a number > 1 is a vertical stretch."];
+          break;
+        }
+        case 1:{
+          var c=rInt(2,8);
+          stem="How does g(x) = (x + "+c+")² compare to f(x) = x²?";
+          correct="Shifted left "+c+" units";
+          choices=shuffle(["Shifted left "+c+" units","Shifted right "+c+" units","Shifted up "+c+" units","Shifted down "+c+" units"]);
+          explain="Inside the parentheses affects the graph horizontally. It is 'opposite' of the sign, so +"+c+" means shifted left "+c+" units.";
+          hints=["Inside the parentheses = horizontal shift.","Inside is 'opposite' of what you expect.","+ means left, - means right."];
+          break;
+        }
+        case 2:{
+          stem="Describe all transformations from f(x) = x² to g(x) = -(x - 3)² + 5.";
+          correct="Reflected over x-axis, right 3, up 5";
+          choices=shuffle(["Reflected over x-axis, right 3, up 5","Reflected over x-axis, left 3, up 5","Right 3, up 5 (no reflection)","Reflected over y-axis, right 3, down 5"]);
+          explain="Negative outside = reflect over x-axis. (x-3) inside = right 3. +5 outside = up 5.";
+          hints=["Negative sign in front = reflection over x-axis.","Inside (x-3) = right 3.","Outside +5 = up 5."];
+          break;
+        }
+        case 3:{
+          stem="If f(x) = x² - 4, what is the equation of g(x) = f(x) + 7? What does this do to the graph?";
+          correct="g(x) = x² + 3; shifts f(x) up 7";
+          choices=shuffle(["g(x) = x² + 3; shifts f(x) up 7","g(x) = x² + 3; shifts f(x) left 7","g(x) = (x+7)² - 4; shifts f(x) left 7","g(x) = 7x² - 4; vertical stretch by 7"]);
+          explain="g(x) = f(x) + 7 = (x² - 4) + 7 = x² + 3. Adding 7 on the outside shifts the entire graph up 7 units.";
+          hints=["Add 7 to the original function.","x² - 4 + 7 = ?","Adding on the outside shifts up."];
+          break;
+        }
+        default:{
+          stem="STAAR: Given f(x) = x², which function creates a graph that is wider (vertically compressed) and shifted down 2 units?";
+          correct="g(x) = 0.5x² - 2";
+          choices=shuffle(["g(x) = 0.5x² - 2","g(x) = 2x² - 2","g(x) = 0.5(x - 2)²","g(x) = 2(x + 2)²"]);
+          explain="Wider/compressed means |a| < 1 (so 0.5 works). Shifted down 2 means subtract 2 outside (so - 2).";
+          hints=["Wider means the factor in front must be between 0 and 1.","Shifted down means subtract outside the x².","0.5x² - 2."];
+        }
+      }
+      return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"4g",level:level};
+    }
+  },
+  {
+    id:"4h",name:"Square Roots & Completing the Square",teks:"A.8A",
+    explanation:"Sometimes you don't need the whole quadratic formula! If there's no 'x' term (e.g., 2x² = 18), just isolate x² and take the square root of both sides (remember the ±!). Completing the square is another method that turns any trinomial into a perfect square binomial.",
+    realWorld:"If an object is dropped (not thrown), its height is h = -16t² + starting_height. Because there's no 't' term, calculating when it hits the ground is a simple square root problem.",
+    prereqs:["4c","4d"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>The Missing Middle Term</h4><div class="analogy-box"><strong>Think of it this way:</strong> If I tell you x&sup2; = 25, you probably know x = 5. But wait... (&minus;5) &times; (&minus;5) is also 25! It is essential to remember that taking a square root gives <strong>two</strong> answers: positive and negative.</div><p>If an equation looks like <strong>ax&sup2; + c = 0</strong> (no basic "x" term in the middle), you don\'t need factoring or complex formulas. Treat it like a regular equation: get x&sup2; by itself, then square root.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Solving with Square Roots</h4><div class="math-box"><strong>Rule:</strong> If x&sup2; = k, then x = &plusmn;&radic;k.<br>(If k is negative, there are no real solutions).</div><p><strong>Worked example:</strong> Solve 3x&sup2; &minus; 27 = 0</p><ol class="step-list"><li>Add 27: 3x&sup2; = 27</li><li>Divide by 3: x&sup2; = 9</li><li>Square root: <strong>x = &plusmn;3</strong> (meaning x=3 or x=&minus;3)</li></ol><p><strong>Worked example:</strong> (x &minus; 2)&sup2; = 16</p><ol class="step-list"><li>Square root both sides: x &minus; 2 = &plusmn;4</li><li>Add 2: x = 2 &plusmn; 4</li><li><strong>x = 6</strong> or <strong>x = &minus;2</strong></li></ol>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Completing the Square</h4><p>If an equation doesn\'t factor and isn\'t just x&sup2;, you can <em>force</em> the left side to be a perfect square. This is called completing the square.</p><div class="math-box"><strong>To complete x&sup2; + bx:</strong> Add (b/2)&sup2; to both sides.</div><p><strong>Worked example:</strong> Solve x&sup2; + 6x &minus; 7 = 0</p><ol class="step-list"><li>Move the constant: x&sup2; + 6x = 7</li><li>Find (b/2)&sup2;: (6/2)&sup2; = 3&sup2; = 9</li><li>Add 9 to BOTH sides: x&sup2; + 6x + 9 = 7 + 9</li><li>Factor the left side: (x + 3)&sup2; = 16</li><li>Square root both sides: x + 3 = &plusmn;4</li><li>x = &minus;3 &plusmn; 4 &rarr; <strong>x = 1</strong> or <strong>x = &minus;7</strong></li></ol><div class="staar-box"><strong>STAAR Tip:</strong> Look closely at the answer choices. If they look like "3 ± √5", you should either use the quadratic formula or complete the square. Factoring won\'t work!</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:{
+          var n=rInt(2,7);
+          var sq=n*n;
+          stem="Solve: 2x² = "+(2*sq);
+          correct="x = "+n+" or x = -"+n;
+          choices=shuffle(["x = "+n+" or x = -"+n,"x = "+n,"x = "+sq,"x = "+(2*sq)]);
+          explain="Divide by 2: x² = "+sq+". Square root both sides: x = ±√"+sq+" = ±"+n+".";
+          hints=["Divide both sides by 2 first.","x² = "+sq+".","Take the square root, remember the ±."];
+          break;
+        }
+        case 1:{
+          var h=rInt(1,5), ans=rInt(2,6);
+          var sq=ans*ans;
+          stem="Solve: (x - "+h+")² = "+sq;
+          correct="x = "+(h+ans)+" or x = "+(h-ans);
+          choices=shuffle([correct,"x = "+(ans-h)+" or x = -"+(ans+h),"x = "+ans+" or x = -"+ans,"x = "+sq+" + "+h]);
+          explain="Take square root: x - "+h+" = ±"+ans+". Set up two equations: x - "+h+" = "+ans+" → x = "+(h+ans)+". And x - "+h+" = -"+ans+" → x = "+(h-ans)+".";
+          hints=["Take the square root of both sides.","x - "+h+" = ±"+ans+".","Add "+h+" to both "+ans+" and -"+ans+"."];
+          break;
+        }
+        case 2:{
+          stem="A wrench falls from a 144-foot bridge. The equation for its height is h = -16t² + 144. How long does it take to hit the water (h = 0)?";
+          correct="3 seconds";
+          choices=shuffle(["3 seconds","4 seconds","9 seconds","16 seconds"]);
+          explain="0 = -16t² + 144 → 16t² = 144 → t² = 9. Extract square roots: t = ±3. Since time cannot be negative, t = 3 seconds.";
+          hints=["Set h = 0: 0 = -16t² + 144.","Move 16t² to the left: 16t² = 144.","Divide by 16 and take the square root."];
+          break;
+        }
+        case 3:{
+          stem="Solve x² + 8x - 20 = 0 by completing the square. What number do you add to both sides in the process?";
+          correct="Add 16 to both sides";
+          choices=shuffle(["Add 16 to both sides","Add 4 to both sides","Add 64 to both sides","Add 20 to both sides"]);
+          explain="Move 20 over: x² + 8x = 20. Take half of b (8/2 = 4), square it (16), and add to both sides: x² + 8x + 16 = 36.";
+          hints=["Move the constant term to the right side: x² + 8x = 20.","Take half of the x coefficient...","...then square it. (8/2)² = 16."];
+          break;
+        }
+        default:{
+          stem="STAAR: What are the solutions to 3x² - 75 = 0?";
+          correct="x = 5 and x = -5";
+          choices=shuffle(["x = 5 and x = -5","x = 25 and x = -25","x = 5 only","No real solutions"]);
+          explain="Add 75: 3x² = 75. Divide by 3: x² = 25. Square root: x = ±5.";
+          hints=["Add 75 to both sides.","Divide by 3.","x² = 25, so x = ?"];
+        }
+      }
+      return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"4h",level:level};
+    }
+  },
+  {
+    id:"4i",name:"Quadratic Regression",teks:"A.8B",
+    explanation:"Sometimes real-world data traces a curve instead of a line. We can use technology to find the parabola of 'best fit' (y = ax² + bx + c) for the data, just like finding a line of best fit. Once we have the equation, we can make predictions.",
+    realWorld:"Engineers track a prototype rocket's altitude at different times. The points aren't a perfectly flawless parabola because of wind, but running a quadratic regression gives a formula that models its flight incredibly well.",
+    prereqs:["4d","6b"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Curves of Best Fit</h4><div class="analogy-box"><strong>Think of it this way:</strong> Remember drawing a straight line through scatter plot dots? What if the dots go up, hit a peak, and come back down? A straight line would be a terrible fit! We need a <strong>curve of best fit</strong>.</div><p>Instead of y = mx + b, our calculator creates <strong>y = ax&sup2; + bx + c</strong> to pass as close to all the dots as possible.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Using Technology &amp; Making Predictions</h4><div class="math-box"><strong>Finding Regression:</strong><br>You aren\'t expected to find this equation by hand! You use a TI-84 (Stat &rarr; Calc &rarr; QuadReg) or Desmos (y&sub1; ~ ax&sub1;&sup2; + bx&sub1; + c).</div><ol class="step-list"><li>Enter the data points into the calculator (L1 and L2).</li><li>Run the Quadratic Regression tool.</li><li>Write down a, b, and c to form your equation.</li><li>Plug in a new x-value to <strong>predict</strong> a future outcome.</li></ol><p><strong>Example context:</strong> A company\'s profit rises as they hire more workers, but eventually having too many workers causes chaos and profit drops. A quadratic regression models this curve perfectly to find the exact number of workers that <em>maximizes</em> profit.</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Interpolation, Extrapolation & Goodness of Fit</h4><p>Just like linear regression, you have to be careful with predictions:</p><ul style="margin:6px 0 6px 18px;font-size:.9rem;line-height:1.7"><li><strong>Interpolation:</strong> Predicting within your data range (safe and reliable)</li><li><strong>Extrapolation:</strong> Predicting far outside your data range (risky!)</li></ul><p><strong>The R&sup2; Value:</strong> Calculators often give an R&sup2; value with quadratic regression. It\'s the "Coefficient of Determination." It tells you how well the parabola fits the data. <br>&bull; R&sup2; = 1: Perfect fit<br>&bull; R&sup2; = 0.95: Great fit<br>&bull; R&sup2; = 0.20: Terrible fit (dots are scattered everywhere)</p><div class="staar-box"><strong>STAAR Tip:</strong> You will absolutely have a calculator for these problems. If asked to find the model, type the points into Stat-Edit, then Stat-Calc-5 (QuadReg). Don\'t waste time trying to guess the equation by plugging points in manually!</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:{
+          stem="A scatter plot of a kicked ball's height rises and then falls. Should you use linear or quadratic regression?";
+          correct="Quadratic, because the data curves up and down";
+          choices=shuffle(["Quadratic, because the data curves up and down","Linear, because all gravity is linear","Quadratic, because time is squared","Linear, because the ball travels in a straight line"]);
+          explain="A rising and falling pattern forms a parabola shape, making quadratic regression the best fit.";
+          hints=["Does the path of a ball form a straight line or a U-shape?","A U-shape is a parabola.","Parabolas are modeled by quadratic functions."];
+          break;
+        }
+        case 1:{
+          stem="A calculator gives QuadReg results: a = -2, b = 10, c = 5. Write the equation of best fit.";
+          correct="y = -2x² + 10x + 5";
+          choices=shuffle(["y = -2x² + 10x + 5","y = 5x² + 10x - 2","y = -2x + 10","-2x² + 10x + 5 = 0"]);
+          explain="The quadratic regression equation format is y = ax² + bx + c. Standard form with these values is y = -2x² + 10x + 5.";
+          hints=["Standard form is y = ax² + bx + c.","Plug in a=-2, b=10, c=5.","y = -2x² + 10x + 5."];
+          break;
+        }
+        case 2:{
+          stem="The profit of a store over months is modeled by P(m) = -m² + 12m - 10 (m is months 1 to 11). What is the predicted profit in month 5?";
+          correct="$25";
+          choices=shuffle(["$25","$10","$45","$50"]);
+          explain="Plug m = 5 into the model: P(5) = -(5)² + 12(5) - 10 = -25 + 60 - 10 = 25.";
+          hints=["Plug m = 5 into the given model.","-(5²) = -25. 12(5) = 60.","-25 + 60 - 10 = ?"];
+          break;
+        }
+        case 3:{
+          stem="An engineer tracks a car's braking distance. The data's linear regression has R² = 0.85. The quadratic regression has R² = 0.99. Which model is better and why?";
+          correct="Quadratic, because R² is closer to 1";
+          choices=shuffle(["Quadratic, because R² is closer to 1","Linear, because R² is lower","Both are equally good","Quadratic, because braking is always quadratic"]);
+          explain="R² is the coefficient of determination. A value closer to 1 (like 0.99) means the model fits the data much more accurately.";
+          hints=["What does the R² value represent?","It shows how well the model fits the data mathematically.","Closer to 1 = better fit."];
+          break;
+        }
+        default:{
+          stem="STAAR: A table of data points is (1,5), (2,12), (3,15), (4,14), (5,9). What kind of data is this?";
+          correct="Quadratic, because the y-values increase then decrease";
+          choices=shuffle(["Quadratic, because the y-values increase then decrease","Linear, because the x-values increase by 1","Exponential, because it grows fast","Neither"]);
+          explain="The y-values go 5 → 12 → 15 (increasing), then 15 → 14 → 9 (decreasing). This up-and-down pattern signifies a parabola (quadratic).";
+          hints=["Look at the y-values.","Do they keep going up, keep going down, or change direction?","Changing direction (up then down) means it's quadratic."];
+        }
+      }
+      return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"4i",level:level};
+    }
   }
   ]// end concepts
 },
@@ -1530,9 +2113,10 @@ const UNITS=[
   objectives:[
     "I can identify, classify, and describe polynomials by degree and number of terms (A.10A).",
     "I can add and subtract polynomials by combining like terms (A.10A).",
-    "I can multiply polynomials including binomials using the distributive property (A.10B).",
-    "I can factor out a greatest common factor from a polynomial (A.10C).",
-    "I can factor trinomials of the form x\u00B2 + bx + c and ax\u00B2 + bx + c (A.10E, A.10F)."
+    "I can multiply polynomials including binomials using the distributive property (A.10B, A.10D).",
+    "I can determine the quotient of a polynomial when divided by another polynomial (A.10C).",
+    "I can factor out a greatest common factor from a polynomial (A.10D).",
+    "I can factor trinomials of the form x\u00B2 + bx + c and ax\u00B2 + bx + c, including difference of squares (A.10E, A.10F)."
   ],
   concepts:[
   {
@@ -1540,6 +2124,11 @@ const UNITS=[
     explanation:"A polynomial is a sum of terms where each term has a variable raised to a whole-number exponent. We classify them by degree (highest exponent: 1=linear, 2=quadratic, 3=cubic) and by number of terms (1=monomial, 2=binomial, 3=trinomial). Always write in standard form — from highest degree to lowest.",
     realWorld:"When an architect in Dallas designs a building, the volume formula might be a cubic polynomial: V = x\u00B3 + 4x\u00B2 + 5x. Knowing it\u2019s a cubic tells you it has at most 3 real solutions and a specific graph shape.",
     prereqs:["1b"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Sorting the Crowd</h4><div class="analogy-box"><strong>Think of it this way:</strong> Imagine walking into a Hebron High School assembly. You can classify students by their <strong>grade level</strong> (freshman, sophomore, junior, senior) and by what <strong>group</strong> they belong to (band, athletics, choir).<br><br>Polynomials work the same way! We classify them by their <strong>highest exponent</strong> (degree) and by <strong>how many terms</strong> they have.</div><p>A polynomial is just a chain of math terms connected by addition or subtraction.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Names and Rules</h4><div class="math-box"><strong>Naming by Degree (highest exponent):</strong><br>&bull; Degree 1 = Linear (e.g., 3x)<br>&bull; Degree 2 = Quadratic (e.g., 5x&sup2;)<br>&bull; Degree 3 = Cubic (e.g., &minus;2x&sup3;)</div><div class="math-box" style="margin-top:10px"><strong>Naming by Terms (chunks):</strong><br>&bull; 1 term = Monomial<br>&bull; 2 terms = Binomial<br>&bull; 3 terms = Trinomial</div><p><strong>The Golden Rule:</strong> Polynomials must have <strong>whole-number exponents</strong>. You cannot have negative exponents (x&minus;&sup2;) or variables in the denominator (3/x).</p><p><strong>Standard Form:</strong> Always write terms in descending order, from the highest exponent down to the constant (the regular number).</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Tricky Classifications &amp; STAAR Strategies</h4><p>Let\'s classify: 4x &minus; 7x&sup3; + 2</p><ol class="step-list"><li>First, put it in standard form: &minus;7x&sup3; + 4x + 2</li><li>Degree: The highest exponent is 3, so it is <strong>Cubic</strong>.</li><li>Terms: There are 3 pieces, so it is a <strong>Trinomial</strong>.</li><li>Result: <strong>Cubic Trinomial</strong></li></ol><div class="staar-box"><strong>STAAR Tip:</strong> STAAR will try to trick you with terms out of order. Always re-write the polynomial in standard form first. Also, remember that "x" by itself has an invisible exponent of 1, so it is degree 1 (linear). Finally, watch out for expressions with &radic;x or 1/x &mdash; those are NOT polynomials!</div>'}
+    ],
     generate:function(level){
       var stem,choices,correct,explain,hints;
       switch(level){
@@ -1600,6 +2189,11 @@ const UNITS=[
     explanation:"To add polynomials, combine like terms (same variable and same exponent). To subtract, distribute the negative sign to every term in the second polynomial first, then combine like terms. Think of it like sorting and stacking matching blocks.",
     realWorld:"Two fundraiser booths at a Lewisville football game: Booth A earns (3x\u00B2 + 5x + 10) dollars and Booth B earns (x\u00B2 + 8x + 15) dollars. Total earnings: add the polynomials to get 4x\u00B2 + 13x + 25.",
     prereqs:["5a"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Sorting the Spirit Store</h4><div class="analogy-box"><strong>Think of it this way:</strong> You\'re volunteering at the Lewisville High spirit store. You have a box from yesterday with 3 hoodies and 5 shirts. Today, you get a new box with 2 hoodies and 4 shirts.<br><br>To find the total, you don\'t combine hoodies and shirts into "shoodies"! You add the hoodies together (5) and the shirts together (9).<br><br>In algebra, we call this <strong>combining like terms</strong>. x&sup2; terms only add to x&sup2; terms, and x terms only add to x terms!</div>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Adding and Subtracting</h4><div class="math-box"><strong>Adding Polynomials:</strong> Just combine like terms!<br>(3x&sup2; + 5x) + (2x&sup2; &minus; x) = 5x&sup2; + 4x</div><p><strong>Subtracting Polynomials:</strong> This is where mistakes happen! You must <strong>distribute the negative sign</strong> to EVERY term in the second polynomial before combining.</p><p><strong>Worked Example:</strong> (4x&sup2; + 3x &minus; 2) &minus; (x&sup2; &minus; 5x + 1)</p><ol class="step-list"><li>Distribute the minus: (4x&sup2; + 3x &minus; 2) + (&minus;x&sup2; + 5x &minus; 1)</li><li>Combine x&sup2; terms: 4x&sup2; &minus; x&sup2; = 3x&sup2;</li><li>Combine x terms: 3x + 5x = 8x</li><li>Combine constants: &minus;2 &minus; 1 = &minus;3</li><li>Result: <strong>3x&sup2; + 8x &minus; 3</strong></li></ol>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Missing Terms &amp; STAAR Strategies</h4><p>Sometimes terms completely cancel out, or one polynomial is missing a degree.</p><div class="math-box"><strong>Example:</strong> (5x&sup2; + 2x) &minus; (5x&sup2; + 7)<br>Distribute: 5x&sup2; + 2x &minus; 5x&sup2; &minus; 7<br>The x&sup2; terms cancel out entirely! Result: <strong>2x &minus; 7</strong></div><p><strong>Geometry Applications:</strong> You\'ll often see questions asking for the perimeter of a shape where the sides are polynomials. Just add all the sides together!</p><div class="staar-box"><strong>STAAR Tip:</strong> Subtraction problems are guaranteed to be on the test. When you see a minus sign between parentheses, immediately draw arrows distributing that negative to every single term inside the second parentheses. The most common trap is only making the first term negative!</div>'}
+    ],
     generate:function(level){
       var stem,choices,correct,explain,hints;
       switch(level){
@@ -1661,6 +2255,11 @@ const UNITS=[
     explanation:"To multiply polynomials, distribute every term in the first polynomial to every term in the second (FOIL is a shortcut for two binomials: First, Outer, Inner, Last). Then combine like terms. For (a + b)(c + d): First = ac, Outer = ad, Inner = bc, Last = bd.",
     realWorld:"You\u2019re designing a Texas-shaped garden bed with length (x + 4) ft and width (x + 3) ft. The area is (x+4)(x+3) = x\u00B2 + 7x + 12 square feet. That\u2019s polynomial multiplication!",
     prereqs:["5b"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>The Handshake Line</h4><div class="analogy-box"><strong>Think of it this way:</strong> Imagine two sports teams lining up to shake hands after a game. Every single player on Team A must shake hands with every single player on Team B.<br><br>Polynomial multiplication is the exact same! If you have a binomial (2 terms) times another binomial (2 terms), every term in the first parentheses must "shake hands" (multiply) with every term in the second parentheses.</div><p>This is often called <strong>FOIL</strong> (First, Outer, Inner, Last), but it\'s really just double-distribution!</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>FOIL and The Box Method</h4><div class="math-box"><strong>The FOIL Method for (x + 3)(x + 4):</strong><br>&bull; <strong>F</strong>irst: x &middot; x = x&sup2;<br>&bull; <strong>O</strong>uter: x &middot; 4 = 4x<br>&bull; <strong>I</strong>nner: 3 &middot; x = 3x<br>&bull; <strong>L</strong>ast: 3 &middot; 4 = 12<br>Combine: x&sup2; + 4x + 3x + 12 &rarr; x&sup2; + 7x + 12</div><p><strong>The Box Method:</strong> If FOIL is confusing, draw a 2&times;2 grid! Put (x + 3) on top and (x + 4) on the side. Multiply the rows and columns to fill the 4 boxes, then combine the diagonal (like terms).</p><p><strong>Monomial &times; Polynomial:</strong> Just distribute!<br>3x(2x&sup2; &minus; 5x + 1) = 6x&sup3; &minus; 15x&sup2; + 3x</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Special Cases &amp; STAAR Strategies</h4><p>There are two special patterns that will save you massive amounts of time if you memorize them:</p><div class="math-box"><strong>Perfect Square:</strong> (x + a)&sup2;<br>It is NOT x&sup2; + a&sup2;! You must FOIL (x + a)(x + a).<br>Pattern: x&sup2; + 2ax + a&sup2;</div><div class="math-box" style="margin-top:10px"><strong>Difference of Squares:</strong> (x + a)(x &minus; a)<br>The middle terms cancel out perfectly!<br>Pattern: x&sup2; &minus; a&sup2;</div><div class="staar-box"><strong>STAAR Tip:</strong> "What is the area of a rectangle with length (x + 5) and width (2x &minus; 3)?" This is just a hidden polynomial multiplication question! Set up (x + 5)(2x &minus; 3) and FOIL. Also, watch out for exponents: x &middot; x = x&sup2;, not 2x!</div>'}
+    ],
     generate:function(level){
       var stem,choices,correct,explain,hints;
       switch(level){
@@ -1718,6 +2317,11 @@ const UNITS=[
     explanation:"Factoring is the reverse of multiplying. Step 1: Always check for a GCF (greatest common factor) first. Step 2: For x\u00B2 + bx + c, find two numbers that multiply to c and add to b. Step 3: Write as (x + p)(x + q). For ax\u00B2 + bx + c (a \u2260 1), the process takes more trial or you can use grouping.",
     realWorld:"If a ball\u2019s height is h = -16t\u00B2 + 48t, factoring gives h = -16t(t - 3). Setting each factor to zero tells you the ball is on the ground at t = 0 (launch) and t = 3 seconds (landing).",
     prereqs:["5c","4c"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Un-Baking the Cake</h4><div class="analogy-box"><strong>Think of it this way:</strong> Multiplying polynomials is like following a recipe to bake a cake. You mix flour, sugar, and eggs together to get the final product.<br><br><strong>Factoring</strong> is the exact opposite &mdash; it\'s like looking at a baked cake and trying to figure out exactly what ingredients went into it! We are taking a polynomial and breaking it back down into the pieces that were multiplied together.</div><p>Factoring is one of the most important skills in Algebra. It lets us simplify complex equations and find their solutions (roots).</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Step 1: GCF, Step 2: The Number Puzzle</h4><div class="math-box"><strong>Always check for a GCF First!</strong><br>Is there a number or variable that divides evenly into EVERY term?<br>Example: 3x&sup2; + 12x = 3x(x + 4)</div><p><strong>Factoring x&sup2; + bx + c</strong></p><ol class="step-list"><li>Set up your parentheses: (x &nbsp; &nbsp;)(x &nbsp; &nbsp;)</li><li>Find two numbers that <strong>multiply to c</strong> (the last number) AND <strong>add to b</strong> (the middle number).</li><li>Example: x&sup2; + 7x + 10</li><li>Multiply to 10, add to 7? The numbers are 5 and 2!</li><li>Result: <strong>(x + 5)(x + 2)</strong></li></ol><p>If c is positive, the signs match. If c is negative, the signs are opposite!</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>When "a" is Not 1 &amp; STAAR Strategies</h4><p>What if there\'s a number in front, like 2x&sup2; + 7x + 3? After checking for a GCF (there isn\'t one), you have to use grouping or the "Slip and Slide" method.</p><ol class="step-list"><li>Multiply a &times; c: 2 &times; 3 = 6</li><li>Find two numbers that multiply to 6 and add to 7 (6 and 1).</li><li>Split the middle term: 2x&sup2; + 6x + 1x + 3</li><li>Factor by grouping: 2x(x + 3) + 1(x + 3)</li><li>Result: <strong>(2x + 1)(x + 3)</strong></li></ol><div class="staar-box"><strong>STAAR Tip:</strong> Factoring questions on a multiple-choice test are gifts! If you forget how to factor, just look at the answer choices. Use FOIL to multiply each answer choice together. The one that matches the original polynomial is the correct answer. Reverse engineering is completely valid on STAAR!</div>'}
+    ],
     generate:function(level){
       var stem,choices,correct,explain,hints;
       switch(level){
@@ -1774,27 +2378,162 @@ const UNITS=[
       }
       return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"5d",level:level};
     }
+  },
+  {
+    id:"5e",name:"Dividing Polynomials",teks:"A.10C",
+    explanation:"Dividing a polynomial by a monomial means splitting it up and dividing each term individually. When dividing by a binomial, we typically factor the numerator first and then cancel out the matching binomial in the denominator.",
+    realWorld:"If you have a total cost function for a school dance C = 150x\u00B2 + 50x, and you want to find the average cost per person (x people), you divide the polynomial by x to get 150x + 50.",
+    prereqs:["5c","5d"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Splitting the Bill</h4><div class="analogy-box"><strong>Think of it this way:</strong> Imagine you and two friends order dinner. You get a $15 pizza, a $9 appetizer, and 3 $2 drinks.<br><br>When the bill comes, you don\'t just divide the total by 3. It makes more sense to divide EACH item by 3 to see what everyone owes: The pizza is $5 each, the appetizer is $3 each, and the drinks are $2 each.<br><br><strong>Dividing polynomials</strong> works the same way! If you divide a big expression by a single term, you must distribute the division to <em>every single piece</em> on top.</div>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Dividing by a Monomial</h4><div class="math-box"><strong>Example:</strong> &nbsp; (6x&sup3; + 4x&sup2; &minus; 2x) &divide; 2x<br><br>Split it into three separate fractions:<br>1. (6x&sup3;) / 2x = 3x&sup2;<br>2. (4x&sup2;) / 2x = 2x<br>3. (&minus;2x) / 2x = &minus;1<br><br><strong>Result:</strong> 3x&sup2; + 2x &minus; 1</div><p><strong>Dividing by a Binomial:</strong> If you see a polynomial divided by something like (x + 3), your goal is to <strong>factor the top</strong>. It will almost certainly factor into two pieces, and one of them will perfectly match the bottom so you can cancel it out!</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>STAAR Strategies &amp; Undefined Values</h4><p>On the STAAR test, division problems often look like giant fractions: <br><strong>(x&sup2; + 7x + 10) / (x + 2)</strong></p><ol class="step-list"><li>Factor the top: x&sup2; + 7x + 10 becomes (x + 5)(x + 2).</li><li>Write it out: <strong>(x + 5)(x + 2) / (x + 2)</strong></li><li>Cancel the matching pieces: The (x + 2) cancels!</li><li>Final Answer: <strong>x + 5</strong></li></ol><div class="staar-box"><strong>STAAR Tip:</strong> Remember that you can never divide by zero! So for the problem above, x cannot equal &minus;2. The test might trick you by asking "For what value of x is the expression undefined?" Just set the bottom equal to 0 and solve!</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:{
+          var a=rInt(2,5),b=rInt(2,4),c=rInt(2,6);
+          var m=rInt(2,4);
+          var ca=a*m,cb=b*m,cc=c*m;
+          stem="Divide: ("+ca+"x\u00B3 + "+cb+"x\u00B2 - "+cc+"x) \u00F7 "+m+"x";
+          correct=a+"x\u00B2 + "+b+"x - "+c;
+          choices=shuffle([a+"x\u00B2 + "+b+"x - "+c, a+"x\u00B3 + "+b+"x\u00B2 - "+c+"x", (ca/m)+"x\u00B2 + "+(cb/m)+"x + "+(cc/m), a+"x\u00B2 + "+b+"x"]);
+          explain="Divide each term by "+m+"x: ("+ca+"/"+m+")x\u00B2 + ("+cb+"/"+m+")x - ("+cc+"/"+m+"). Result: "+a+"x\u00B2 + "+b+"x - "+c+".";
+          hints=["Divide the coefficients by "+m+".","Subtract 1 from each exponent because you are dividing by x.",""+a+"x\u00B2 + "+b+"x - "+c+"."];
+          break;
+        }
+        case 1:{
+          var p=rInt(1,5),q=rInt(2,6);
+          var b=p+q, c=p*q;
+          stem="Simplify by factoring: (x\u00B2 + "+b+"x + "+c+") / (x + "+p+")";
+          correct="x + "+q;
+          choices=shuffle(["x + "+q, "x + "+p, "x + "+b, "x\u00B2 + "+q]);
+          explain="Factor the top: x\u00B2 + "+b+"x + "+c+" = (x + "+p+")(x + "+q+"). Cancel the (x + "+p+"). Result: x + "+q+".";
+          hints=["Factor the numerator first.","Two numbers that multiply to "+c+" and add to "+b+" are "+p+" and "+q+".","Cancel out (x + "+p+"). Result: x + "+q+"."];
+          break;
+        }
+        case 2:{
+          var v=rInt(3,8);
+          stem="For what value of x is the expression (x\u00B2 - 9) / (x - "+v+") undefined?";
+          correct=String(v);
+          choices=shuffle([String(v), "-"+v, "3", "-3"]);
+          explain="An expression is undefined when the denominator is equal to zero. Set x - "+v+" = 0. x = "+v+".";
+          hints=["You cannot divide by zero!","Set the denominator equal to 0.","x - "+v+" = 0, so x = "+v+"."];
+          break;
+        }
+        case 3:{
+          var a=2, p=rInt(1,4), q=rInt(1,5);
+          var sum=p+q, prod=p*q;
+          var mid=a*sum, last=a*prod;
+          stem="Simplify: (2x\u00B2 + "+mid+"x + "+last+") / (2x + "+(2*p)+")";
+          correct="x + "+q;
+          choices=shuffle(["x + "+q, "x + "+p, "2x + "+q, "2x + "+p]);
+          explain="Factor the GCF on top: 2(x\u00B2 + "+sum+"x + "+prod+") = 2(x + "+p+")(x + "+q+"). Factor the bottom: 2(x + "+p+"). Cancel the 2 and the (x + "+p+"). Result: x + "+q+".";
+          hints=["Factor out a 2 from both the top and the bottom first!","Top is 2(x+"+p+")(x+"+q+"). Bottom is 2(x+"+p+").","Cancel the matching parts!"];
+          break;
+        }
+        default:{
+          stem="STAAR: The area of a rectangle is (x\u00B2 + 5x + 6) and its length is (x + 3). What is its width?";
+          correct="x + 2";
+          choices=shuffle(["x + 2", "x + 3", "x + 5", "x + 6"]);
+          explain="Area = length \u00D7 width, so Width = Area / length. (x\u00B2 + 5x + 6) / (x + 3). Factor the top to (x + 2)(x + 3). Cancel (x + 3). Width = x + 2.";
+          hints=["Divide the area by the length.","Factor x\u00B2 + 5x + 6.","(x + 2)(x + 3). Cancel the (x + 3)."];
+        }
+      }
+      return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"5e",level:level};
+    }
+  },
+  {
+    id:"5f",name:"Special Cases & Difference of Squares",teks:"A.10D, A.10F",
+    explanation:"Some binomials and trinomials follow specific patterns that make them easy to factor once you memorize the rules. The most common is the Difference of Two Squares: a\u00B2 - b\u00B2 = (a - b)(a + b).",
+    realWorld:"In physics, calculating the kinetic energy difference between two velocities involves squaring numbers and finding their difference, which can be factored to make mental math much easier!",
+    prereqs:["5d"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>The Missing Middle</h4><div class="analogy-box"><strong>Think of it this way:</strong> In a normal quadratic like x&sup2; + 5x + 6, you have three parts: the front, the middle, and the end.<br><br>But what if you see x&sup2; &minus; 25? The "x" term in the middle is completely missing! It\'s like seeing a car without a middle row of seats.<br><br>Why is it missing? Because when it was multiplied out, the middle terms were exact opposites (like +5x and &minus;5x) and they canceled each other out completely!</div>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Difference of Two Squares</h4><div class="math-box"><strong>The Pattern:</strong> &nbsp; a&sup2; &minus; b&sup2; = (a &minus; b)(a + b)<br><br><strong>Example 1:</strong> x&sup2; &minus; 49<br>&bull; What squared is x&sup2;? &rarr; x<br>&bull; What squared is 49? &rarr; 7<br><strong>Result:</strong> (x &minus; 7)(x + 7)</div><p><strong>Example 2 (Number in front):</strong> 4x&sup2; &minus; 81<br>&bull; What squared is 4x&sup2;? &rarr; 2x<br>&bull; What squared is 81? &rarr; 9<br><strong>Result:</strong> (2x &minus; 9)(2x + 9)</p><p><strong>WARNING:</strong> This ONLY works for subtraction (difference). x&sup2; + 25 cannot be factored with real numbers!</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Hidden Patterns &amp; STAAR Strategies</h4><p>Sometimes the difference of squares is hiding behind a Greatest Common Factor (GCF). You MUST factor out the GCF first!</p><div class="math-box"><strong>Example:</strong> 2x&sup2; &minus; 18<br>1. Factor out the 2: 2(x&sup2; &minus; 9)<br>2. Factor the difference of squares: <strong>2(x &minus; 3)(x + 3)</strong></div><div class="staar-box"><strong>STAAR Tip:</strong> STAAR loves to trick you with "Sum of Squares". If you see a plus sign like x&sup2; + 16, do NOT pick (x + 4)(x &minus; 4). The correct answer is usually "prime" or "cannot be factored." Always double check your signs using FOIL!</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:{
+          var n=rInt(2,10);
+          var sq=n*n;
+          stem="Factor: x\u00B2 - "+sq;
+          correct="(x - "+n+")(x + "+n+")";
+          choices=shuffle(["(x - "+n+")(x + "+n+")", "(x - "+sq+")(x + 1)", "(x - "+n+")(x - "+n+")", "(x + "+n+")(x + "+n+")"]);
+          explain="Difference of squares: a\u00B2 - b\u00B2 = (a - b)(a + b). The square root of "+sq+" is "+n+". Result: (x - "+n+")(x + "+n+").";
+          hints=["What number times itself is "+sq+"?",""+n+" \u00D7 "+n+" = "+sq+".","The pattern is (x - n)(x + n)."];
+          break;
+        }
+        case 1:{
+          var a=rInt(2,5), b=rInt(1,9);
+          var asq=a*a, bsq=b*b;
+          stem="Factor: "+asq+"x\u00B2 - "+bsq;
+          correct="("+a+"x - "+b+")("+a+"x + "+b+")";
+          choices=shuffle(["("+a+"x - "+b+")("+a+"x + "+b+")", "("+asq+"x - "+b+")(x + "+b+")", "("+a+"x - "+bsq+")("+a+"x + 1)", "("+a+"x - "+b+")("+a+"x - "+b+")"]);
+          explain="The square root of "+asq+"x\u00B2 is "+a+"x. The square root of "+bsq+" is "+b+". Result: ("+a+"x - "+b+")("+a+"x + "+b+").";
+          hints=["Find the square root of both parts.","\u221A("+asq+"x\u00B2) = "+a+"x. \u221A("+bsq+") = "+b+".","Put them in the (a - b)(a + b) pattern."];
+          break;
+        }
+        case 2:{
+          var gcf=rInt(2,5), n=rInt(2,6);
+          var sq=n*n;
+          var last=gcf*sq;
+          stem="Factor completely: "+gcf+"x\u00B2 - "+last;
+          correct=gcf+"(x - "+n+")(x + "+n+")";
+          choices=shuffle([gcf+"(x - "+n+")(x + "+n+")", "(x - "+n+")(x + "+n+")", gcf+"(x\u00B2 - "+sq+")", gcf+"(x - "+n+")\u00B2"]);
+          explain="Factor out the GCF first: "+gcf+"(x\u00B2 - "+sq+"). Then factor the difference of squares inside: "+gcf+"(x - "+n+")(x + "+n+").";
+          hints=["There is a GCF! Factor out "+gcf+" first.",""+gcf+"(x\u00B2 - "+sq+").","Now factor the x\u00B2 - "+sq+" part!"];
+          break;
+        }
+        case 3:{
+          stem="Which of the following is an equivalent form of 16x\u00B2 - 25y\u00B2?";
+          correct="(4x - 5y)(4x + 5y)";
+          choices=shuffle(["(4x - 5y)(4x + 5y)", "(8x - 5y)(2x + 5y)", "(4x - 5y)\u00B2", "(16x - 25y)(x + y)"]);
+          explain="Difference of squares with two variables. \u221A(16x\u00B2) = 4x. \u221A(25y\u00B2) = 5y. Result: (4x - 5y)(4x + 5y).";
+          hints=["What is the square root of 16x\u00B2? What is the square root of 25y\u00B2?","4x and 5y.","Pattern: (A - B)(A + B)."];
+          break;
+        }
+        default:{
+          var n=rInt(3,8);
+          var sq=n*n;
+          stem="STAAR: Which expression is equivalent to x\u00B2 + "+sq+"?";
+          correct="Cannot be factored over real numbers";
+          choices=shuffle(["Cannot be factored over real numbers", "(x + "+n+")(x + "+n+")", "(x - "+n+")(x + "+n+")", "(x - "+n+")\u00B2"]);
+          explain="This is a SUM of squares. Difference of squares (x\u00B2 - "+sq+") can be factored. A sum of squares cannot be factored using real numbers. (x + "+n+")(x + "+n+") equals x\u00B2 + "+(2*n)+"x + "+sq+", not x\u00B2 + "+sq+".";
+          hints=["Look closely at the sign! It's a PLUS sign.","Difference of squares has a MINUS sign.","Sum of squares cannot be factored."];
+        }
+      }
+      return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"5f",level:level};
+    }
   }
   ]// end concepts
 },
 {
   id:6,name:"Data Analysis & Statistics",
-  teks:"TEKS A.12A\u2013A.12C",locked:false,
+  teks:"TEKS A.4A\u2013A.4C, A.8B, A.9E",locked:false,
   eq:"How do we use data to discover patterns, make predictions, and support decisions?",
   eu:"Statistics gives us tools to summarize data, identify trends, and make predictions. A line of best fit and correlation tell us how strongly two variables are related \u2014 but correlation does not prove causation.",
   objectives:[
-    "I can create and interpret scatter plots to identify trends and relationships (A.12A).",
-    "I can describe correlation as positive, negative, or none and estimate its strength (A.12A).",
-    "I can determine and use a line of best fit to make predictions (A.12B).",
-    "I can interpret two-way frequency tables to analyze categorical data (A.12C).",
-    "I can distinguish between correlation and causation (A.12A)."
+    "I can calculate correlation coefficients and interpret them as a measure of strength (A.4A).",
+    "I can compare and contrast association and causation in real-world problems (A.4B).",
+    "I can write linear functions that provide a reasonable fit to data and make predictions (A.4C).",
+    "I can write quadratic and exponential functions using technology to model data (A.8B, A.9E).",
+    "I can interpret two-way frequency tables to analyze categorical data (8.11C)."
   ],
   concepts:[
   {
-    id:"6a",name:"Scatter Plots & Correlation",teks:"A.12A",
+    id:"6a",name:"Scatter Plots & Correlation",teks:"A.4A, A.4B",
     explanation:"A scatter plot shows two variables as dots on a coordinate plane. If the dots trend upward from left to right, that\u2019s positive correlation (as one increases, so does the other). Downward = negative correlation. Random scatter = no correlation. The tighter the dots cluster around a line, the stronger the correlation.",
     realWorld:"Plot the high temperature in Dallas each day (x) against ice cream sales (y). You\u2019ll see a positive correlation \u2014 hotter days mean more ice cream sold! But does heat CAUSE ice cream sales? That\u2019s a deeper question.",
     prereqs:["1b"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Connecting the Dots</h4><div class="analogy-box"><strong>Think of it this way:</strong> Does the outside temperature affect how much AC you use in Texas? Yes! As the temperature goes up, AC usage goes up. That\'s a <strong>positive correlation</strong>.<br><br>What about temperature and hot chocolate sales? As the temperature goes up, sales go down. That\'s a <strong>negative correlation</strong>.</div><p>A scatter plot is just a graph of dots showing how two variables are related. If the dots trend uphill, it\'s positive. Downhill, it\'s negative. If they look like a random cloud of mosquitoes, there is <strong>no correlation</strong>.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Strength and the "r" Value</h4><div class="math-box"><strong>The Correlation Coefficient (r)</strong><br>A number between -1 and 1 that measures how tightly the dots cluster around a line.<br>&bull; r = 1: Perfect positive line<br>&bull; r = &minus;1: Perfect negative line<br>&bull; r = 0: Completely random scatter</div><p>If r = 0.85, that\'s a <strong>strong positive</strong> correlation. If r = &minus;0.3, that\'s a <strong>weak negative</strong> correlation.</p><p><strong>Correlation &ne; Causation:</strong> Just because two things are correlated doesn\'t mean one <em>causes</em> the other. For example, ice cream sales and sunburns are highly correlated. Does eating ice cream cause sunburns? No! They both go up because of a third factor: sunny, hot weather.</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>STAAR Strategies &amp; Tricky Wording</h4><p>When analyzing a scatter plot, always look at the overall trend, not individual outlier dots.</p><div class="staar-box"><strong>STAAR Tip:</strong> STAAR loves to test your vocabulary on correlation questions. Watch out for absolute words like "always", "proves", or "causes". The correct answer will usually contain softer "trend" language like: "<strong>tends to</strong> increase," "is <strong>associated with</strong>," or "there is a <strong>relationship</strong>." Never choose an answer that claims one variable strictly causes the other just based on a scatter plot!</div>'}
+    ],
     generate:function(level){
       var stem,choices,correct,explain,hints;
       switch(level){
@@ -1845,10 +2584,15 @@ const UNITS=[
     }
   },
   {
-    id:"6b",name:"Line of Best Fit",teks:"A.12B",
+    id:"6b",name:"Line of Best Fit",teks:"A.4C",
     explanation:"A line of best fit (trend line) is a straight line drawn through a scatter plot that best represents the overall trend. It minimizes the distances from each point to the line. You can use this line\u2019s equation (y = mx + b) to predict y-values for x-values you haven\u2019t measured. Be careful predicting far outside your data range \u2014 that\u2019s called extrapolation and can be unreliable!",
     realWorld:"A Lewisville ISD teacher plots class size (x) vs. average test score (y) for 10 classes. The trend line is y = -1.5x + 105. For a class of 30 students, she predicts an average score of -1.5(30) + 105 = 60.",
     prereqs:["6a","1b"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Finding the Center Path</h4><div class="analogy-box"><strong>Think of it this way:</strong> Imagine a large crowd of students leaving Hebron High School and walking toward the parking lot. They aren\'t walking in a perfectly straight, single-file line. They are scattered.<br><br>But if you had to draw one straight path right down the middle of the crowd to represent where everyone is heading, that path is the <strong>Line of Best Fit</strong> (or trend line).</div><p>It\'s a line drawn through a scatter plot that gets as close to as many dots as possible, with about half the dots above it and half below it.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Interpreting the Line</h4><div class="math-box"><strong>The Equation: y = mx + b</strong><br>&bull; <strong>Slope (m):</strong> The rate of change. "For every 1 unit increase in x, y is predicted to change by m."<br>&bull; <strong>y-intercept (b):</strong> The starting point. "When x is 0, the predicted y is b."</div><p><strong>Example:</strong> A trend line for studying (x hours) vs test score (y) is y = 5x + 60.<br>The slope of 5 means: Every extra hour of studying adds about 5 points to the score.<br>The intercept of 60 means: A student who studies 0 hours is predicted to score a 60.</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Making Predictions &amp; STAAR Strategies</h4><p>We use the trend line to predict values we don\'t have data for. Just plug the given x into the equation and solve for y!</p><ul style="margin:6px 0 6px 18px;font-size:.9rem;line-height:1.7"><li><strong>Interpolation:</strong> Predicting a value <em>inside</em> your data range. (Very reliable)</li><li><strong>Extrapolation:</strong> Predicting a value far <em>outside</em> your data range. (Risky! A student studying 20 hours won\'t score a 160 on a test).</li></ul><div class="staar-box"><strong>STAAR Tip:</strong> You can find the exact line of best fit (Linear Regression) using your calculator! Put your x-values in L1 and y-values in L2, then run STAT &rarr; CALC &rarr; 4:LinReg. The calculator will give you the exact slope (a) and intercept (b). Don\'t guess from the graph if they give you a table of points!</div>'}
+    ],
     generate:function(level){
       var stem,choices,correct,explain,hints;
       switch(level){
@@ -1901,10 +2645,15 @@ const UNITS=[
     }
   },
   {
-    id:"6c",name:"Two-Way Frequency Tables",teks:"A.12C",
+    id:"6c",name:"Two-Way Frequency Tables",teks:"8.11C",
     explanation:"A two-way frequency table organizes data about two categorical variables. Rows represent one variable, columns represent the other, and each cell shows the count. Marginal frequencies (row/column totals) summarize each variable. Relative frequencies (percentages) let you compare groups of different sizes.",
     realWorld:"Survey 200 LISD 8th graders: Do you prefer pizza or tacos? Are you in band or athletics? A two-way table shows how many band students prefer pizza vs. tacos, and the same for athletes. You can spot interesting patterns!",
     prereqs:[],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Organizing the Data</h4><div class="analogy-box"><strong>Think of it this way:</strong> Imagine you survey students in the cafeteria about two things: their grade (Freshman vs. Sophomore) and their lunch choice (Pizza vs. Tacos).<br><br>You could write a massive list of 100 responses, but it would be impossible to read. A <strong>Two-Way Frequency Table</strong> organizes this perfectly! Rows are the grades, columns are the lunch choices, and the boxes show how many students fit into <strong>both</strong> categories.</div>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Reading the Table</h4><div class="math-box"><strong>Vocabulary:</strong><br>&bull; <strong>Joint Frequency:</strong> The inside boxes (e.g., Freshman who chose Pizza).<br>&bull; <strong>Marginal Frequency:</strong> The totals on the edges (e.g., Total Freshmen, Total Pizza).</div><p><strong>Relative Frequency (Percentages):</strong> Instead of just counts, we often want percentages so we can compare groups of different sizes.</p><ol class="step-list"><li>Identify the "part" (the specific group they are asking about).</li><li>Identify the "whole" (the total they are comparing to).</li><li>Divide part by whole: part &divide; whole</li></ol>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Finding the Right Denominator &amp; STAAR Strategies</h4><p>The hardest part of two-way tables is finding the correct total to divide by. Read the question carefully!</p><ul style="margin:6px 0 6px 18px;font-size:.9rem;line-height:1.7"><li>"What percent <strong>of all students</strong> like pizza?" &rarr; Denominator is the grand total.</li><li>"What percent <strong>of the freshmen</strong> like pizza?" &rarr; Denominator is the total freshmen row only.</li><li>"Of the students <strong>who chose pizza</strong>, what percent were freshmen?" &rarr; Denominator is the total pizza column only.</li></ul><div class="staar-box"><strong>STAAR Tip:</strong> When STAAR asks for relative frequency, underline the word immediately following "of" or "given that". This tells you exactly what number goes in the denominator. If you use the grand total when they only asked about one specific row, you will definitely see your wrong answer as one of the multiple-choice options!</div>'}
+    ],
     generate:function(level){
       var stem,choices,correct,explain,hints;
       switch(level){
@@ -1956,10 +2705,15 @@ const UNITS=[
     }
   },
   {
-    id:"6d",name:"Interpreting Data & Predictions",teks:"A.12B",
+    id:"6d",name:"Interpreting Data & Predictions",teks:"A.4C",
     explanation:"Data analysis is about telling a story with numbers. Look for outliers (data points far from the trend), consider the context, and always ask: is my prediction reasonable? Interpolation (predicting within the data range) is safer than extrapolation (predicting beyond it). Always report what the data shows, not what you wish it showed.",
     realWorld:"The Texas Rangers\u2019 batting averages over a season can be analyzed with statistics. An outlier game (0 hits) might pull the average down. Understanding mean vs. median helps: median is more resistant to outliers.",
     prereqs:["6a","6b"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Telling a Story with Numbers</h4><div class="analogy-box"><strong>Think of it this way:</strong> Data analysis isn\'t just about calculating numbers; it\'s about figuring out what story the numbers are telling. Are the numbers typical? Is there one weird data point throwing everything off?<br><br>If 9 students score a 90 on a quiz, but one student scores a 0, the average drops to an 81. The 0 is an <strong>outlier</strong>. Does an 81 accurately represent how the class did? Not really!</div><p>When we interpret data, we have to use common sense and look for factors that might skew the results or break our models.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Mean vs. Median and Outliers</h4><div class="math-box"><strong>Which average is better?</strong><br>&bull; <strong>Mean:</strong> Add all up, divide by total. Gets pulled heavily by outliers.<br>&bull; <strong>Median:</strong> The physical middle number. Completely ignores outliers.</div><p>If you have an extreme outlier (like a billionaire moving into a normal neighborhood), the <strong>mean</strong> will skyrocket, but the <strong>median</strong> will stay mostly the same. The median is a much better measure of the "typical" value when outliers are present.</p><p><strong>Evaluating Predictions:</strong> Always ask: "Does this prediction make real-world sense?" If a model predicts a person\'s height will be negative, or that a company will sell 4.5 cars, the model has broken down!</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Synthesizing Data Skills &amp; STAAR Strategies</h4><p>On STAAR, data interpretation questions often combine skills: reading a scatter plot, evaluating a trend line, and checking if a statement is reasonable.</p><ol class="step-list"><li>Read the axes carefully. Are the units in thousands?</li><li>Check the scale. Does the graph skip numbers?</li><li>Evaluate the model. Is it predicting something impossible?</li></ol><div class="staar-box"><strong>STAAR Tip:</strong> Don\'t blindly trust the math equation! If an equation predicts a student will score a 115 on a 100-point test, the correct answer might be "The model is no longer valid at this value." Always apply real-world logic to the numbers.</div>'}
+    ],
     generate:function(level){
       var stem,choices,correct,explain,hints;
       switch(level){
@@ -2009,6 +2763,62 @@ const UNITS=[
         }
       }
       return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"6d",level:level};
+    }
+  },
+  {
+    id:"6e",name:"Non-Linear Regression",teks:"A.8B, A.9E",
+    explanation:"Sometimes a straight line is not the best fit for data. If the data curves up and then down (like a thrown ball), we use Quadratic Regression. If the data curves up extremely fast (like population growth), we use Exponential Regression.",
+    realWorld:"Predicting the number of bacteria on a cafeteria table over time requires an exponential curve because bacteria double every hour. A straight line would severely underestimate the danger!",
+    prereqs:["6b"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Fitting the Right Shape</h4><div class="analogy-box"><strong>Think of it this way:</strong> Imagine trying to fit a perfectly straight ruler to a bent horseshoe. It doesn\'t work very well, right?<br><br>When we look at a scatter plot, we first have to decide what "shape" the dots are making.<br>&bull; <strong>Line:</strong> Steady, constant growth (like a paycheck).<br>&bull; <strong>U-Shape:</strong> Goes down then up, or up then down (like a thrown football). This is <strong>Quadratic</strong>.<br>&bull; <strong>Hockey Stick:</strong> Starts slow then explodes upwards (like a viral TikTok video). This is <strong>Exponential</strong>.</div>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Using Technology</h4><div class="math-box"><strong>Calculator Commands:</strong><br>Enter your data into L1 and L2 using STAT &rarr; EDIT.<br><br>Then choose the right model:<br>&bull; STAT &rarr; CALC &rarr; <strong>4:LinReg</strong> (Straight line: y = ax + b)<br>&bull; STAT &rarr; CALC &rarr; <strong>5:QuadReg</strong> (U-Shape: y = ax&sup2; + bx + c)<br>&bull; STAT &rarr; CALC &rarr; <strong>0:ExpReg</strong> (Hockey stick: y = a &middot; b^x)</div><p>When the problem asks for the "best fit", look at the graph! Whichever curve naturally flows through the center of the dots without fighting the shape is the correct model to use.</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>STAAR Strategies &amp; Tables</h4><p>Sometimes STAAR just gives you a table of values and asks what type of function best models it.</p><ol class="step-list"><li>Look at the y-values as x increases by 1.</li><li>Are you <strong>adding</strong> the same number every time? &rarr; <strong>Linear</strong></li><li>Are you <strong>multiplying</strong> by the same number every time (e.g., doubling)? &rarr; <strong>Exponential</strong></li><li>Are the differences changing, but the <em>differences of the differences</em> are constant? &rarr; <strong>Quadratic</strong></li></ol><div class="staar-box"><strong>STAAR Tip:</strong> If you are completely stuck, pick any x-value from the table. Plug that x into all four multiple-choice equations. Whichever equation gives you a y-value closest to the table is the correct answer!</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:{
+          stem="A scatter plot shows the height of a baseball over time. The dots go up, peak, and then come back down. Which regression model should you use?";
+          correct="Quadratic";
+          choices=shuffle(["Quadratic", "Linear", "Exponential", "Absolute Value"]);
+          explain="A path that goes up and then down creates a parabola (U-shape), which is modeled by a quadratic function.";
+          hints=["What shape does a thrown baseball make?","It goes up and comes back down in a curve.","That U-shape is a parabola (quadratic)."];
+          break;
+        }
+        case 1:{
+          stem="A table shows the number of infected computers on a network: Day 1 (5), Day 2 (25), Day 3 (125), Day 4 (625). What type of function best models this data?";
+          correct="Exponential";
+          choices=shuffle(["Exponential", "Linear", "Quadratic", "No relationship"]);
+          explain="The y-values are multiplying by 5 each day (5 &times; 5 = 25, 25 &times; 5 = 125). Repeated multiplication indicates an exponential function.";
+          hints=["Look at how the y-values grow. Are they adding or multiplying?","They are multiplying by 5 each time.","Multiplication means exponential growth!"];
+          break;
+        }
+        case 2:{
+          stem="You run QuadReg on your calculator and get a = -16, b = 40, c = 5. Write the quadratic equation.";
+          correct="y = -16x\u00B2 + 40x + 5";
+          choices=shuffle(["y = -16x\u00B2 + 40x + 5", "y = 5x\u00B2 + 40x - 16", "y = -16 + 40x + 5x\u00B2", "y = -16x + 40"]);
+          explain="The standard form for quadratic regression is y = ax\u00B2 + bx + c. Substituting the values gives y = -16x\u00B2 + 40x + 5.";
+          hints=["Recall the standard form: y = ax\u00B2 + bx + c.","Plug in a=-16, b=40, c=5.","y = -16x\u00B2 + 40x + 5."];
+          break;
+        }
+        case 3:{
+          stem="Using the exponential regression equation y = 10(2)^x, predict the value of y when x = 4.";
+          correct="160";
+          choices=shuffle(["160", "80", "10000", "40"]);
+          explain="Plug in x=4: y = 10(2)^4. First do the exponent: 2^4 = 16. Then multiply: 10 &times; 16 = 160.";
+          hints=["Plug x = 4 into the equation.","Calculate 2 to the 4th power first.","2 &times; 2 &times; 2 &times; 2 = 16. Then multiply by 10."];
+          break;
+        }
+        default:{
+          stem="STAAR: Which type of function best models the data set {(1, 2), (2, 4), (3, 6), (4, 8)}?";
+          correct="Linear";
+          choices=shuffle(["Linear", "Quadratic", "Exponential", "None of these"]);
+          explain="As x increases by 1, y increases by adding 2 each time. A constant addition (constant rate of change) means it is a linear function.";
+          hints=["Look at the y-values: 2, 4, 6, 8.","Are you adding the same number or multiplying by the same number?","You are adding 2 each time. Constant addition is linear."];
+        }
+      }
+      return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"6e",level:level};
     }
   }
   ]// end concepts
@@ -2224,8 +3034,8 @@ function renderLearnTab(u){
   html+="</ul></div>";
   html+='<h2 style="margin-bottom:12px">Concepts</h2>';
 
-  if(u.id>=1&&u.id<=4){
-    // ── Units 1–4: 3-Level Progressive Disclosure ──
+  if(u.id>=1&&u.id<=6){
+    // ── Units 1–6: 3-Level Progressive Disclosure ──
     u.concepts.forEach(function(c,i){
       var lvls=c.levels||[];
       html+='<div class="concept-card" data-cid="'+c.id+'" id="concept-'+c.id+'">'+
@@ -2431,6 +3241,42 @@ function renderMiniViz(cid){
       cx.beginPath();cx.arc(xpx,nlY,6,0,Math.PI*2);cx.fill();
     }
     sl.addEventListener("input",upd1e);upd1e();
+  }else if(cid==="1f"){
+    container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Literal Equation Machine: Convert Ax + By = C into y = mx + b</p>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+
+        '<label style="font-size:.85rem"><input type="number" id="mv1fA" value="3" min="-10" max="10" style="width:45px">x + <input type="number" id="mv1fB" value="2" min="-10" max="10" style="width:45px">y = <input type="number" id="mv1fC" value="12" min="-50" max="50" style="width:50px"></label>'+
+      '</div>'+
+      '<div style="background:#fdf4ff;border-radius:8px;padding:12px;font-size:1rem;line-height:1.8" id="mv1fSteps"></div>';
+    function upd1f(){
+      var a=parseInt($("mv1fA").value)||0, b=parseInt($("mv1fB").value)||0, c=parseInt($("mv1fC").value)||0;
+      var r=$("mv1fSteps");
+      if(b===0){
+        r.innerHTML='<span style="color:var(--red);font-weight:bold">Error:</span> If B is 0, there is no y variable to solve for! (This creates a vertical line x = '+(c/a!==0? (c/a).toFixed(2) : 0)+')';
+        return;
+      }
+      var eqA = (a>=0?"":"-") + Math.abs(a) + "x";
+      var eqB = (b>=0?"+":"-") + " " + Math.abs(b) + "y";
+      var aMv = (a>0?"-":"+") + " " + Math.abs(a) + "x";
+      
+      var mNum = -a, mDen = b;
+      var cDen = b;
+      var mbStr = mDen===1?mNum:(mNum+"/"+mDen);
+      var cbStr = cDen===1?c:(c+"/"+cDen);
+      
+      var decM = mNum/mDen;
+      var decC = c/cDen;
+      var signB = decC>=0 ? "+ "+decC.toFixed(1) : "- "+Math.abs(decC).toFixed(1);
+
+      r.innerHTML='<div style="font-weight:bold;margin-bottom:8px">Start: '+eqA+' '+eqB+' = '+c+'</div>'+
+        '<div><strong>Step 1:</strong> Undo the x-term by moving it to the right side.</div>'+
+        '<div style="font-family:monospace;color:#dc2626">&nbsp;&nbsp;'+b+'y = '+aMv+' + '+c+'</div>'+
+        '<div style="margin-top:8px"><strong>Step 2:</strong> Divide EVERYTHING by the y-coefficient ('+b+').</div>'+
+        '<div style="font-family:monospace;color:#2563eb">&nbsp;&nbsp;y = ('+mNum+'/'+mDen+')x + ('+c+'/'+mDen+')</div>'+
+        '<hr style="border:none;border-top:1px dashed #cbd5e1;margin:8px 0">'+
+        '<div style="font-weight:bold;color:var(--green)">Slope-Intercept Form: y = '+decM.toFixed(2)+'x '+signB+'</div>';
+    }
+    ["mv1fA","mv1fB","mv1fC"].forEach(function(id){$(id).addEventListener("input",upd1f);});
+    upd1f();
   }else if(cid==="2a"){
     // Two-line graph for systems by graphing
     container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Interactive Graph: see where two lines intersect</p>'+
@@ -2596,6 +3442,50 @@ function renderMiniViz(cid){
     }
     ["mv2dA","mv2dB","mv2dN","mv2dT"].forEach(function(id){$(id).addEventListener("input",upd2d);});
     upd2d();
+  }else if(cid==="2e"){
+    container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Solution Explorer: Match or mismatch m and b to see what happens.</p>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+
+        '<label style="font-size:.85rem;color:#2563eb;font-weight:600">Line 1: y = <input type="range" id="mv2em1" min="-3" max="3" value="2" style="width:50px;vertical-align:middle">x + <input type="range" id="mv2eb1" min="-5" max="5" value="1" style="width:50px;vertical-align:middle"></label>'+
+      '</div>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+
+        '<label style="font-size:.85rem;color:#e8722a;font-weight:600">Line 2: y = <input type="range" id="mv2em2" min="-3" max="3" value="-1" style="width:50px;vertical-align:middle">x + <input type="range" id="mv2eb2" min="-5" max="5" value="-2" style="width:50px;vertical-align:middle"></label>'+
+      '</div>'+
+      '<div id="mv2eR" style="margin-bottom:8px;font-weight:600;font-size:1.1rem;text-align:center"></div>'+
+      '<canvas id="mvC-2e"></canvas>';
+    function upd2e(){
+      var m1=parseInt($("mv2em1").value), b1=parseInt($("mv2eb1").value);
+      var m2=parseInt($("mv2em2").value), b2=parseInt($("mv2eb2").value);
+      var r=$("mv2eR");
+      var cv=$("mvC-2e");sizeCanvas(cv,320,180);var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+      cx.clearRect(0,0,W,H);
+      var ox=W/2,oy=H/2,sc=15;
+      
+      cx.strokeStyle="#e2e8f0";cx.lineWidth=1;
+      for(var i=-10;i<=10;i++){var px=ox+i*sc;cx.beginPath();cx.moveTo(px,0);cx.lineTo(px,H);cx.stroke();}
+      for(var i=-6;i<=6;i++){var py=oy-i*sc;cx.beginPath();cx.moveTo(0,py);cx.lineTo(W,py);cx.stroke();}
+      
+      cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+      cx.beginPath();cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+      cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.stroke();
+
+      cx.strokeStyle="#2563eb";cx.lineWidth=4;cx.beginPath();
+      cx.moveTo(0,oy-(m1*(-ox/sc)+b1)*sc);cx.lineTo(W,oy-(m1*((W-ox)/sc)+b1)*sc);cx.stroke();
+      
+      cx.setLineDash(m1===m2&&b1===b2?[5,5]:[]);
+      cx.strokeStyle="#e8722a";cx.lineWidth=2;cx.beginPath();
+      cx.moveTo(0,oy-(m2*(-ox/sc)+b2)*sc);cx.lineTo(W,oy-(m2*((W-ox)/sc)+b2)*sc);cx.stroke();
+      cx.setLineDash([]);
+
+      if(m1===m2 && b1===b2){
+        r.innerHTML='<span style="color:var(--green)">Infinitely Many Solutions</span><br><span style="font-size:.85rem;color:var(--muted)">Same slope, same intercept (same line)</span>';
+      }else if(m1===m2){
+        r.innerHTML='<span style="color:var(--red)">No Solution</span><br><span style="font-size:.85rem;color:var(--muted)">Same slope, different intercepts (parallel)</span>';
+      }else{
+        r.innerHTML='<span style="color:#2563eb">Exactly One Solution</span><br><span style="font-size:.85rem;color:var(--muted)">Different slopes (they must cross)</span>';
+      }
+    }
+    ["mv2em1","mv2eb1","mv2em2","mv2eb2"].forEach(function(id){$(id).addEventListener("input",upd2e);});
+    upd2e();
   }else if(cid==="3a"||cid==="3b"){
     // Exponential growth/decay curve visualizer
     var isGrowth=cid==="3a";
@@ -2745,6 +3635,139 @@ function renderMiniViz(cid){
     }
     ["mv3dA","mv3dB"].forEach(function(id){$(id).addEventListener("input",upd3d);});
     upd3d();
+  }else if(cid==="3e"){
+    container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Asymptote Explorer &mdash; y = a &middot; b<sup>x</sup> + k:</p>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+
+        '<label style="font-size:.85rem;display:block"><span style="color:#2563eb;font-weight:700">a</span> = <input type="range" id="mv3ea" min="-5" max="5" value="2" step="1" style="width:70px;vertical-align:middle"> <span id="mv3eaV">2</span></label>'+
+        '<label style="font-size:.85rem;display:block"><span style="color:#16a34a;font-weight:700">b</span> = <input type="range" id="mv3eb" min="0.1" max="3" value="1.5" step="0.1" style="width:70px;vertical-align:middle"> <span id="mv3ebV">1.5</span></label>'+
+        '<label style="font-size:.85rem;display:block"><span style="color:#dc2626;font-weight:700">k</span> = <input type="range" id="mv3ek" min="-5" max="5" value="0" step="1" style="width:70px;vertical-align:middle"> <span id="mv3ekV">0</span></label>'+
+      '</div>'+
+      '<div id="mv3eR" style="margin-bottom:8px;font-weight:600;font-size:.9rem"></div>'+
+      '<canvas id="mvC-3e"></canvas>';
+    function upd3e(){
+      var a=parseFloat($("mv3ea").value); if(a===0)a=1;
+      var b=parseFloat($("mv3eb").value); if(b===1)b=1.1;
+      var k=parseFloat($("mv3ek").value);
+      $("mv3eaV").textContent=a;$("mv3ebV").textContent=b;$("mv3ekV").textContent=k;
+      $("mv3eR").innerHTML="Equation: y = "+a+"("+b+")<sup>x</sup> "+(k>=0?"+ "+k:"- "+Math.abs(k))+"<br>Asymptote: y = "+k;
+      var cv=$("mvC-3e");sizeCanvas(cv,320,200);var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+      cx.clearRect(0,0,W,H);
+      var ox=W/2,oy=H/2,sc=15;
+      cx.strokeStyle="#e2e8f0";cx.lineWidth=1;
+      for(var i=-10;i<=10;i++){cx.beginPath();cx.moveTo(ox+i*sc,0);cx.lineTo(ox+i*sc,H);cx.stroke();}
+      for(var i=-6;i<=6;i++){cx.beginPath();cx.moveTo(0,oy-i*sc);cx.lineTo(W,oy-i*sc);cx.stroke();}
+      cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+      cx.beginPath();cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+      cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.stroke();
+      // Asymptote
+      var asyY=oy-k*sc;
+      cx.strokeStyle="#dc2626";cx.lineWidth=2;cx.setLineDash([5,5]);
+      cx.beginPath();cx.moveTo(0,asyY);cx.lineTo(W,asyY);cx.stroke();cx.setLineDash([]);
+      cx.fillStyle="#dc2626";cx.font="bold 12px system-ui";cx.fillText("y = "+k, 5, asyY-6);
+      // Curve
+      cx.strokeStyle="#2563eb";cx.lineWidth=2.5;cx.beginPath();
+      var first=true;
+      for(var xi=-10;xi<=10;xi+=0.2){
+        var yi=a*Math.pow(b,xi)+k;
+        var px=ox+xi*sc,py=oy-yi*sc;
+        if(py<-50||py>H+50) continue;
+        if(first){cx.moveTo(px,py);first=false;}else cx.lineTo(px,py);
+      }
+      cx.stroke();
+    }
+    ["mv3ea","mv3eb","mv3ek"].forEach(function(id){$(id).addEventListener("input",upd3e);});
+    upd3e();
+  }else if(cid==="3f"){
+    container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Domain & Range limit visualization:</p>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+
+        '<label style="font-size:.85rem">Function: <select id="mv3fF"><option value="1">y = 2(1.5)ˣ (Pos a)</option><option value="-1">y = -2(1.5)ˣ (Neg a)</option></select></label>'+
+      '</div>'+
+      '<div id="mv3fR" style="margin-bottom:8px;font-weight:600;font-size:.9rem;background:#f8fafc;padding:12px;border-radius:8px"></div>'+
+      '<canvas id="mvC-3f"></canvas>';
+    function upd3f(){
+      var f=parseInt($("mv3fF").value)||1;
+      $("mv3fR").innerHTML="Mathematical Domain: <strong>All Real Numbers</strong><br>Mathematical Range: <strong>"+(f>0?"y > 0":"y < 0")+"</strong>";
+      var cv=$("mvC-3f");sizeCanvas(cv,320,180);var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+      cx.clearRect(0,0,W,H);
+      var ox=W/2,oy=H/2,sc=15;
+      // Shade Range
+      cx.fillStyle=f>0?"rgba(37,99,235,0.1)":"rgba(220,38,38,0.1)";
+      if(f>0) cx.fillRect(0,0,W,oy);
+      else cx.fillRect(0,oy,W,H-oy);
+      // Axes
+      cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+      cx.beginPath();cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+      cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.stroke();
+      // Curve
+      cx.strokeStyle=f>0?"#2563eb":"#dc2626";cx.lineWidth=2.5;cx.beginPath();
+      var first=true;
+      for(var xi=-10;xi<=10;xi+=0.2){
+        var yi=f*2*Math.pow(1.5,xi);
+        var px=ox+xi*sc,py=oy-yi*sc;
+        if(py<-50||py>H+50) continue;
+        if(first){cx.moveTo(px,py);first=false;}else cx.lineTo(px,py);
+      }
+      cx.stroke();
+      cx.fillStyle=f>0?"#2563eb":"#dc2626";cx.font="12px system-ui";cx.textAlign="center";
+      cx.fillText("Valid Range Area", W/4, f>0?20:H-20);
+    }
+    $("mv3fF").addEventListener("input",upd3f);
+    upd3f();
+  }else if(cid==="3g"){
+    container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Regression Models: Linear vs Exponential fit</p>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+
+        '<label style="font-size:.85rem">Show Model: <select id="mv3gM"><option value="lin">Linear (y=mx+b)</option><option value="exp">Exponential (y=abˣ)</option></select></label>'+
+      '</div>'+
+      '<div id="mv3gR" style="margin-bottom:8px;font-weight:600;font-size:.9rem;background:#f8fafc;padding:12px;border-radius:8px"></div>'+
+      '<canvas id="mvC-3g"></canvas>';
+    function upd3g(){
+      var m=$("mv3gM").value;
+      var r=$("mv3gR");
+      var cv=$("mvC-3g");sizeCanvas(cv,320,200);var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+      cx.clearRect(0,0,W,H);
+      var pts=[{x:0,y:2},{x:1,y:4.5},{x:2,y:8},{x:3,y:17},{x:4,y:33},{x:5,y:62}];
+      var ox=30,oy=H-30,gw=W-40,gh=H-40;
+      // Axes
+      cx.strokeStyle="#e2e8f0";cx.lineWidth=1;
+      for(var i=0;i<=5;i++){cx.beginPath();cx.moveTo(ox+i*gw/5,oy);cx.lineTo(ox+i*gw/5,0);cx.stroke();}
+      cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+      cx.beginPath();cx.moveTo(ox,oy);cx.lineTo(ox+gw,oy);cx.stroke();
+      cx.beginPath();cx.moveTo(ox,oy);cx.lineTo(ox,oy-gh);cx.stroke();
+      // Plot pts
+      cx.fillStyle="#334155";
+      pts.forEach(function(p){
+        var px=ox+(p.x/5)*gw;
+        var py=oy-(p.y/70)*gh;
+        cx.beginPath();cx.arc(px,py,4,0,Math.PI*2);cx.fill();
+        cx.fillStyle="#64748b";cx.font="10px system-ui";cx.textAlign="center";cx.fillText(p.y,px,py-6);
+        cx.fillStyle="#334155";
+      });
+      // Best fit lines
+      cx.lineWidth=2.5;cx.beginPath();
+      if(m==="lin"){
+        cx.strokeStyle="#dc2626";
+        // y = 11.2x - 3
+        for(var x=0;x<=5;x+=0.1){
+          var y=11.2*x - 3;
+          var px=ox+(x/5)*gw, py=oy-(y/70)*gh;
+          if(x===0)cx.moveTo(px,py); else cx.lineTo(px,py);
+        }
+        cx.stroke();
+        r.innerHTML="<span style='color:#dc2626'>Linear Model (R&sup2; = 0.85): y = 11.2x - 3</span><br>The line misses the curve entirely &mdash; very poor fit!";
+      }else{
+        cx.strokeStyle="#16a34a";
+        // y = 2.1 * (1.95)^x
+        for(var x=0;x<=5;x+=0.1){
+          var y=2.1*Math.pow(1.95,x);
+          var px=ox+(x/5)*gw, py=oy-(y/70)*gh;
+          if(x===0)cx.moveTo(px,py); else cx.lineTo(px,py);
+        }
+        cx.stroke();
+        r.innerHTML="<span style='color:#16a34a'>Exponential Model (R&sup2; = 0.99): y = 2.1(1.95)<sup>x</sup></span><br>The curve passes perfectly through the points!";
+      }
+    }
+    $("mv3gM").addEventListener("input",upd3g);
+    upd3g();
   }else if(cid==="4a"||cid==="4b"){
     // Parabola Explorer — enhanced with vertex label, y-intercept, and x-intercepts
     container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Parabola Explorer — adjust a, h, k in y = a(x - h)&sup2; + k:</p>'+
@@ -2907,6 +3930,189 @@ function renderMiniViz(cid){
     }
     ["mv4da","mv4db","mv4dc"].forEach(function(id){$(id).addEventListener("input",upd4d);});
     upd4d();
+  }else if(cid==="4e"){
+    container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Domain & Range Explorer:</p>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+
+        '<label style="font-size:.85rem">Opens: <select id="mv4eDir"><option value="1">Up</option><option value="-1">Down</option></select></label>'+
+        '<label style="font-size:.85rem">Vertex y (k): <input type="number" id="mv4ek" value="3" min="-10" max="10" style="width:50px"></label>'+
+      '</div>'+
+      '<div id="mv4eR" style="font-size:.9rem;line-height:1.8;background:#f8fafc;border-radius:8px;padding:12px;margin-bottom:8px"></div>'+
+      '<canvas id="mvC-4e"></canvas>';
+    function upd4e(){
+      var dir=parseInt($("mv4eDir").value)||1, k=parseInt($("mv4ek").value)||0;
+      var cv=$("mvC-4e");sizeCanvas(cv,320,150);var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+      cx.clearRect(0,0,W,H);
+      var pad=20,gw=W-2*pad,gh=H-2*pad;
+      var yMin=-10,yMax=10;
+      var ox=W/2,oy=H/2;
+      var sc=gh/(yMax-yMin);
+      cx.strokeStyle="#e2e8f0";cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+      cx.strokeStyle="#7c3aed";cx.lineWidth=2;cx.beginPath();
+      for(var xi=-5;xi<=5;xi+=0.2){
+        var yi=dir*(xi*xi)+k;
+        var px=ox+xi*(gw/10),py=oy-yi*sc;
+        if(py<-10||py>H+10)continue;
+        cx.lineTo(px,py);
+      }
+      cx.stroke();
+      var rangeStr=dir>0?"y ≥ "+k:"y ≤ "+k;
+      $("mv4eR").innerHTML="<strong>Domain:</strong> All real numbers (-&infin; < x < &infin;)<br><strong>Range:</strong> "+rangeStr;
+    }
+    ["mv4eDir","mv4ek"].forEach(function(id){$(id).addEventListener("input",upd4e);});
+    upd4e();
+  }else if(cid==="4f"){
+    container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Equation Builder (Vertex Form): y = a(x - h)² + k</p>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+
+        '<label style="font-size:.85rem">Vertex h: <input type="number" id="mv4fh" value="2" style="width:45px"></label>'+
+        '<label style="font-size:.85rem">Vertex k: <input type="number" id="mv4fk" value="-3" style="width:45px"></label><br>'+
+        '<label style="font-size:.85rem">Point x: <input type="number" id="mv4fx" value="4" style="width:45px"></label>'+
+        '<label style="font-size:.85rem">Point y: <input type="number" id="mv4fy" value="5" style="width:45px"></label>'+
+      '</div>'+
+      '<div id="mv4fR" style="font-size:.9rem;line-height:1.8;background:#f8fafc;border-radius:8px;padding:12px"></div>';
+    function upd4f(){
+      var h=parseFloat($("mv4fh").value)||0,k=parseFloat($("mv4fk").value)||0;
+      var px=parseFloat($("mv4fx").value)||0,py=parseFloat($("mv4fy").value)||0;
+      var dx=(px-h);
+      var r=$("mv4fR");
+      if(dx===0){r.innerHTML="<span style='color:var(--orange)'>The point's x cannot be the same as the vertex's x (unless it IS the vertex and then we can't find 'a').</span>";return;}
+      var dx2=dx*dx;
+      var a=(py-k)/dx2;
+      r.innerHTML="1. Start with y = a(x - h)&sup2; + k<br>"+
+        "2. Plug in vertex: y = a(x "+(h>=0?"- "+h:"+ "+Math.abs(h))+")&sup2; "+(k>=0?"+ "+k:"- "+Math.abs(k))+"<br>"+
+        "3. Plug in point: "+py+" = a("+px+" "+(h>=0?"- "+h:"+ "+Math.abs(h))+")&sup2; "+(k>=0?"+ "+k:"- "+Math.abs(k))+"<br>"+
+        "4. Solve for a: "+py+" = a("+dx+")&sup2; "+(k>=0?"+ "+k:"- "+Math.abs(k))+" &rarr; "+py+" = "+dx2+"a "+(k>=0?"+ "+k:"- "+Math.abs(k))+"<br>"+
+        "&nbsp;&nbsp;&nbsp;&nbsp;"+(py-k)+" = "+dx2+"a &rarr; <strong>a = "+a.toFixed(2).replace(/\.00$/,"")+"</strong><br>"+
+        "<strong>Final Eq:</strong> y = "+a.toFixed(2).replace(/\.00$/,"")+"(x "+(h>=0?"- "+h:"+ "+Math.abs(h))+")&sup2; "+(k>=0?"+ "+k:"- "+Math.abs(k));
+    }
+    ["mv4fh","mv4fk","mv4fx","mv4fy"].forEach(function(id){$(id).addEventListener("input",upd4f);});
+    upd4f();
+  }else if(cid==="4g"){
+    container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Transformations: f(x)=x&sup2; (gray) vs g(x)=a(x-h)&sup2;+k (blue)</p>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+
+        '<label style="font-size:.85rem"><span style="color:#2563eb;font-weight:700">a</span>:<input type="range" id="mv4ga" min="-3" max="3" value="-1" step="0.5" style="width:70px"><span id="mv4gaV">-1</span></label>'+
+        '<label style="font-size:.85rem"><span style="color:#2563eb;font-weight:700">h</span>:<input type="range" id="mv4gh" min="-5" max="5" value="2" step="1" style="width:70px"><span id="mv4ghV">2</span></label>'+
+        '<label style="font-size:.85rem"><span style="color:#2563eb;font-weight:700">k</span>:<input type="range" id="mv4gk" min="-5" max="5" value="4" step="1" style="width:70px"><span id="mv4gkV">4</span></label>'+
+      '</div>'+
+      '<div id="mv4gEq" style="margin-bottom:8px;font-weight:600;font-size:.9rem"></div>'+
+      '<canvas id="mvC-4g"></canvas>';
+    function upd4g(){
+      var a=parseFloat($("mv4ga").value)||1,h=parseFloat($("mv4gh").value)||0,k=parseFloat($("mv4gk").value)||0;
+      if(a===0)a=0.5;
+      $("mv4gaV").textContent=a;$("mv4ghV").textContent=h;$("mv4gkV").textContent=k;
+      $("mv4gEq").innerHTML="g(x) = "+a+"(x "+(h>=0?"- "+h:"+ "+Math.abs(h))+")&sup2; "+(k>=0?"+ "+k:"- "+Math.abs(k));
+      var cv=$("mvC-4g");sizeCanvas(cv,320,200);var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+      cx.clearRect(0,0,W,H);
+      var ox=W/2,oy=H/2+20,sc=15; // move origin down a bit
+      cx.strokeStyle="#e2e8f0";cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+      // Parent
+      cx.strokeStyle="#94a3b8";cx.lineWidth=1.5;cx.beginPath();
+      for(var xi=-10;xi<=10;xi+=0.2){
+        var py=oy-(xi*xi)*sc;
+        var px=ox+xi*sc;
+        if(xi===-10) cx.moveTo(px,py); else cx.lineTo(px,py);
+      }
+      cx.stroke();
+      // Transformed
+      cx.strokeStyle="#2563eb";cx.lineWidth=2.5;cx.beginPath();
+      for(var xi=-10;xi<=10;xi+=0.2){
+        var py=oy-(a*(xi-h)*(xi-h)+k)*sc;
+        var px=ox+xi*sc;
+        if(xi===-10) cx.moveTo(px,py); else cx.lineTo(px,py);
+      }
+      cx.stroke();
+    }
+    ["mv4ga","mv4gh","mv4gk"].forEach(function(id){$(id).addEventListener("input",upd4g);});
+    upd4g();
+  }else if(cid==="4h"){
+    container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Visualizing Perfect Squares: (x + b/2)&sup2; = x&sup2; + bx + (b/2)&sup2;</p>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+
+        '<label style="font-size:.85rem">b = <input type="number" id="mv4hB" value="6" min="-20" max="20" style="width:50px"></label>'+
+      '</div>'+
+      '<div id="mv4hR" style="font-size:.9rem;line-height:1.8;background:#f8fafc;border-radius:8px;padding:12px;margin-bottom:8px"></div>'+
+      '<canvas id="mvC-4h"></canvas>';
+    function upd4h(){
+      var b=parseFloat($("mv4hB").value)||0;
+      var half=b/2;
+      var sq=half*half;
+      $("mv4hR").innerHTML="To complete the square for <span style='font-family:monospace'>x&sup2; + "+b+"x</span>, take half of b and square it:<br>"+
+        "&nbsp;&bull; Half of b: "+half+"<br>"+
+        "&nbsp;&bull; Squared: "+sq+"<br>"+
+        "<strong>Perfect Square Trinomial:</strong> x\u00B2 + "+b+"x + "+sq+"<br>"+
+        "<strong>Factored:</strong> (x "+(half>=0?"+ "+half:"- "+Math.abs(half))+")\u00B2";
+      var cv=$("mvC-4h");sizeCanvas(cv,200,200);var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+      cx.clearRect(0,0,W,H);
+      // Area model
+      var ox=40,oy=40,w1=70,w2=b===0?1:Math.max(20,Math.abs(half)*10);
+      if(b!==0){
+        cx.fillStyle="#dbeafe";cx.fillRect(ox,oy,w1,w1);
+        cx.fillStyle="#fef3c7";cx.fillRect(ox+w1,oy,w2,w1);
+        cx.fillStyle="#dcfce7";cx.fillRect(ox,oy+w1,w1,w2);
+        cx.fillStyle="#fce7f3";cx.fillRect(ox+w1,oy+w1,w2,w2);
+        cx.strokeStyle="#1e293b";
+        cx.strokeRect(ox,oy,w1+w2,w1+w2);
+        cx.beginPath();cx.moveTo(ox+w1,oy);cx.lineTo(ox+w1,oy+w1+w2);cx.stroke();
+        cx.beginPath();cx.moveTo(ox,oy+w1);cx.lineTo(ox+w1+w2,oy+w1);cx.stroke();
+        
+        cx.fillStyle="#1e293b";cx.textAlign="center";cx.font="14px system-ui";
+        cx.fillText("x\u00B2",ox+w1/2,oy+w1/2+5);
+        cx.fillText((half)+"x",ox+w1+w2/2,oy+w1/2+5);
+        cx.fillText((half)+"x",ox+w1/2,oy+w1+w2/2+5);
+        cx.fillText((sq),ox+w1+w2/2,oy+w1+w2/2+5);
+        // Headers
+        cx.fillStyle="#64748b";cx.font="12px system-ui";
+        cx.fillText("x",ox+w1/2,oy-8);cx.fillText(half,ox+w1+w2/2,oy-8);
+        cx.textAlign="right";
+        cx.fillText("x",ox-8,oy+w1/2+4);cx.fillText(half,ox-8,oy+w1+w2/2+4);
+      }
+    }
+    $("mv4hB").addEventListener("input",upd4h);
+    upd4h();
+  }else if(cid==="4i"){
+    container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Curve of Best Fit: Drag slider to see linear vs quadratic model on data</p>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+
+        '<label style="font-size:.85rem"><input type="range" id="mv4id" min="0" max="1" step="0.05" value="0" style="vertical-align:middle;width:200px"></label>'+
+      '</div>'+
+      '<div id="mv4info" style="margin-bottom:8px;font-size:.9rem;background:#f8fafc;border-radius:8px;padding:12px">Slide right to reveal the parabolic data pattern!</div>'+
+      '<canvas id="mvC-4i"></canvas>';
+    function upd4i(){
+      var mix=parseFloat($("mv4id").value)||0;
+      var cv=$("mvC-4i");sizeCanvas(cv,320,200);var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+      cx.clearRect(0,0,W,H);
+      var pts=[]; // 7 points
+      for(var i=0;i<7;i++){
+        var x=i;
+        var yLin=2*x+3;
+        var yQuad=-(x-3)*(x-3)+12;
+        var y=yLin*(1-mix)+yQuad*mix + (Math.sin(i*7)*1.5); // pseudo-random noise
+        pts.push({x:x,y:y});
+      }
+      var ox=20,oy=H-20,gw=W-40,gh=H-40;
+      // Axes
+      cx.strokeStyle="#94a3b8";cx.beginPath();cx.moveTo(ox,oy);cx.lineTo(ox+gw,oy);cx.moveTo(ox,oy);cx.lineTo(ox,oy-gh);cx.stroke();
+      // Draw best fit
+      cx.strokeStyle="#2563eb";cx.lineWidth=2;cx.beginPath();
+      for(var x=0;x<=6;x+=0.1){
+        var yLin=2*x+3;
+        var yQuad=-(x-3)*(x-3)+12;
+        var y=yLin*(1-mix)+yQuad*mix;
+        var px=ox+(x/6)*gw;
+        var py=oy-(y/15)*gh;
+        if(x===0) cx.moveTo(px,py); else cx.lineTo(px,py);
+      }
+      cx.stroke();
+      // Plot pts
+      cx.fillStyle="#dc2626";
+      pts.forEach(function(p){
+        var px=ox+(p.x/6)*gw;
+        var py=oy-(p.y/15)*gh;
+        cx.beginPath();cx.arc(px,py,4,0,Math.PI*2);cx.fill();
+      });
+      if(mix<0.3) $("mv4info").innerHTML="Looks fairly <strong>linear</strong>. A straight line is an okay model.";
+      else if(mix<0.7) $("mv4info").innerHTML="Wait, it's starting to curve... a line is a bad fit!";
+      else $("mv4info").innerHTML="There's a peak and drop! We need <strong>Quadratic Regression</strong> to model this parabola.";
+    }
+    $("mv4id").addEventListener("input",upd4i);
+    upd4i();
   }else if(cid==="5a"){
     container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Polynomial Classifier \u2014 enter a polynomial to classify:</p>'+
       '<div style="margin-bottom:8px"><input type="text" id="mv5aIn" value="3x^2 + 2x - 5" placeholder="e.g. 3x^2 + 2x - 5" style="width:100%;max-width:280px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:16px"></div>'+
