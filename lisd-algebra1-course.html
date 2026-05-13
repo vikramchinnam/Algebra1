@@ -41,8 +41,14 @@ canvas{display:block;max-width:100%}
 
 /* ── DASHBOARD ── */
 .dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:16px}
-.unit-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden}
-.unit-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.12)}
+.unit-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative;}
+.unit-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.12);z-index:10;}
+.concept-mega-btn{font-size:.8rem;color:var(--blue);font-weight:700;display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border-radius:8px;background:var(--blue-lt);transition:.2s;margin-top:12px;cursor:pointer;}
+.concept-mega-btn:hover{background:#bfdbfe;}
+.concept-mega-wrapper{position:absolute;top:calc(100% - 10px);left:0;width:100%;padding-top:10px;z-index:100;opacity:0;visibility:hidden;pointer-events:none;transition:all .2s;}
+.concept-mega-content{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:0 10px 25px rgba(0,0,0,.15);display:flex;flex-wrap:wrap;gap:6px;}
+@media(hover:hover){.unit-card:hover .concept-mega-wrapper{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(5px);}}
+.unit-card.force-mega .concept-mega-wrapper{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(5px);}
 .unit-card.locked{opacity:.55;cursor:not-allowed}
 .unit-card.locked:hover{transform:none;box-shadow:var(--shadow)}
 .unit-num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;font-size:.85rem;margin-bottom:8px}
@@ -82,8 +88,10 @@ canvas{display:block;max-width:100%}
 
 /* ── PRACTICE TAB ── */
 .practice-filter{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-.filter-chip{padding:6px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:.85rem;font-weight:500;transition:.2s}
+.filter-chip{padding:6px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;font-size:.85rem;font-weight:500;transition:.2s;cursor:pointer}
 .filter-chip:hover,.filter-chip.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.filter-chip[data-f=""]:hover{background:var(--navy)}
+.filter-chip[data-f]:not([data-f=""]):hover::after{content:" →";opacity:.7}
 .prob-card{border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px;background:#fff}
 .prob-card .level-tag{display:inline-block;font-size:.72rem;padding:2px 10px;border-radius:10px;font-weight:600;margin-bottom:8px}
 .prob-card .level-tag.l1{background:#dbeafe;color:#1d4ed8}
@@ -140,7 +148,8 @@ canvas{display:block;max-width:100%}
 .stat-box .stat-val{font-size:1.6rem;font-weight:700;color:var(--navy)}
 .stat-box .stat-lbl{font-size:.78rem;color:var(--muted)}
 .concept-map{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-.cm-dot{padding:6px 12px;border-radius:8px;font-size:.82rem;font-weight:600;border:1px solid var(--border)}
+.cm-dot{padding:6px 12px;border-radius:8px;font-size:.82rem;font-weight:600;border:1px solid var(--border);cursor:pointer;transition:.15s}
+.cm-dot:hover{transform:translateY(-1px);box-shadow:0 2px 6px rgba(0,0,0,.12);filter:brightness(0.92)}
 .cm-dot.green{background:var(--green-lt);color:var(--green);border-color:var(--green)}
 .cm-dot.yellow{background:var(--gold-lt);color:#92400e;border-color:var(--gold)}
 .cm-dot.red{background:var(--red-lt);color:var(--red);border-color:var(--red)}
@@ -291,9 +300,12 @@ canvas{display:block;max-width:100%}
 
 <!-- ═══ HEADER ═══ -->
 <header class="hdr" role="banner">
-  <div>
-    <h1 id="hdrTitle">LISD Honors Algebra 1</h1>
-    <div class="sub" id="hdrSub">Grade 8 &middot; Texas TEKS Aligned</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <a href="index.html" class="hdr-back" aria-label="Back to course index" style="text-decoration:none;flex-shrink:0">&#8962; Home</a>
+    <div>
+      <h1 id="hdrTitle">LISD Honors Algebra 1</h1>
+      <div class="sub" id="hdrSub">Grade 8 &middot; Texas TEKS Aligned</div>
+    </div>
   </div>
   <div class="hdr-stats" aria-live="polite">
     <button class="hdr-back" id="backBtn" style="display:none" aria-label="Back to dashboard">&#8592; Dashboard</button>
@@ -352,18 +364,750 @@ const LEVEL_TEXT=["#1d4ed8","#4338ca","#92400e","#be185d","#dc2626"];
 
 const UNITS=[
 {
-  id:1,name:"Linear Equations & Inequalities",
-  teks:"TEKS A.5A, A.5B, A.12E",locked:false,
-  eq:"How can we find an unknown value when we know the relationship between quantities?",
-  eu:"An equation is a balance — whatever we do to one side, we must do to the other to keep it true.",
+  id:1,name:"Linear Functions, Equations & Inequalities",
+  teks:"TEKS A.2A–A.3E, A.5A, A.5B, A.12E",locked:false,
+  eq:"How do linear relationships connect quantities — and how do we represent, write, and solve them in every form?",
+  eu:"A linear function is a constant-rate relationship between two quantities; its slope, intercepts, and equation tell a complete story about that relationship.",
   objectives:[
-    "I can solve one-step equations by applying inverse operations (A.5A).",
-    "I can solve two-step equations and explain each step (A.5A).",
-    "I can solve multi-step equations with variables on both sides (A.5A).",
-    "I can write and solve equations from real-world situations (A.2A).",
-    "I can solve and graph one-variable inequalities (A.5B)."
+    "I can determine slope from tables, graphs, two points, and equations (A.3A).",
+    "I can interpret slope as a rate of change in mathematical and real-world contexts (A.3B).",
+    "I can graph linear functions and identify x-intercept, y-intercept, and slope (A.3C).",
+    "I can determine the domain and range of a linear function in context (A.2A).",
+    "I can write linear equations in slope-intercept, standard, and point-slope form (A.2B).",
+    "I can write a linear equation from a table of values, a graph, or a verbal description (A.2C).",
+    "I can write and solve equations involving direct variation (A.2D).",
+    "I can interpret horizontal and vertical lines and their slopes (A.2G).",
+    "I can describe the effect of transformations on f(x)=x (A.3E — Honors).",
+    "I can write equations of parallel and perpendicular lines through a given point (A.2E, A.2F — Honors).",
+    "I can solve one-step, two-step, and multi-step equations in one variable (A.5A).",
+    "I can write and solve equations from real-world situations (A.5A).",
+    "I can solve and graph one-variable inequalities (A.5B).",
+    "I can graph linear inequalities in two variables on the coordinate plane (A.2H/A.3D).",
+    "I can rearrange literal equations for a specified variable (A.12E)."
   ],
   concepts:[
+  {
+    id:"1g",name:"Slope",teks:"A.3A",
+    explanation:"Slope measures steepness: rise ÷ run = (y₂−y₁)/(x₂−x₁). Positive slope rises left-to-right, negative falls, zero is flat (horizontal), undefined is vertical.",
+    realWorld:"A wheelchair ramp rises 1 inch per 12 inches forward — slope 1/12, the ADA standard for accessibility.",
+    prereqs:[],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Rise Over Run</h4><div class="analogy-box"><strong>Imagine hiking a trail:</strong> For every step forward (run), how many steps do you go up (rise)? That ratio is the <strong>slope</strong>!<br><br>Rise &uarr; &divide; Run &rarr; = Slope</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0"><div style="background:#dcfce7;border-radius:8px;padding:8px;text-align:center"><strong>Positive (+)</strong><br>&#8599; Goes up left&rarr;right<br><em>hiking uphill</em></div><div style="background:#fee2e2;border-radius:8px;padding:8px;text-align:center"><strong>Negative (&minus;)</strong><br>&#8600; Goes down left&rarr;right<br><em>hiking downhill</em></div><div style="background:#dbeafe;border-radius:8px;padding:8px;text-align:center"><strong>Zero (0)</strong><br>&#8594; Perfectly flat<br><em>flat road</em></div><div style="background:#fef9c3;border-radius:8px;padding:8px;text-align:center"><strong>Undefined</strong><br>&#8597; Straight up/down<br><em>cliff face</em></div></div>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>The Slope Formula</h4><div class="math-box"><strong>m = (y₂ &minus; y₁) / (x₂ &minus; x₁)</strong><br><br><strong>Example:</strong> Points (1, 3) and (4, 9)<br>m = (9 &minus; 3) / (4 &minus; 1) = 6 / 3 = <strong>2</strong><br><br>Rise = 6, Run = 3, Slope = 2 (goes up 2 for every 1 right)</div><p><strong>Reading slope from a table:</strong> Pick any two rows. Divide the change in y by the change in x. If the ratio is constant, the table is linear!</p><table style="border-collapse:collapse;font-size:.9rem;margin:8px 0"><tr style="background:#e2e8f0"><th style="padding:4px 10px;border:1px solid #cbd5e1">x</th><th style="padding:4px 10px;border:1px solid #cbd5e1">y</th><th style="padding:4px 10px;border:1px solid #cbd5e1">&Delta;y/&Delta;x</th></tr><tr><td style="padding:4px 10px;border:1px solid #cbd5e1">0</td><td style="padding:4px 10px;border:1px solid #cbd5e1">1</td><td style="padding:4px 10px;border:1px solid #cbd5e1">&mdash;</td></tr><tr><td style="padding:4px 10px;border:1px solid #cbd5e1">1</td><td style="padding:4px 10px;border:1px solid #cbd5e1">3</td><td style="padding:4px 10px;border:1px solid #cbd5e1">2</td></tr><tr><td style="padding:4px 10px;border:1px solid #cbd5e1">2</td><td style="padding:4px 10px;border:1px solid #cbd5e1">5</td><td style="padding:4px 10px;border:1px solid #cbd5e1">2</td></tr></table>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Special Cases &amp; STAAR Patterns</h4><div class="math-box"><strong>Zero slope:</strong> y = 5 &rarr; horizontal line, slope = 0<br><strong>Undefined slope:</strong> x = 3 &rarr; vertical line, slope undefined<br><strong>Negative slope:</strong> Points (0,4) and (2,0) &rarr; m = (0&minus;4)/(2&minus;0) = &minus;2</div><p><strong>Negative example:</strong> Line through (0, 8) and (4, 0): m = (0 &minus; 8)/(4 &minus; 0) = &minus;8/4 = <strong>&minus;2</strong></p><div class="staar-box"><strong>STAAR Tip:</strong> Slope-intercept form y = mx + b makes slope easy to read. Standard form Ax + By = C: rearrange to slope-intercept first. Watch the sign! &minus;2x + y = 3 &rarr; y = 2x + 3 so slope = <strong>+2</strong>, not &minus;2.</div>'}
+    ],
+    generate:function(level){
+      var x1,y1,x2,y2,m,run,stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:
+          x1=0;y1=rInt(0,4);run=rInt(1,4);m=rInt(1,4);x2=x1+run;y2=y1+m*run;
+          stem="What is the slope of the line through ("+x1+", "+y1+") and ("+x2+", "+y2+")?";
+          correct=String(m);
+          choices=shuffle([String(m),String(m+1),String(m-1),String(m*2)]);
+          explain="Slope = (y₂−y₁)/(x₂−x₁) = ("+(y2)+"−"+y1+")/("+(x2)+"−"+x1+") = "+(y2-y1)+"/"+(x2-x1)+" = "+m+".";
+          hints=["Use the slope formula: rise over run.","Rise = "+y2+" − "+y1+" = "+(y2-y1)+".","Run = "+x2+" − "+x1+" = "+(x2-x1)+"."];
+          break;
+        case 1:
+          x1=rInt(1,3);y1=rInt(2,5);x2=x1+2;y2=y1+4;
+          stem="Between ("+x1+", "+y1+") and ("+x2+", "+y2+"), what is the rise? What is the run? Then what is the slope?";
+          correct="2";
+          choices=["2","4","1/2","1"];
+          explain="Rise = "+y2+" − "+y1+" = 4. Run = "+x2+" − "+x1+" = 2. Slope = 4/2 = 2.";
+          hints=["Rise = change in y.","Run = change in x.","Slope = rise ÷ run = 4 ÷ 2."];
+          break;
+        case 2:
+          var hrly=rInt(8,15);var hrs=rInt(2,5);
+          stem="A babysitter earns $"+hrly+" per hour. After "+hrs+" hours she earned $"+(hrly*hrs)+". What is the slope of the earnings vs. hours graph?";
+          correct=String(hrly);
+          choices=shuffle([String(hrly),String(hrly+2),String(hrly-1),String(hrs)]);
+          explain="Slope = Δearnings ÷ Δhours = "+hrly+". She earns $"+hrly+" for each additional hour worked.";
+          hints=["Slope in context = rate of change.","How much does she earn per hour?","Each additional hour adds $"+hrly+"."];
+          break;
+        case 3:
+          var m1=rInt(2,4);var m2=m1+rInt(2,3);
+          stem="Line A passes through (0,0) and (1,"+m1+"). Line B passes through (0,0) and (1,"+m2+"). Which line is steeper?";
+          correct="Line B";
+          choices=["Line A","Line B","They are equally steep","Cannot be determined"];
+          explain="Line A has slope "+m1+". Line B has slope "+m2+". Since "+m2+" > "+m1+", Line B is steeper.";
+          hints=["Find the slope of each line.","Compare the two slopes.","A larger positive slope means steeper."];
+          break;
+        default:
+          x1=rInt(-3,-1);y1=rInt(-2,2);x2=rInt(1,3);y2=rInt(3,7);
+          m=Math.round((y2-y1)/(x2-x1)*10)/10;
+          stem="[STAAR] Find the slope of the line through ("+x1+", "+y1+") and ("+x2+", "+y2+").";
+          correct=String(m);
+          choices=shuffle([String(m),String(-m),String(m+1),String(m-1)]);
+          explain="m = ("+y2+" − ("+y1+")) / ("+x2+" − ("+x1+")) = "+(y2-y1)+"/"+(x2-x1)+" = "+m+".";
+          hints=["Label each point: (x₁,y₁) and (x₂,y₂).","Be careful with negatives!","m = Δy/Δx."];
+      }
+      return {stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"1g",level:level};
+    }
+  },
+  {
+    id:"1h",name:"Rate of Change",teks:"A.3B",
+    explanation:"Rate of change = slope in context. It describes how one quantity changes per unit of another. Always include units: $/hour, miles/gallon, degrees/min.",
+    realWorld:"A car burns fuel at 1/20 gallon per mile (−15 gallons per 300 miles). Negative because the tank depletes.",
+    prereqs:["1g"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Slope Has Meaning</h4><div class="analogy-box"><strong>Your speedometer</strong> shows miles per hour — that is a rate of change! It tells you how fast distance changes over time.<br><br>Slope = (change in output) ÷ (change in input) = <strong>rate of change</strong></div><table style="border-collapse:collapse;font-size:.9rem;margin:10px 0;width:100%"><tr style="background:#e2e8f0"><th style="padding:5px 8px;border:1px solid #cbd5e1">Situation</th><th style="padding:5px 8px;border:1px solid #cbd5e1">Rate of Change</th></tr><tr><td style="padding:5px 8px;border:1px solid #cbd5e1">Distance vs. Time</td><td style="padding:5px 8px;border:1px solid #cbd5e1">mph (speed)</td></tr><tr><td style="padding:5px 8px;border:1px solid #cbd5e1">Cost vs. Items</td><td style="padding:5px 8px;border:1px solid #cbd5e1">$/item (price)</td></tr><tr><td style="padding:5px 8px;border:1px solid #cbd5e1">Temp vs. Time</td><td style="padding:5px 8px;border:1px solid #cbd5e1">&deg;F/hour (heating rate)</td></tr></table>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Finding Rate of Change</h4><div class="math-box"><strong>Rate of Change = Δy / Δx (with units!)</strong><br><br><strong>Example:</strong> A worker earns $60 in 2 hrs and $150 in 5 hrs.<br>Δsalary = $150 − $60 = $90<br>Δhours = 5 − 2 = 3<br>Rate = $90 / 3 hrs = <strong>$30 per hour</strong></div><p>The rate of change <strong>is</strong> the slope when you graph the data. Units are always (y-units) per (x-unit).</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Interpreting &amp; Comparing Rates</h4><p><strong>Scenario A:</strong> Plan A charges $20 setup + $5/month.<br><strong>Scenario B:</strong> Plan B charges $0 setup + $8/month.</p><p>Rate of change for A = <strong>$5/month</strong>. Rate of change for B = <strong>$8/month</strong>. Plan B costs more per month, but Plan A starts higher.</p><div class="staar-box"><strong>STAAR Tip:</strong> Average rate of change uses two specific points. On STAAR you may see “which has the greater rate of change” — compute slope for each and compare. Remember: steeper slope = greater rate of change.</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:
+          stem="A car travels at a constant speed of 55 miles per hour. What is the rate of change of distance with respect to time?";
+          correct="55 mph";
+          choices=["55 mph","55 miles","1/55 hr/mi","110 mph"];
+          explain="Rate of change = Δdistance/Δtime = 55 miles per hour. The slope of the distance-time graph is 55.";
+          hints=["Rate of change = change in output ÷ change in input.","Output = distance, input = time.","The car goes 55 miles every hour."];
+          break;
+        case 1:
+          var t1=rInt(1,3);var temp1=rInt(50,60);var t2=t1+2;var temp2=temp1+rInt(8,16);
+          stem="At "+t1+" hours the temperature was "+temp1+"°F. At "+t2+" hours it was "+temp2+"°F. What is the average rate of change?";
+          var rate=((temp2-temp1)/(t2-t1));
+          correct=String(rate)+"°F/hr";
+          choices=[String(rate)+"°F/hr",String(rate*2)+"°F/hr",String(rate-1)+"°F/hr",String(rate)+"°F"];
+          explain="Δtemp = "+(temp2-temp1)+"°F, Δtime = "+(t2-t1)+" hr. Rate = "+(temp2-temp1)+"/"+(t2-t1)+" = "+rate+"°F/hr.";
+          hints=["Rate = Δtemp ÷ Δtime.","Change in temp = "+temp2+" − "+temp1+".","Change in time = "+t2+" − "+t1+"."];
+          break;
+        case 2:
+          var gal=rInt(2,5);var miles=gal*rInt(20,30);
+          stem="A car uses "+gal+" gallons to travel "+miles+" miles. What is the rate of change of miles per gallon?";
+          var mpg=miles/gal;
+          correct=String(mpg)+" mpg";
+          choices=[String(mpg)+" mpg",String(mpg-5)+" mpg",String(mpg+5)+" mpg",String(gal/miles)+" gal/mi"];
+          explain="Δmiles = "+miles+", Δgallons = "+gal+". MPG = "+miles+"/"+gal+" = "+mpg+" miles per gallon.";
+          hints=["Miles per gallon = miles ÷ gallons.","Rate of change = output change ÷ input change.",""+miles+" ÷ "+gal+" = ?"];
+          break;
+        case 3:
+          stem="Plan A costs $10/month. Plan B costs $15/month. Which plan has a higher rate of change of cost?";
+          correct="Plan B";
+          choices=["Plan A","Plan B","They are equal","Cannot determine"];
+          explain="Rate of change of cost for Plan A = $10/month; Plan B = $15/month. $15 > $10 so Plan B costs more per month.";
+          hints=["Rate of change here = cost per month.","Compare $10/month vs $15/month.","Which number is bigger?"];
+          break;
+        default:
+          var r1=rInt(1,4);var r2=r1+rInt(2,4);var slope=rInt(2,6);var yStart=rInt(1,5);
+          stem="[STAAR] A table shows x = "+r1+", y = "+(yStart+slope*r1)+"; and x = "+r2+", y = "+(yStart+slope*r2)+". What is the rate of change?";
+          correct=String(slope);
+          choices=shuffle([String(slope),String(slope+1),String(slope-1),String(slope*2)]);
+          explain="Δy = "+(yStart+slope*r2)+" − "+(yStart+slope*r1)+" = "+(slope*(r2-r1))+". Δx = "+(r2-r1)+". Rate = "+slope+".";
+          hints=["Rate of change = Δy ÷ Δx.","Find the change in y and the change in x.","Divide them!"];
+      }
+      return {stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"1h",level:level};
+    }
+  },
+  {
+    id:"1i",name:"Graphing Linear Functions",teks:"A.3C",
+    explanation:"Graph y=mx+b by plotting (0,b) then using rise/run to find a second point. The x-intercept is where y=0 (solve mx+b=0). The y-intercept is (0,b).",
+    realWorld:"Profit p = 12s − 48: y-intercept −48 means $48 fixed loss; x-intercept s=4 means break-even after 4 shirts sold.",
+    prereqs:["1g","1h"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Two Key Points</h4><div class="analogy-box">To draw a line you only need <strong>two points</strong>. The easiest two to find are the <strong>intercepts</strong>:<br><br>&bull; <strong>y-intercept:</strong> where the line crosses the y-axis (set x = 0)<br>&bull; <strong>x-intercept:</strong> where the line crosses the x-axis (set y = 0)</div><p>For y = 2x + 4:<br>&bull; y-intercept: set x=0 &rarr; y = 4 &rarr; point (0, 4)<br>&bull; x-intercept: set y=0 &rarr; 0 = 2x+4 &rarr; x = &minus;2 &rarr; point (&minus;2, 0)</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Slope-Intercept Graphing Steps</h4><ol class="step-list"><li>Identify <strong>b</strong> (y-intercept). Plot (0, b).</li><li>From that point, use the slope m = rise/run to find the next point.</li><li>Connect the dots and extend the line.</li></ol><div class="math-box"><strong>Example: y = 3x &minus; 6</strong><br>b = &minus;6 &rarr; plot (0, &minus;6)<br>m = 3 = 3/1 &rarr; go up 3, right 1 &rarr; plot (1, &minus;3)<br>x-intercept: 0 = 3x&minus;6 &rarr; x = 2 &rarr; point (2, 0)</div>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Context Intercepts</h4><p>In real-world problems, both intercepts have meaning:</p><ul style="margin:6px 0 6px 18px;font-size:.9rem;line-height:1.8"><li><strong>y-intercept:</strong> starting value (initial cost, starting height, etc.)</li><li><strong>x-intercept:</strong> break-even point, when value hits zero, etc.</li></ul><div class="staar-box"><strong>STAAR Tip:</strong> Questions often ask “what does the y-intercept represent?” or “at what point does the graph cross the x-axis?” For the x-intercept, set y = 0 and solve. For y-intercept questions about context, look for the starting or fixed value.</div>'}
+    ],
+    generate:function(level){
+      var m,b,stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:
+          m=rInt(1,5);b=rInt(-6,6);
+          stem="What is the y-intercept of y = "+m+"x + ("+b+")?";
+          correct=String(b);
+          choices=shuffle([String(b),String(b+2),String(b-2),String(m)]);
+          explain="In y = mx + b, the y-intercept is b. Here b = "+b+", so the y-intercept is "+b+".";
+          hints=["In y = mx + b, b is the y-intercept.","The y-intercept is the constant term.","What value is added to mx?"];
+          break;
+        case 1:
+          stem="For y = 3x − 6, what is the x-intercept?";
+          correct="(2, 0)";
+          choices=["(2, 0)","(0, −6)","(3, 0)","(−2, 0)"];
+          explain="Set y = 0: 0 = 3x − 6 → 3x = 6 → x = 2. The x-intercept is (2, 0).";
+          hints=["To find x-intercept, set y = 0.","0 = 3x − 6.","Solve for x: add 6, then divide by 3."];
+          break;
+        case 2:
+          var fixed=rInt(20,60)*2;var price=rInt(5,15);
+          stem="A company earns $"+price+" per item and has $"+fixed+" in fixed costs. The profit equation is p = "+price+"s − "+fixed+". How many items must they sell to break even?";
+          var breakEven=Math.round(fixed/price);
+          correct=String(breakEven)+" items";
+          choices=[String(breakEven)+" items",String(breakEven+price)+" items",String(breakEven-1)+" items",String(fixed)+" items"];
+          explain="Break-even = x-intercept: set p = 0. 0 = "+price+"s − "+fixed+" → s = "+fixed+"/"+price+" = "+breakEven+".";
+          hints=["Break-even means profit = 0.","Set p = 0 and solve for s.",""+fixed+" ÷ "+price+" = ?"];
+          break;
+        case 3:
+          var x1=rInt(1,3);var y1=rInt(4,8);var x2=x1+2;var y2=y1+rInt(2,6);
+          var slope=Math.round((y2-y1)/(x2-x1));var intercept=y1-slope*x1;
+          stem="A line passes through ("+x1+", "+y1+") and ("+x2+", "+y2+"). What is the y-intercept?";
+          correct=String(intercept);
+          choices=shuffle([String(intercept),String(intercept+2),String(intercept-2),String(slope)]);
+          explain="Slope = "+(y2-y1)+"/"+(x2-x1)+" = "+slope+". Use y = "+slope+"x + b with ("+x1+", "+y1+"): "+y1+" = "+slope+"("+x1+") + b → b = "+intercept+".";
+          hints=["Find slope first: Δy/Δx.","Then use point-slope to find b.","Plug one point into y = mx + b."];
+          break;
+        default:
+          m=rInt(2,4);b=rInt(-4,4);var tx=rInt(1,3);var ty=m*tx+b;
+          stem="[STAAR] Which ordered pair lies on the line y = "+m+"x + ("+b+")?";
+          correct="("+tx+", "+ty+")";
+          var wrong1=tx+1;var wrong2=tx-1;
+          choices=shuffle(["("+tx+", "+ty+")","("+tx+", "+(ty+1)+")","("+wrong1+", "+(m*wrong1+b-1)+")","(0, "+(b+1)+")"]);
+          explain="Substitute x = "+tx+": y = "+m+"("+tx+") + ("+b+") = "+ty+". So ("+tx+", "+ty+") is on the line.";
+          hints=["Plug each x-value into the equation.","Check if the resulting y matches.","Try ("+tx+", ?): y = "+m+"("+tx+") + ("+b+")."];
+      }
+      return {stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"1i",level:level};
+    }
+  },
+  {
+    id:"1j",name:"Domain & Range of Linear Functions",teks:"A.2A",
+    explanation:"Domain = valid input (x) values; range = valid output (y) values. Unrestricted linear functions: domain and range are all reals. In context, restrict based on what makes sense.",
+    realWorld:"Pool fills at 200 gal/hr: V=200h. Domain 0≤h≤8 (hours to fill); Range 0≤V≤1600 (gallons).",
+    prereqs:["1i"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Inputs &amp; Outputs</h4><div class="analogy-box"><strong>Think of a function like a vending machine:</strong><br>&bull; Domain = the buttons you can press (valid inputs)<br>&bull; Range = the snacks that can come out (possible outputs)<br><br>For a <em>linear</em> function with no restrictions, you can press any button &rarr; any output is possible!</div><p>In math: unrestricted linear function &rarr; Domain = all real numbers, Range = all real numbers.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Context Restrictions</h4><p>In real-world situations, not all values make sense:</p><div class="math-box"><strong>Example:</strong> A worker earns y = 12x dollars for x hours worked.<br>&bull; Can x be negative? No! Domain: x &ge; 0<br>&bull; Can x be 1000? Probably not. Domain: 0 &le; x &le; 40 (realistic work week)<br>&bull; Range follows: 0 &le; y &le; 480</div><p>Always ask: What are the <strong>real-world limits</strong> on the input?</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Notation &amp; STAAR Practice</h4><p>Domain and range can be written as:<br>&bull; <strong>Inequality:</strong> 0 &le; x &le; 10<br>&bull; <strong>Interval notation:</strong> [0, 10]<br>&bull; <strong>Set notation:</strong> {x | 0 &le; x &le; 10}</p><div class="staar-box"><strong>STAAR Tip:</strong> For linear functions in context, the domain is almost always restricted to non-negative values (you can\'t have negative time or negative items). The range is determined by plugging in the domain endpoints. If the function is y = 5x + 10 with domain 0 &le; x &le; 6, then range is 10 &le; y &le; 40.</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:
+          stem="Given f(x) = 2x + 3 with domain {−2, −1, 0, 1, 2}, what is the range?";
+          correct="{−1, 1, 3, 5, 7}";
+          choices=["{−1, 1, 3, 5, 7}","{−4, −2, 0, 2, 4}","{−2, −1, 0, 1, 2}","{1, 3, 5, 7, 9}"];
+          explain="Substitute each x: f(−2)=−1, f(−1)=1, f(0)=3, f(1)=5, f(2)=7. Range = {−1, 1, 3, 5, 7}.";
+          hints=["Plug each domain value into f(x) = 2x + 3.","f(−2) = 2(−2) + 3 = ?","List all outputs."];
+          break;
+        case 1:
+          stem="A dog walker charges $15 per dog. She can walk at most 8 dogs per day. Which is a reasonable domain?";
+          correct="0 ≤ d ≤ 8";
+          choices=["0 ≤ d ≤ 8","all real numbers","−8 ≤ d ≤ 8","d > 0"];
+          explain="She can walk 0 to 8 dogs (non-negative whole numbers up to her maximum). Domain: 0 ≤ d ≤ 8.";
+          hints=["Can she walk a negative number of dogs?","What is the maximum?","Domain captures all valid inputs."];
+          break;
+        case 2:
+          stem="A pool fills at 200 gallons/hour. The equation is V = 200h. The pool holds 1600 gallons. Write the domain and range.";
+          correct="Domain: 0 ≤ h ≤ 8; Range: 0 ≤ V ≤ 1600";
+          choices=["Domain: 0 ≤ h ≤ 8; Range: 0 ≤ V ≤ 1600","Domain: all reals; Range: all reals","Domain: 0 ≤ h ≤ 1600; Range: 0 ≤ V ≤ 8","Domain: h > 0; Range: V > 0"];
+          explain="Pool fills for 1600/200 = 8 hours. Domain 0≤8, Range 0≤1600.";
+          hints=["How long until the pool is full?","1600 ÷ 200 = ?","Domain = time values; Range = volume values."];
+          break;
+        case 3:
+          stem="Why does the linear function y = 3x + 1 (with no context restrictions) have domain = all real numbers?";
+          correct="Any real number x produces a valid output, so no values are excluded.";
+          choices=["Any real number x produces a valid output, so no values are excluded.","Because the slope is positive.","Because it has a y-intercept of 1.","Because it passes through the origin."];
+          explain="You can substitute any real number for x in y = 3x + 1 and get a valid real-number output. No restrictions needed.";
+          hints=["Try plugging in x = −1000. Do you get a valid y?","Linear functions have no square roots or denominators.","Any real x works!"];
+          break;
+        default:
+          stem="[STAAR] A taxi charges $2.50 per mile. The driver works routes from 1 mile to 20 miles. Which domain is appropriate for the cost function C = 2.5m?";
+          correct="1 ≤ m ≤ 20";
+          choices=["1 ≤ m ≤ 20","all real numbers","0 ≤ m ≤ 50","m ≥ 0"];
+          explain="The driver works routes from 1 to 20 miles. Domain: 1 ≤ m ≤ 20.";
+          hints=["What is the minimum route length?","What is the maximum?","Domain = the range of input values."];
+      }
+      return {stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"1j",level:level};
+    }
+  },
+  {
+    id:"1k",name:"Slope-Intercept Form",teks:"A.2B",
+    explanation:"y = mx + b: m = slope, b = y-intercept. Identify both from an equation. Write equations given slope+intercept, slope+point, or two points.",
+    realWorld:"Phone plan: C = 0.05t + 30. Slope 0.05 = cost per text; y-intercept 30 = monthly base fee.",
+    prereqs:["1g","1i"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>y = mx + b Decoded</h4><div class="analogy-box"><strong>y = mx + b is a recipe:</strong><br>&bull; <strong>m</strong> = slope (how steep, positive/negative/zero)<br>&bull; <strong>b</strong> = y-intercept (where you start on the y-axis)<br><br>Example: y = 3x + 2<br>&bull; Slope = 3 (go up 3 for each step right)<br>&bull; y-intercept = 2 (cross y-axis at 2)</div>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Writing Equations</h4><ol class="step-list"><li>Given slope m and y-intercept b: just write y = mx + b.</li><li>Given slope m and a point (x₁, y₁): substitute into y = mx + b and solve for b.</li><li>Given two points: find slope first (Δy/Δx), then use a point to find b.</li></ol><div class="math-box"><strong>Example:</strong> slope = 2, passes through (3, 7)<br>7 = 2(3) + b &rarr; 7 = 6 + b &rarr; b = 1<br>Equation: y = 2x + 1</div>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>From Non-Standard Form</h4><p>Equations aren\'t always given in slope-intercept form. Rearrange!</p><div class="math-box"><strong>Example:</strong> 4x − 2y = 10<br>Step 1: −4x both sides &rarr; −2y = −4x + 10<br>Step 2: &divide; by −2 &rarr; y = 2x − 5<br>Slope = 2, y-intercept = −5</div><div class="staar-box"><strong>STAAR Tip:</strong> Always isolate y to identify slope. Watch signs when dividing by a negative coefficient! If you divide by −2, flip the signs of every term.</div>'}
+    ],
+    generate:function(level){
+      var m,b,stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:
+          m=rInt(-4,4);if(m===0)m=2;b=rInt(-5,5);
+          stem="Identify the slope and y-intercept of y = "+m+"x + ("+b+").";
+          correct="slope = "+m+", y-intercept = "+b;
+          choices=shuffle(["slope = "+m+", y-intercept = "+b,"slope = "+b+", y-intercept = "+m,"slope = "+m+", y-intercept = "+(b+1),"slope = "+(m+1)+", y-intercept = "+b]);
+          explain="In y = mx + b, m is the slope and b is the y-intercept. Here m = "+m+" and b = "+b+".";
+          hints=["In y = mx + b, m comes first.","b is the constant (no x).","Read them directly!"];
+          break;
+        case 1:
+          var A=rInt(2,4);var B=rInt(-6,-2);
+          stem="Rearrange "+A+"x + y = "+(A*2+B)+" into slope-intercept form. What is the slope?";
+          var intercept=(A*2+B)-A*2;
+          correct=String(-A);
+          choices=shuffle([String(-A),String(A),String(intercept),String(-A+1)]);
+          explain="Subtract "+A+"x: y = −"+A+"x + "+(A*2+B)+" − "+A+"x... wait. y = −"+A+"x + "+(intercept+(A*2+B)-A*2)+". Slope = −"+A+".";
+          hints=["Move the x-term to the right.","y = −"+A+"x + ?","Slope is the coefficient of x."];
+          break;
+        case 2:
+          var rate=rInt(5,15);var base=rInt(20,50);
+          stem="A phone plan charges $"+base+" per month plus $"+rate+" per GB of data. Write the slope-intercept equation for the monthly cost C in terms of GB used g.";
+          correct="C = "+rate+"g + "+base;
+          choices=["C = "+rate+"g + "+base,"C = "+base+"g + "+rate,"C = "+rate+"g − "+base,"C = "+base+"g − "+rate];
+          explain="Slope = $"+rate+"/GB (rate per GB), y-intercept = $"+base+" (base fee). Equation: C = "+rate+"g + "+base+".";
+          hints=["Slope = cost per unit = "+rate+".","y-intercept = starting cost = "+base+".","y = mx + b format."];
+          break;
+        case 3:
+          var x1=rInt(1,3);var y1=rInt(5,10);var x2=x1+2;var y2=y1+rInt(4,8);
+          var slope=Math.round((y2-y1)/(x2-x1));var yint=y1-slope*x1;
+          stem="Find the equation of the line through ("+x1+", "+y1+") and ("+x2+", "+y2+").";
+          correct="y = "+slope+"x + ("+yint+")";
+          choices=shuffle(["y = "+slope+"x + ("+yint+")","y = "+slope+"x + "+(yint+2),"y = "+(slope+1)+"x + "+yint,"y = "+(slope-1)+"x + "+yint]);
+          explain="Slope = "+(y2-y1)+"/"+(x2-x1)+" = "+slope+". Then "+y1+" = "+slope+"("+x1+") + b → b = "+yint+". Equation: y = "+slope+"x + "+yint+".";
+          hints=["Step 1: find slope = Δy/Δx.","Step 2: use a point to find b.","Write y = mx + b."];
+          break;
+        default:
+          stem="[STAAR] Which equation has slope 3 and y-intercept −5?";
+          correct="y = 3x − 5";
+          choices=["y = 3x − 5","y = −5x + 3","y = 3x + 5","y = −3x − 5"];
+          explain="Slope = 3 means coefficient of x is 3. y-intercept = −5 means constant is −5. So y = 3x − 5.";
+          hints=["In y = mx + b, m = slope and b = y-intercept.","Which answer has m = 3?","Which of those has b = −5?"];
+      }
+      return {stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"1k",level:level};
+    }
+  },
+  {
+    id:"1l",name:"Writing Equations from Tables & Graphs",teks:"A.2C",
+    explanation:"From table: compute Δy/Δx for slope, use a point to find b. From graph: read y-intercept directly, count slope. Always verify with a second point.",
+    realWorld:"A taxi table shows: 1mi=$6.50, 2mi=$9, 3mi=$11.50. Rate = $2.50/mi, base = $4. Equation: C=2.5m+4.",
+    prereqs:["1k"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Equation Detective</h4><div class="analogy-box"><strong>From a table:</strong> Find the pattern! Look for how y changes as x increases by 1. That change is your <strong>slope</strong>.<br><br><strong>From a graph:</strong> Where does the line cross the y-axis? That\'s your <strong>b</strong>. Then count how far up (rise) for how far right (run).</div>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Step-by-Step from Table</h4><ol class="step-list"><li>Pick two rows. Compute slope = Δy / Δx.</li><li>Substitute one (x, y) point and slope m into y = mx + b.</li><li>Solve for b.</li><li>Write the full equation.</li><li>Verify with a different row!</li></ol><div class="math-box"><strong>Example:</strong> Table: (1, 5), (3, 9)<br>Slope = (9−5)/(3−1) = 4/2 = 2<br>5 = 2(1) + b &rarr; b = 3<br>Equation: y = 2x + 3. Check: y(3) = 2(3)+3 = 9 &#10003;</div>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Real-World Tables</h4><p>When tables come from real situations, the equation tells a story:</p><div class="math-box"><strong>Earnings table:</strong><br>Hours: 2, 4, 6, 8<br>Pay: $30, $50, $70, $90<br><br>Slope = (50−30)/(4−2) = 10/hr<br>30 = 10(2) + b &rarr; b = 10<br>Equation: P = 10h + 10 (base pay = $10)</div><div class="staar-box"><strong>STAAR Tip:</strong> When given a table, check that Δy/Δx is constant for ALL pairs. If not, the relationship is not linear! On STAAR you may need to identify which table represents a linear function.</div>'}
+    ],
+    generate:function(level){
+      var m,b,stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:
+          m=rInt(2,5);b=rInt(1,8);
+          stem="A table shows x=0, y="+b+" and x=1, y="+(m+b)+". What is the equation?";
+          correct="y = "+m+"x + "+b;
+          choices=shuffle(["y = "+m+"x + "+b,"y = "+b+"x + "+m,"y = "+(m+1)+"x + "+b,"y = "+m+"x + "+(b+1)]);
+          explain="When x=0, y="+b+" gives b="+b+". Slope = ("+(m+b)+"−"+b+")/(1−0) = "+m+". Equation: y = "+m+"x + "+b+".";
+          hints=["x=0 gives the y-intercept directly.","Slope = change in y when x increases by 1.","Write y = mx + b."];
+          break;
+        case 1:
+          m=rInt(2,4);b=rInt(2,6);var x1=rInt(2,4);var x2=x1+2;
+          stem="A table shows ("+x1+", "+(m*x1+b)+") and ("+x2+", "+(m*x2+b)+"). Write the equation.";
+          correct="y = "+m+"x + "+b;
+          choices=shuffle(["y = "+m+"x + "+b,"y = "+m+"x + "+(b+1),"y = "+(m+1)+"x + "+b,"y = "+(m-1)+"x + "+b]);
+          explain="Slope = ("+(m*x2+b)+"−"+(m*x1+b)+")/("+(x2)+"−"+(x1)+") = "+(m*(x2-x1))+"/"+(x2-x1)+" = "+m+". Then b = "+(m*x1+b)+"−"+m+"("+x1+") = "+b+".";
+          hints=["Find slope: Δy/Δx.","Then use one point to find b.","Substitute into y = mx + b."];
+          break;
+        case 2:
+          var wage=rInt(10,15);var bonus=rInt(5,20);var hrs=rInt(3,5);
+          stem="An employee earns $"+bonus+" plus $"+wage+"/hr. Table shows ("+hrs+", "+(wage*hrs+bonus)+") and ("+(hrs+2)+", "+(wage*(hrs+2)+bonus)+"). Write the equation and predict earnings at 10 hours.";
+          correct="y = "+wage+"x + "+bonus+"; at 10 hrs: $"+(wage*10+bonus);
+          choices=["y = "+wage+"x + "+bonus+"; at 10 hrs: $"+(wage*10+bonus),"y = "+bonus+"x + "+wage+"; at 10 hrs: $"+(bonus*10+wage),"y = "+wage+"x; at 10 hrs: $"+(wage*10),"y = "+wage+"x + "+bonus+"; at 10 hrs: $"+(wage*10+bonus+10)];
+          explain="Slope = "+wage+" ($/hr), b = "+bonus+" (bonus). y = "+wage+"x + "+bonus+". At x=10: "+(wage*10+bonus)+".";
+          hints=["Find slope from the table.","Find b using a point.","Plug in x = 10 to predict."];
+          break;
+        case 3:
+          var x1=rInt(1,3);var y1=rInt(4,8);var slope=rInt(2,4);var yint=y1-slope*x1;
+          stem="Two points: ("+x1+", "+y1+") and ("+(x1+3)+", "+(y1+slope*3)+"). Write the slope-intercept equation.";
+          correct="y = "+slope+"x + "+yint;
+          choices=shuffle(["y = "+slope+"x + "+yint,"y = "+slope+"x + "+(yint+1),"y = "+(slope+1)+"x + "+yint,"y = "+slope+"x − "+Math.abs(yint)]);
+          explain="Slope = "+(slope*3)+"/"+(3)+" = "+slope+". b = "+y1+"−"+slope+"("+x1+") = "+yint+". Equation: y = "+slope+"x + "+yint+".";
+          hints=["Slope = Δy/Δx.","Use ("+x1+", "+y1+") to find b.","Write the final equation."];
+          break;
+        default:
+          m=rInt(2,5);b=rInt(-4,4);
+          var p0=[0,b];var p1=[1,m+b];var p2=[2,2*m+b];var p3=[3,3*m+b];
+          stem="[STAAR] A table shows (0, "+b+"), (1, "+(m+b)+"), (2, "+(2*m+b)+"), (3, "+(3*m+b)+"). Which equation represents this data?";
+          correct="y = "+m+"x + "+b;
+          choices=shuffle(["y = "+m+"x + "+b,"y = "+b+"x + "+m,"y = "+(m+1)+"x + "+b,"y = "+m+"x + "+(b+1)]);
+          explain="When x=0, y="+b+" so b="+b+". Slope = "+(m+b)+" − "+b+" = "+m+". Equation: y = "+m+"x + "+b+".";
+          hints=["x=0 gives you b directly.","Check the constant change in y.","Equation: y = mx + b."];
+      }
+      return {stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"1l",level:level};
+    }
+  },
+  {
+    id:"1m",name:"Standard Form",teks:"A.2B",
+    explanation:"Ax + By = C where A≥0, all integers. Convert from slope-intercept by moving x-term. Find x-intercept (set y=0) and y-intercept (set x=0).",
+    realWorld:"Festival: 8A + 5C = 400 (adult $8, child $5, raise $400). Standard form shows both ticket types symmetrically.",
+    prereqs:["1k","1f"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Two Variables, One Constraint</h4><div class="analogy-box"><strong>Standard form Ax + By = C</strong> is like a budget:<br>"I have $400. Adult tickets cost $8, child tickets cost $5."<br>8A + 5C = 400<br><br>Both unknowns are on the same side — showing they both contribute to the total!</div><p>Rules: A &ge; 0 (positive leading coefficient), all coefficients are integers (no fractions).</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Converting Between Forms</h4><div class="math-box"><strong>Slope-intercept &rarr; Standard:</strong><br>y = −2x + 6<br>Add 2x both sides: 2x + y = 6 &#10003;<br><br><strong>Standard &rarr; Slope-intercept:</strong><br>3x + 2y = 12<br>Subtract 3x: 2y = −3x + 12<br>Divide by 2: y = −3/2 x + 6</div><p>To find intercepts from standard form:<br>&bull; x-intercept: set y=0 &rarr; Ax = C &rarr; x = C/A<br>&bull; y-intercept: set x=0 &rarr; By = C &rarr; y = C/B</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Intercepts from Standard Form</h4><div class="math-box"><strong>Example:</strong> 4x + 3y = 24<br>x-intercept (y=0): 4x = 24 &rarr; x = 6 &rarr; (6, 0)<br>y-intercept (x=0): 3y = 24 &rarr; y = 8 &rarr; (0, 8)</div><div class="staar-box"><strong>STAAR Tip:</strong> Standard form questions often ask for intercepts. Always check that A &ge; 0 (if you get a negative A, multiply everything by −1). For fractions, multiply through to clear denominators before calling it standard form.</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:
+          stem="Convert y = −2x + 6 to standard form.";
+          correct="2x + y = 6";
+          choices=["2x + y = 6","−2x + y = 6","2x − y = 6","y = −2x + 6"];
+          explain="Add 2x to both sides: 2x + y = 6. A=2≥0 &#10003;, all integers &#10003;.";
+          hints=["Move the x-term to the left side.","Add 2x to both sides.","Standard form: Ax + By = C with A ≥ 0."];
+          break;
+        case 1:
+          stem="Convert 3x + 2y = 12 to slope-intercept form.";
+          correct="y = −3/2 x + 6";
+          choices=["y = −3/2 x + 6","y = 3/2 x + 6","y = −3x + 6","y = −3/2 x − 6"];
+          explain="Subtract 3x: 2y = −3x + 12. Divide by 2: y = −3/2 x + 6.";
+          hints=["Isolate y: subtract 3x first.","2y = −3x + 12.","Divide every term by 2."];
+          break;
+        case 2:
+          var A=rInt(2,5);var B=rInt(2,4);var C=A*rInt(2,4);
+          stem="Find the x-intercept and y-intercept of "+A+"x + "+B+"y = "+C+".";
+          var xi=C/A;var yi=C/B;
+          correct="x-intercept: ("+xi+", 0); y-intercept: (0, "+yi+")";
+          choices=["x-intercept: ("+xi+", 0); y-intercept: (0, "+yi+")","x-intercept: (0, "+xi+"); y-intercept: ("+yi+", 0)","x-intercept: ("+A+", 0); y-intercept: (0, "+B+")","x-intercept: ("+C+", 0); y-intercept: (0, "+C+")"];
+          explain="Set y=0: "+A+"x = "+C+" &rarr; x = "+xi+". Set x=0: "+B+"y = "+C+" &rarr; y = "+yi+".";
+          hints=["x-intercept: set y = 0 and solve for x.","y-intercept: set x = 0 and solve for y.","Divide C by the appropriate coefficient."];
+          break;
+        case 3:
+          stem="A fundraiser sells small candles for $3 and large candles for $5, aiming to raise $120. Write a standard form equation.";
+          correct="3s + 5l = 120";
+          choices=["3s + 5l = 120","5s + 3l = 120","s + l = 120","3s − 5l = 120"];
+          explain="Small candles cost $3 each (3s) and large cost $5 each (5l), totaling $120. So 3s + 5l = 120.";
+          hints=["Let s = small candles sold, l = large candles sold.","Revenue from small: 3s; from large: 5l.","Total = 120."];
+          break;
+        default:
+          stem="[STAAR] Which equation is equivalent to y = −3/4 x + 2 in standard form?";
+          correct="3x + 4y = 8";
+          choices=["3x + 4y = 8","−3x + 4y = 8","3x − 4y = 8","4x + 3y = 8"];
+          explain="Multiply by 4: 4y = −3x + 8. Add 3x: 3x + 4y = 8. A=3≥0 &#10003;.";
+          hints=["Clear fractions by multiplying by 4.","Move x-term to the left.","Ensure A ≥ 0."];
+      }
+      return {stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"1m",level:level};
+    }
+  },
+  {
+    id:"1n",name:"Direct Variation",teks:"A.2D",
+    explanation:"y = kx: b=0, line through origin. k = constant of variation = y/x for any point. Recognize from table (y/x constant) or graph (through origin).",
+    realWorld:"d = 60t (driving at 60 mph). At t=0 d=0; the graph passes through origin.",
+    prereqs:["1k"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Zero Starting Point</h4><div class="analogy-box"><strong>Direct variation:</strong> when x = 0, y = 0. Always through the origin!<br><br>Real examples:<br>&bull; d = 60t: no time = no distance<br>&bull; tax = 0.08 &times; price: no purchase = no tax<br>&bull; area = s²: side length 0 = area 0</div><p>Key formula: <strong>y = kx</strong> (no extra constant b). The number k is called the <strong>constant of variation</strong>.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Identifying Direct Variation</h4><div class="math-box"><strong>From a table:</strong> Compute y/x for each row. If the ratio is always the same, it\'s direct variation and k = y/x.<br><br>x: 2, 4, 6 &nbsp;&nbsp; y: 10, 20, 30<br>y/x: 5, 5, 5 &#10003; &rarr; k = 5, equation: y = 5x</div><p><strong>From a graph:</strong> Passes through the origin (0,0) with a straight line? Direct variation!</p><p><strong>Not direct variation:</strong> y = 3x + 2 (the "+2" means when x=0, y=2, not zero)</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Using Direct Variation</h4><div class="math-box"><strong>If y varies directly with x:</strong><br>Step 1: Write y = kx<br>Step 2: Substitute the given (x, y) to find k<br>Step 3: Use k to answer questions<br><br>Example: y = 15 when x = 3 &rarr; 15 = k(3) &rarr; k = 5<br>Find y when x = 7: y = 5(7) = 35</div><div class="staar-box"><strong>STAAR Tip:</strong> Direct variation problems often say "y varies directly with x" or "y is proportional to x." These all mean y = kx. The key check: does the graph pass through the origin?</div>'}
+    ],
+    generate:function(level){
+      var k,x,y,stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:
+          k=rInt(2,8);x=rInt(2,5);y=k*x;
+          stem="If y = kx and the point ("+x+", "+y+") is on the line, what is k?";
+          correct=String(k);
+          choices=shuffle([String(k),String(k+1),String(k-1),String(k*2)]);
+          explain="k = y/x = "+y+"/"+x+" = "+k+".";
+          hints=["k = y ÷ x.","Divide the y-value by the x-value.",""+y+" ÷ "+x+" = ?"];
+          break;
+        case 1:
+          k=rInt(3,6);
+          stem="A table shows: x = 2, y = "+(k*2)+"; x = 4, y = "+(k*4)+"; x = 5, y = "+(k*5+1)+". Does this table represent direct variation?";
+          correct="No — y/x is not constant";
+          choices=["No — y/x is not constant","Yes — it passes through the origin","Yes — y/x = "+k,"Cannot determine"];
+          explain="y/x for the three rows: "+(k*2)+"/2 = "+k+", "+(k*4)+"/4 = "+k+", "+(k*5+1)+"/5 = "+((k*5+1)/5).toFixed(1)+" ≠ "+k+". Not constant → not direct variation.";
+          hints=["Compute y/x for each row.","If all ratios are equal, it is direct variation.","Check the third row carefully!"];
+          break;
+        case 2:
+          k=rInt(5,12);var miles=rInt(3,6);
+          stem="A car uses fuel in direct variation with distance. It uses "+k+" gallons for "+miles+" miles per tank... wait — if y varies directly with x and y = "+(k*miles)+" when x = "+miles+", write the direct variation equation.";
+          correct="y = "+k+"x";
+          choices=["y = "+k+"x","y = "+k+"x + "+miles,"y = "+miles+"x","y = x + "+k];
+          explain="k = y/x = "+(k*miles)+"/"+miles+" = "+k+". Equation: y = "+k+"x.";
+          hints=["Find k = y/x.","Write y = kx.","No b term — it passes through origin!"];
+          break;
+        case 3:
+          stem="Which is a direct variation: y = 3x + 2 or y = 3x?";
+          correct="y = 3x";
+          choices=["y = 3x","y = 3x + 2","Both","Neither"];
+          explain="y = 3x has b = 0 and passes through origin — direct variation. y = 3x + 2 has b = 2 ≠ 0 — NOT direct variation.";
+          hints=["Direct variation: y = kx with no constant added.","Does y = 3x + 2 equal 0 when x = 0?","Does y = 3x equal 0 when x = 0?"];
+          break;
+        default:
+          k=rInt(3,7);var xGiven=rInt(2,4);var xFind=rInt(5,9);
+          stem="[STAAR] If y varies directly with x and y = "+(k*xGiven)+" when x = "+xGiven+", find y when x = "+xFind+".";
+          correct=String(k*xFind);
+          choices=shuffle([String(k*xFind),String(k*xFind+k),String(k*xFind-k),String(k*(xFind+1))]);
+          explain="k = "+(k*xGiven)+"/"+xGiven+" = "+k+". y = "+k+"("+xFind+") = "+(k*xFind)+".";
+          hints=["Find k = y/x from the given values.","Write y = kx.","Substitute x = "+xFind+"."];
+      }
+      return {stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"1n",level:level};
+    }
+  },
+  {
+    id:"1o",name:"Horizontal & Vertical Lines",teks:"A.2G",
+    explanation:"Horizontal y=k: slope 0, parallel to x-axis. Vertical x=h: undefined slope, parallel to y-axis. Vertical lines cannot be written as y=mx+b.",
+    realWorld:"Speed limit sign y=65 on a speed graph. A doorway at x=0 on a position graph.",
+    prereqs:["1g"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Flat and Steep</h4><div class="analogy-box"><strong>Horizontal line y = k:</strong> Every point has the same y-value. Like a table surface — perfectly flat!<br><br><strong>Vertical line x = h:</strong> Every point has the same x-value. Like a wall — perfectly upright!</div><p>&bull; y = 3: points (−2, 3), (0, 3), (5, 3) &mdash; all have y = 3<br>&bull; x = 4: points (4, −1), (4, 0), (4, 7) &mdash; all have x = 4</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Slope of Special Lines</h4><div class="math-box"><strong>Horizontal y = k:</strong> slope = 0<br>Pick two points: (1, k) and (5, k)<br>m = (k − k)/(5 − 1) = 0/4 = <strong>0</strong><br><br><strong>Vertical x = h:</strong> slope = undefined<br>Pick two points: (h, 2) and (h, 7)<br>m = (7 − 2)/(h − h) = 5/0 = <strong>undefined</strong></div><p>Vertical lines CANNOT be written as y = mx + b. They are <strong>not functions</strong>!</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Writing Equations &amp; Applications</h4><p>To write the equation:<br>&bull; Horizontal: look at the y-value of any point. Write y = (that value).<br>&bull; Vertical: look at the x-value of any point. Write x = (that value).</p><div class="staar-box"><strong>STAAR Tip:</strong> If you see all points with the same y, equation is y = constant. If all points have the same x, equation is x = constant. Common confusion: “which line is horizontal?” The one written as y = k (not x = k)!</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:
+          var k=rInt(-4,4);
+          stem="Two points: (3, "+k+") and (−1, "+k+"). What is the equation of the line?";
+          correct="y = "+k;
+          choices=["y = "+k,"x = "+k,"y = 3","x = −1"];
+          explain="Both points have y = "+k+". The line is horizontal: y = "+k+".";
+          hints=["Check: do both points have the same x or same y?","Same y → horizontal line.","Horizontal line equation: y = constant."];
+          break;
+        case 1:
+          stem="Which line is horizontal and which is vertical: y = 5 or x = −3?";
+          correct="y = 5 is horizontal; x = −3 is vertical";
+          choices=["y = 5 is horizontal; x = −3 is vertical","y = 5 is vertical; x = −3 is horizontal","Both are horizontal","Both are vertical"];
+          explain="y = 5 means all y-values are 5 — that’s a flat (horizontal) line. x = −3 means all x-values are −3 — that’s a vertical line.";
+          hints=["y = constant → horizontal.","x = constant → vertical.","Horizontal is flat; vertical is upright."];
+          break;
+        case 2:
+          stem="A thermometer reads 72°F all day on a temperature-vs-time graph. Which type of line is this, and what is its equation?";
+          correct="Horizontal line; y = 72";
+          choices=["Horizontal line; y = 72","Vertical line; x = 72","Horizontal line; x = 72","Vertical line; y = 72"];
+          explain="Temperature (y-axis) is constant at 72°F regardless of time — this is a horizontal line y = 72.";
+          hints=["What is constant: time or temperature?","Constant output (y) → horizontal line.","Equation: y = 72."];
+          break;
+        case 3:
+          stem="Using the slope formula, explain why x = 4 has an undefined slope.";
+          correct="Division by zero: x₂ − x₁ = 4 − 4 = 0";
+          choices=["Division by zero: x₂ − x₁ = 4 − 4 = 0","The y-values are always 4","The line has a slope of 4","Undefined means slope = 0"];
+          explain="On the line x = 4, both points have x = 4. Run = x₂ − x₁ = 4 − 4 = 0. Slope = rise/0 = undefined (division by zero).";
+          hints=["Pick two points on x = 4.","Calculate the run (change in x).","What happens when you divide by zero?"];
+          break;
+        default:
+          var h=rInt(-4,4);
+          stem="[STAAR] Which equation represents a horizontal line through (−2, "+h+")?";
+          correct="y = "+h;
+          choices=["y = "+h,"x = −2","y = −2","x = "+h];
+          explain="A horizontal line through (−2, "+h+") has y = "+h+" everywhere along it.";
+          hints=["Horizontal line → y = constant.","What is the y-value of the given point?","Write y = that value."];
+      }
+      return {stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"1o",level:level};
+    }
+  },
+  {
+    id:"1p",name:"Transformations of f(x)=x",teks:"A.3E",
+    explanation:"Parent: f(x)=x (slope 1, through origin). Transformations: vertical stretch (af(x)=ax), reflection (−f(x)=−x), vertical shift (f(x)+k=x+k), combinations.",
+    realWorld:"Normal pace: f(x)=x miles in x hours. Double speed: 2f(x)=2x. 3-mile head start: f(x)+3=x+3.",
+    prereqs:["1k"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>The Parent Function</h4><div class="analogy-box"><strong>f(x) = x</strong> is the simplest possible line: every output equals its input. It’s like a perfect mirror — slope = 1, through the origin.<br><br>Transformations change it:<br>&bull; Multiply by a &rarr; <strong>steeper or flatter</strong> (stretch/compress)<br>&bull; Negate &rarr; <strong>flip</strong> (reflect over x-axis)<br>&bull; Add constant &rarr; <strong>shift up/down</strong></div>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Transformation Rules</h4><div class="math-box"><strong>From f(x) = x:</strong><br>&bull; af(x) = ax: slope changes to a (vertical stretch if |a|>1)<br>&bull; −f(x) = −x: reflected over x-axis (slope − 1)<br>&bull; f(x) + k = x + k: shifts up k units (y-intercept = k)<br>&bull; af(x) + k = ax + k: stretch AND shift</div><p><strong>Example:</strong> g(x) = 3x − 2 compared to f(x) = x:<br>&bull; Vertically stretched by factor 3<br>&bull; Shifted down 2 units</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>STAAR Transformation Questions</h4><p>STAAR often asks: "Which transformation maps f(x) to g(x)?" or "Describe all transformations."</p><div class="math-box"><strong>Strategy:</strong><br>1. Compare slopes: a = new slope/old slope<br>2. Compare y-intercepts: shift = new b − old b<br>3. If new slope is negative: there was a reflection</div><div class="staar-box"><strong>STAAR Tip:</strong> For Honors Algebra 1, transformations of f(x)=x are often tested. Remember: the parent f(x)=x has slope 1 and y-intercept 0. Any change in slope is a stretch/compress/reflection. Any change in y-intercept is a vertical shift.</div>'}
+    ],
+    generate:function(level){
+      var a,k,stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:
+          a=rInt(2,5);k=rInt(-4,4);
+          stem="Compare y = "+a+"x + ("+k+") to f(x) = x. What are the slope and y-intercept?";
+          correct="slope = "+a+", y-intercept = "+k;
+          choices=shuffle(["slope = "+a+", y-intercept = "+k,"slope = "+k+", y-intercept = "+a,"slope = 1, y-intercept = "+k,"slope = "+a+", y-intercept = 0"]);
+          explain="y = "+a+"x + ("+k+") has slope = "+a+" and y-intercept = "+k+".";
+          hints=["In y = mx + b, m is slope and b is y-intercept.","Identify m and b directly.","Slope = "+a+", b = "+k+"."];
+          break;
+        case 1:
+          k=rInt(2,6);
+          stem="Describe the transformation from f(x) = x to g(x) = −x + "+k+".";
+          correct="Reflected over x-axis, shifted up "+k+" units";
+          choices=["Reflected over x-axis, shifted up "+k+" units","Reflected over y-axis, shifted left "+k+" units","Shifted up "+k+" units only","Stretched by factor "+k+" and reflected"];
+          explain="The slope changed from 1 to −1 (reflection). The y-intercept changed from 0 to "+k+" (shift up "+k+").";
+          hints=["Compare the slopes: 1 vs −1 → reflection.","Compare y-intercepts: 0 vs "+k+" → vertical shift.","Name both transformations."];
+          break;
+        case 2:
+          a=rInt(2,4);k=rInt(-5,-1);
+          stem="Starting with f(x) = x, apply a vertical stretch by factor "+a+" and shift down "+Math.abs(k)+" units. Write the resulting equation.";
+          correct="y = "+a+"x + ("+k+")";
+          choices=["y = "+a+"x + ("+k+")","y = "+a+"x + "+Math.abs(k),"y = "+Math.abs(k)+"x + "+a,"y = "+a+"x"];
+          explain="Stretch by "+a+": y = "+a+"x. Shift down "+Math.abs(k)+": y = "+a+"x − "+Math.abs(k)+".";
+          hints=["Stretch first: multiply f(x) by "+a+".","Shift down: subtract "+Math.abs(k)+".","Combine both changes."];
+          break;
+        case 3:
+          a=rInt(2,4);k=rInt(-5,5);
+          stem="g(x) = "+a+"x + ("+k+"). Describe ALL transformations from f(x) = x.";
+          var desc="Vertical stretch by factor "+a+(k>0?", shift up "+k:(k<0?", shift down "+Math.abs(k):", no vertical shift"));
+          correct=desc;
+          choices=[desc,"Horizontal stretch by factor "+a+(k!==0?", shift by "+k:""),"Reflection, then shift","Stretch by "+k+", shift by "+a];
+          explain="Slope "+a+" vs 1 → vertical stretch by "+a+". y-intercept "+k+" vs 0 → "+(k>0?"shift up "+k:k<0?"shift down "+Math.abs(k):"no shift")+".";
+          hints=["Compare new slope to 1.","Compare new y-intercept to 0.","Name each transformation."];
+          break;
+        default:
+          stem="[STAAR] Which transformation maps f(x) = x to g(x) = 2x − 3?";
+          correct="Vertical stretch by 2, shift down 3";
+          choices=["Vertical stretch by 2, shift down 3","Vertical stretch by 3, shift down 2","Reflection and shift down 3","Horizontal stretch by 2, shift left 3"];
+          explain="Slope changes from 1 to 2 (vertical stretch by 2). y-intercept changes from 0 to −3 (shift down 3).";
+          hints=["Compare slopes: 1 vs 2.","Compare y-intercepts: 0 vs −3.","Stretch then shift."];
+      }
+      return {stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"1p",level:level};
+    }
+  },
+  {
+    id:"1q",name:"Parallel Lines",teks:"A.2E",
+    explanation:"Parallel lines: same slope (m), different y-intercepts. To write parallel line through point (x₁,y₁): keep slope m, substitute point into y=mx+b to find new b.",
+    realWorld:"Two trains on parallel tracks: same direction (slope), different starting positions.",
+    prereqs:["1k"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Same Direction, Different Path</h4><div class="analogy-box"><strong>Parallel lines never meet</strong> because they always go in exactly the same direction — same slope!<br><br>Like two cars driving side by side at the same speed: they travel together but never collide.</div><p>Parallel lines: <strong>m₁ = m₂</strong> but <strong>b₁ &ne; b₂</strong><br>Example: y = 2x + 1 and y = 2x − 5 are parallel (both have slope 2)</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Writing a Parallel Line</h4><ol class="step-list"><li>Identify the slope m from the given line.</li><li>Use the same slope m for the new line.</li><li>Substitute the given point into y = mx + b.</li><li>Solve for b.</li></ol><div class="math-box"><strong>Example:</strong> Parallel to y = 3x + 1 through (0, −2)<br>Same slope: m = 3<br>Use point (0, −2): −2 = 3(0) + b &rarr; b = −2<br>Equation: y = 3x − 2</div>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Standard Form &amp; Parallel</h4><p>Convert to slope-intercept form first to compare slopes:</p><div class="math-box"><strong>Are y = 2x + 3 and 4x − 2y = 7 parallel?</strong><br>4x − 2y = 7 &rarr; −2y = −4x + 7 &rarr; y = 2x − 7/2<br>Both have slope = 2 &rarr; <strong>YES, parallel!</strong></div><div class="staar-box"><strong>STAAR Tip:</strong> To check parallel: convert both to slope-intercept and compare slopes. Same slope + different y-intercept = parallel. Same slope + same y-intercept = same line (not parallel).</div>'}
+    ],
+    generate:function(level){
+      var m,b1,b2,stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:
+          m=rInt(2,4);b1=rInt(1,5);b2=b1+rInt(-6,-2);var b3=rInt(-5,-1);var b4=rInt(6,9);
+          stem="From these equations, which two are parallel? (A) y="+m+"x+"+b1+" (B) y="+m+"x+("+b2+") (C) y="+(m+1)+"x+"+b3+" (D) y="+(m-1)+"x+"+b4;
+          correct="A and B";
+          choices=["A and B","A and C","B and D","C and D"];
+          explain="Lines A and B both have slope "+m+" but different y-intercepts ("+b1+" and "+b2+"). They are parallel.";
+          hints=["Compare the slopes (coefficients of x).","A and B both have slope "+m+".","Same slope, different y-intercept = parallel."];
+          break;
+        case 1:
+          m=rInt(2,4);
+          stem="Write the equation of the line parallel to y = "+m+"x + 1 through (0, −2).";
+          correct="y = "+m+"x − 2";
+          choices=["y = "+m+"x − 2","y = −"+(1/m).toFixed(0)+"x − 2","y = "+m+"x + 1","y = −"+m+"x − 2"];
+          explain="Same slope "+m+". Point (0, −2) gives b = −2. Equation: y = "+m+"x − 2.";
+          hints=["Keep the same slope.","Use y = mx + b with m = "+m+".","Point (0, −2): b = −2."];
+          break;
+        case 2:
+          m=rInt(2,4);var x1=rInt(1,3);var y1=m*x1+rInt(1,5);var b_new=y1-m*x1;
+          stem="Write the equation of the line parallel to y = −"+m+"x + 5 through ("+x1+", "+y1+").";
+          correct="y = −"+m+"x + "+(y1+m*x1);
+          var bNew=y1+m*x1;
+          choices=shuffle(["y = −"+m+"x + "+bNew,"y = "+m+"x + "+bNew,"y = −"+m+"x + 5","y = −"+m+"x − "+bNew]);
+          explain="Same slope −"+m+". Use ("+x1+", "+y1+"): "+y1+" = −"+m+"("+x1+") + b &rarr; b = "+(y1+m*x1)+". Equation: y = −"+m+"x + "+(y1+m*x1)+".";
+          hints=["Slope stays −"+m+".","Substitute ("+x1+", "+y1+") into y = −"+m+"x + b.","Solve for b."];
+          break;
+        case 3:
+          stem="Are y = 2x + 3 and 4x − 2y = 7 parallel? Justify your answer.";
+          correct="Yes — both have slope 2";
+          choices=["Yes — both have slope 2","No — different forms","Yes — both pass through origin","No — different slopes"];
+          explain="Convert 4x−2y=7: y=2x−7/2. Both lines have slope=2 and different y-intercepts → parallel.";
+          hints=["Convert standard form to slope-intercept.","Compare the slopes.","Same slope → parallel."];
+          break;
+        default:
+          m=rInt(2,4);var xp=rInt(1,3);var yp=m*xp+rInt(1,4);var b_ans=yp-m*xp;
+          stem="[STAAR] Which equation is parallel to y = "+m+"x − 5 and passes through ("+xp+", "+yp+")?";
+          correct="y = "+m+"x + "+b_ans;
+          choices=shuffle(["y = "+m+"x + "+b_ans,"y = "+m+"x − 5","y = "+(m+1)+"x + "+b_ans,"y = −"+(1/m).toFixed(1)+"x + "+b_ans]);
+          explain="Same slope "+m+". Use ("+xp+", "+yp+"): b = "+yp+"−"+m+"("+xp+") = "+b_ans+". Equation: y="+m+"x+"+b_ans+".";
+          hints=["Parallel → same slope "+m+".","Use the given point to find b.","Substitute and solve."];
+      }
+      return {stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"1q",level:level};
+    }
+  },
+  {
+    id:"1r",name:"Perpendicular Lines",teks:"A.2F",
+    explanation:"Perpendicular lines: slopes are negative reciprocals (m₁×m₂=−1). If slope=3, perpendicular slope=−1/3. To write: find negative reciprocal of slope, then use point to find b.",
+    realWorld:"A road crossing a highway at 90°: if highway has slope 2, road has slope −1/2.",
+    prereqs:["1q"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Right-Angle Partners</h4><div class="analogy-box"><strong>Perpendicular lines meet at a 90° angle.</strong><br><br>Their slopes are <strong>negative reciprocals</strong>:<br>&bull; Slope 2 &harr; perpendicular slope −1/2<br>&bull; Slope −3 &harr; perpendicular slope 1/3<br>&bull; Slope 4/5 &harr; perpendicular slope −5/4<br><br>Quick check: multiply the two slopes &rarr; should get −1.</div>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Finding Perpendicular Slope</h4><ol class="step-list"><li>Flip the fraction (reciprocal).</li><li>Change the sign (negate).</li><li>Result: negative reciprocal.</li></ol><div class="math-box"><strong>Examples:</strong><br>m = 3 = 3/1 &rarr; flip: 1/3 &rarr; negate: <strong>−1/3</strong><br>m = −2 = −2/1 &rarr; flip: 1/−2 &rarr; negate: <strong>1/2</strong><br>m = 2/3 &rarr; flip: 3/2 &rarr; negate: <strong>−3/2</strong></div><p>Then use the perpendicular slope and a given point to write y = mx + b.</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Writing Perpendicular Lines</h4><div class="math-box"><strong>Example:</strong> Perpendicular to y = 2x + 1, through (0, 3)<br>Perpendicular slope = −1/2<br>Use (0, 3): 3 = −1/2(0) + b &rarr; b = 3<br>Equation: y = −1/2 x + 3</div><div class="staar-box"><strong>STAAR Tip:</strong> Perpendicular slope = −(1/m). Common mistake: just negating (not also reciprocating). Verify: multiply original slope by your new slope — must equal −1. For m=4: perp slope = −1/4. Check: 4 &times; (−1/4) = −1 &#10003;</div>'}
+    ],
+    generate:function(level){
+      var m,stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:
+          m=rInt(2,5);
+          stem="What is the slope of a line perpendicular to a line with slope "+m+"?";
+          correct="−"+"1/"+m;
+          choices=["−1/"+m,"1/"+m,"−"+m,String(m)];
+          explain="Perpendicular slope = −1/m = −1/"+m+". Check: "+m+" × (−1/"+m+") = −1 &#10003;.";
+          hints=["Flip: 1/"+m+".","Then negate: −1/"+m+".","Check: multiply and get −1."];
+          break;
+        case 1:
+          stem="Which pair of lines is perpendicular: (A) y=2x+1 & y=−1/2 x+3 or (B) y=3x+2 & y=3x−1?";
+          correct="Pair A";
+          choices=["Pair A","Pair B","Both pairs","Neither pair"];
+          explain="Pair A: slopes 2 and −1/2. Product: 2×(−1/2) = −1 &#10003; → perpendicular! Pair B: both slope 3 → parallel.";
+          hints=["Perpendicular: product of slopes = −1.","Check pair A: 2 × (−1/2) = ?","Check pair B: both have slope 3 → parallel, not perpendicular."];
+          break;
+        case 2:
+          stem="Write the equation of the line perpendicular to y = 2x + 1 through (0, 3).";
+          correct="y = −1/2 x + 3";
+          choices=["y = −1/2 x + 3","y = 2x + 3","y = 1/2 x + 3","y = −2x + 3"];
+          explain="Perpendicular slope = −1/2. Use (0, 3): b = 3. Equation: y = −1/2 x + 3.";
+          hints=["Perpendicular slope = −1/2.","Point (0, 3) directly gives b = 3.","Write y = (−1/2)x + 3."];
+          break;
+        case 3:
+          stem="Write the equation of the line perpendicular to y = −1/3 x + 4 through (−1, 2).";
+          correct="y = 3x + 5";
+          choices=["y = 3x + 5","y = −1/3 x + 5","y = 3x − 5","y = −3x + 5"];
+          explain="Perp slope = 3 (neg. recip. of −1/3). Use (−1,2): 2 = 3(−1)+b → b = 5. Equation: y = 3x+5.";
+          hints=["Neg. reciprocal of −1/3 = 3.","Substitute (−1, 2) into y = 3x + b.","2 = 3(−1) + b → b = ?"];
+          break;
+        default:
+          stem="[STAAR] Which equation is perpendicular to y = 4x − 1 and passes through (2, 0)?";
+          correct="y = −1/4 x + 1/2";
+          choices=["y = −1/4 x + 1/2","y = 4x + 1","y = −1/4 x − 1/2","y = 1/4 x + 1/2"];
+          explain="Perp slope = −1/4. Use (2,0): 0 = −1/4(2)+b → b = 1/2. Equation: y = −1/4 x + 1/2.";
+          hints=["Perp slope = −1/4 (neg. recip. of 4).","Substitute (2, 0) into y = −1/4 x + b.","0 = −1/4(2) + b → b = ?"];
+      }
+      return {stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"1r",level:level};
+    }
+  },
+  {
+    id:"1s",name:"Linear Inequalities in Two Variables",teks:"A.2H",
+    explanation:"Graph y>mx+b: dashed boundary line, shade above. Graph y<mx+b: dashed line, shade below. For ≤/≥: solid line. Test (0,0) to confirm shading.",
+    realWorld:"Budget: 3b+2f<50. The shaded region below the line shows all affordable (burgers, fries) combinations.",
+    prereqs:["1e","1k"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>More Than a Line</h4><div class="analogy-box"><strong>An inequality in two variables describes a whole region</strong> of the coordinate plane, not just a line!<br><br>&bull; <strong>Dashed line</strong>: > or < (boundary NOT included)<br>&bull; <strong>Solid line</strong>: ≥ or ≤ (boundary included)<br>&bull; <strong>Shade above</strong>: y > (or y ≥)<br>&bull; <strong>Shade below</strong>: y < (or y ≤)</div>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Graphing Steps</h4><ol class="step-list"><li>Graph the boundary line (dashed if strict, solid if equal-included).</li><li>Pick a test point NOT on the line (usually (0,0)).</li><li>Substitute into the inequality.</li><li>If true: shade the side with (0,0). If false: shade the other side.</li></ol><div class="math-box"><strong>Example:</strong> y &gt; 2x − 1<br>Boundary: y = 2x − 1 (dashed)<br>Test (0,0): 0 &gt; 2(0)−1 = −1? YES! Shade the side containing (0,0).</div>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Real-World Inequalities</h4><p>Many real-world constraints are inequalities:</p><div class="math-box"><strong>Example:</strong> Budget: spend at most $50 on books (b) and pens (p).<br>5b + 2p &le; 50<br>Boundary: solid line (includes equal case)<br>Shade below: any combination where total ≤ $50</div><div class="staar-box"><strong>STAAR Tip:</strong> For “which point is in the solution set,” substitute the point into the inequality. Also check: if the boundary is dashed, points ON the line are NOT solutions.</div>'}
+    ],
+    generate:function(level){
+      var m,b,stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:
+          m=rInt(1,3);b=rInt(-3,3);
+          stem="For the inequality y > "+m+"x + ("+b+"), should you shade above or below the boundary line?";
+          correct="Above";
+          choices=["Above","Below","On the line","Both sides"];
+          explain="y > mx+b means y-values greater than the line. “Greater than” means above the boundary line.";
+          hints=["y > means y is larger than the right side.","Larger y-values are above the line.","Shade the region above the dashed line."];
+          break;
+        case 1:
+          m=rInt(1,3);b=rInt(-2,2);var x0=2;var y0=m*x0+b+rInt(1,3);
+          stem="Is ("+x0+", "+y0+") a solution to y ≥ "+m+"x + ("+b+")?";
+          var lhs=y0;var rhs=m*x0+b;
+          correct=lhs>=rhs?"Yes":"No";
+          choices=lhs>=rhs?["Yes","No","Cannot determine","Only if on the line"]:["No","Yes","Cannot determine","Only if on the line"];
+          explain="Substitute: "+y0+" ≥ "+m+"("+x0+") + ("+b+") = "+rhs+". "+y0+" ≥ "+rhs+" is "+(lhs>=rhs?"TRUE":"FALSE")+".";
+          hints=["Substitute x = "+x0+" into the right side.","Right side = "+rhs+".","Is "+y0+" ≥ "+rhs+"?"];
+          break;
+        case 2:
+          var price1=rInt(3,6);var price2=rInt(2,4);var budget=rInt(20,40);
+          stem="You have $"+budget+" to spend on apples ($"+price1+" each) and bananas ($"+price2+" each). Write an inequality for the affordable combinations.";
+          correct=price1+"a + "+price2+"b ≤ "+budget;
+          choices=[price1+"a + "+price2+"b ≤ "+budget,price1+"a + "+price2+"b ≥ "+budget,price1+"a + "+price2+"b < "+budget,price1+"a − "+price2+"b ≤ "+budget];
+          explain="Total cost = "+price1+"a + "+price2+"b. Must be at most $"+budget+". Inequality: "+price1+"a + "+price2+"b ≤ "+budget+".";
+          hints=["Cost of apples: "+price1+" × a.","Cost of bananas: "+price2+" × b.","Total ≤ budget means ≤ "+budget+"."];
+          break;
+        case 3:
+          m=rInt(1,3);b=rInt(1,4);
+          stem="A graph shows a dashed line y = −"+m+"x + "+b+" with the region below the line shaded. Write the inequality.";
+          correct="y < −"+m+"x + "+b;
+          choices=["y < −"+m+"x + "+b,"y > −"+m+"x + "+b,"y ≤ −"+m+"x + "+b,"y ≥ −"+m+"x + "+b];
+          explain="Dashed line → strict inequality (< or >). Shaded below → y < the line. Inequality: y < −"+m+"x + "+b+".";
+          hints=["Dashed line → use < or >.","Shaded below → y < (boundary).","Write y < −"+m+"x + "+b+"."];
+          break;
+        default:
+          m=rInt(1,3);b=rInt(-3,3);
+          stem="[STAAR] Which ordered pair is in the solution set of y ≤ "+m+"x + "+b+"?";
+          var xTest=rInt(1,4);var yTest=m*xTest+b-rInt(1,3);
+          correct="("+xTest+", "+yTest+")";
+          var xW1=xTest;var yW1=m*xTest+b+rInt(1,3);
+          var xW2=xTest+1;var yW2=m*(xTest+1)+b+1;
+          var xW3=xTest-1;var yW3=m*(xTest-1)+b+2;
+          choices=shuffle(["("+xTest+", "+yTest+")","("+xW1+", "+yW1+")","("+xW2+", "+yW2+")","("+xW3+", "+yW3+")"]);
+          explain="Test ("+xTest+", "+yTest+"): "+yTest+" ≤ "+m+"("+xTest+") + "+b+" = "+(m*xTest+b)+". "+yTest+" ≤ "+(m*xTest+b)+" ✓.";
+          hints=["Substitute each point into the inequality.","Check if y ≤ mx + b.","Only ("+xTest+", "+yTest+") satisfies the inequality."];
+      }
+      return {stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"1s",level:level};
+    }
+  },
   {
     id:"1a",name:"One-Step Equations",teks:"A.5A",
     explanation:"A one-step equation needs just one operation to solve. If something is added to x, subtract it from both sides. If x is multiplied by something, divide both sides. Think of it like a balance scale — keep both sides equal!",
@@ -738,13 +1482,79 @@ const UNITS=[
   eq:"How can we find the point where two relationships meet?",
   eu:"A system of equations represents two constraints at once — the solution is the point that satisfies both simultaneously.",
   objectives:[
-    "I can determine the solution of a system by graphing two lines (A.2A).",
+    "I can write a system of two linear equations from a table of values, a graph, and a verbal description (A.2I).",
+    "I can graph a system of two linear equations and determine the solution if it exists (A.3F).",
+    "I can estimate the graphical solution of a system when the intersection is not at integer coordinates (A.3G).",
     "I can solve a system of equations using substitution (A.5C).",
     "I can solve a system of equations using elimination (A.5C).",
-    "I can write and solve systems from real-world situations (A.2A).",
+    "I can write and solve systems of equations from real-world situations (A.2I, A.5C).",
     "I can determine if a system has one solution, no solution, or infinitely many solutions (A.5C)."
   ],
   concepts:[
+  {
+    id:"2f",name:"Writing Systems from Tables, Graphs & Descriptions",teks:"A.2I",
+    explanation:"A system of two linear equations can be written from a table (find slope and intercept for each relationship), from a graph (read each line's slope and y-intercept), or from a verbal description (translate each sentence into an equation). Identifying what each variable represents is the critical first step.",
+    realWorld:"Two streaming services: a table shows that Service A costs $10 for 0 movies and adds $2 each movie; Service B costs $4 for 0 movies and adds $4 each. Reading the table gives y = 2x + 10 and y = 4x + 4 — now you have a system!",
+    prereqs:["1k","1l"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Two Clues Make a System</h4><div class="analogy-box"><strong>Think about it:</strong> One equation is a clue — it constrains but doesn\'t pin down an exact answer. Two equations together, sharing the same two variables, nail down exactly one (x, y) point that satisfies <em>both</em> at once. That\'s the power of a system!<br><br>You can spot a system hiding anywhere:<br>&bull; A <strong>table</strong> with two columns of (x, y) data from two different scenarios<br>&bull; A <strong>graph</strong> showing two lines<br>&bull; A <strong>story</strong> with two separate sentences describing two relationships</div><p>Your job: translate each relationship into y&nbsp;=&nbsp;mx&nbsp;+&nbsp;b form, then you\'re ready to solve.</p>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Three Ways to Write a System</h4><div class="math-box"><strong>From a table:</strong> For each relationship, find slope (Δy/Δx) and y-intercept (y when x = 0).<br><br><strong>From a graph:</strong> Read each line\'s y-intercept and use rise/run for slope.<br><br><strong>From a description:</strong> Define variables, then translate each sentence into an equation.</div><p><strong>Worked example — from description:</strong></p><ol class="step-list"><li>"Service A costs $10/month plus $2 per movie."<br>&rarr; y = 2x + 10</li><li>"Service B costs $4/month plus $4 per movie."<br>&rarr; y = 4x + 4</li><li>System: { y = 2x + 10 and y = 4x + 4 }</li></ol><p><strong>From a table example:</strong></p><table style="border-collapse:collapse;font-size:.88rem;margin:8px 0"><tr style="background:#e2e8f0"><th style="padding:3px 10px;border:1px solid #cbd5e1">x (movies)</th><th style="padding:3px 10px;border:1px solid #cbd5e1">Plan A cost</th><th style="padding:3px 10px;border:1px solid #cbd5e1">Plan B cost</th></tr><tr><td style="padding:3px 10px;border:1px solid #cbd5e1;text-align:center">0</td><td style="padding:3px 10px;border:1px solid #cbd5e1;text-align:center">$10</td><td style="padding:3px 10px;border:1px solid #cbd5e1;text-align:center">$4</td></tr><tr><td style="padding:3px 10px;border:1px solid #cbd5e1;text-align:center">1</td><td style="padding:3px 10px;border:1px solid #cbd5e1;text-align:center">$12</td><td style="padding:3px 10px;border:1px solid #cbd5e1;text-align:center">$8</td></tr><tr><td style="padding:3px 10px;border:1px solid #cbd5e1;text-align:center">2</td><td style="padding:3px 10px;border:1px solid #cbd5e1;text-align:center">$14</td><td style="padding:3px 10px;border:1px solid #cbd5e1;text-align:center">$12</td></tr></table><p>A: slope = 2, intercept = 10 &rarr; y = 2x + 10. B: slope = 4, intercept = 4 &rarr; y = 4x + 4.</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Reading Systems from Graphs &amp; STAAR Patterns</h4><div class="math-box"><strong>From a graph — step by step:</strong><br>1. Find each line\'s y-intercept (where it crosses y-axis)<br>2. Pick a second clear point on each line<br>3. Compute slope = rise / run for each line<br>4. Write y = mx + b for each line</div><p><strong>Tricky graph cases:</strong></p><ul style="margin:6px 0 6px 18px;font-size:.9rem;line-height:1.7"><li>If a line passes through the origin: b = 0, so y = mx</li><li>If a line is horizontal: slope = 0, equation is y = b</li><li>If a line is vertical: equation is x = h (cannot be in y = mx + b form)</li></ul><div class="staar-box"><strong>STAAR Tip:</strong> "Which system best represents the situation?" questions always appear. Define your variables clearly (e.g., "let x = number of months"), then translate each sentence into one equation. The key word "together" or "combined" usually signals an addition equation; "each" or "per" signals multiplication. Match units on both sides!</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:{
+          var b1=rInt(5,15);var m1=rInt(1,4);var b2=rInt(1,b1-1);var m2=m1+rInt(1,3);
+          stem="Plan A: the table shows x=0 → $"+b1+", x=1 → $"+(b1+m1)+". Plan B: x=0 → $"+b2+", x=1 → $"+(b2+m2)+". Which system models these plans?";
+          correct="y = "+m1+"x + "+b1+" and y = "+m2+"x + "+b2;
+          choices=shuffle(["y = "+m1+"x + "+b1+" and y = "+m2+"x + "+b2,"y = "+b1+"x + "+m1+" and y = "+b2+"x + "+m2,"y = "+m1+"x + "+b2+" and y = "+m2+"x + "+b1,"y = "+m2+"x + "+b1+" and y = "+m1+"x + "+b2]);
+          explain="Plan A: slope = "+(b1+m1)+" − "+b1+" = "+m1+", intercept = "+b1+". Plan B: slope = "+m2+", intercept = "+b2+". System: y = "+m1+"x + "+b1+" and y = "+m2+"x + "+b2+".";
+          hints=["For each plan, find slope (difference in cost per extra movie).",
+                 "Plan A slope = "+(b1+m1)+" − "+b1+" = "+m1+", intercept = "+b1+".",
+                 "y = "+m1+"x + "+b1+" and y = "+m2+"x + "+b2+"."];
+          break;
+        }
+        case 1:{
+          var r1=rInt(2,5);var f1=rInt(5,15);var r2=r1+rInt(1,3);var f2=rInt(0,f1-1);
+          stem="\"Rideshare X charges $"+f1+" flat plus $"+r1+" per mile. Rideshare Y charges $"+f2+" flat plus $"+r2+" per mile.\" Write a system of equations where y = total cost and x = miles.";
+          correct="y = "+r1+"x + "+f1+" and y = "+r2+"x + "+f2;
+          choices=shuffle(["y = "+r1+"x + "+f1+" and y = "+r2+"x + "+f2,"y = "+f1+"x + "+r1+" and y = "+f2+"x + "+r2,"y = "+r1+"x − "+f1+" and y = "+r2+"x − "+f2,"y = ("+r1+"+"+f1+")x and y = ("+r2+"+"+f2+")x"]);
+          explain="\"Per mile\" = slope. \"Flat fee\" = y-intercept. X: y = "+r1+"x + "+f1+". Y: y = "+r2+"x + "+f2+".";
+          hints=["\"Per mile\" translates to multiplication (slope).","\"Flat fee\" translates to the starting value (y-intercept).","X: y = "+r1+"x + "+f1+". Y: y = "+r2+"x + "+f2+"."];
+          break;
+        }
+        case 2:{
+          var m1=rInt(1,3);var b1=rInt(2,8);var m2=-rInt(1,3);var b2=rInt(8,15);
+          stem="A graph shows Line 1 has y-intercept "+b1+" and passes through (2, "+(b1+2*m1)+"). Line 2 has y-intercept "+b2+" and passes through (2, "+(b2+2*m2)+"). Write the system.";
+          correct="y = "+m1+"x + "+b1+" and y = "+m2+"x + "+b2;
+          choices=shuffle(["y = "+m1+"x + "+b1+" and y = "+m2+"x + "+b2,"y = "+b1+"x + "+m1+" and y = "+b2+"x + "+m2,"y = "+m1+"x − "+b1+" and y = "+(-m2)+"x + "+b2,"y = "+m2+"x + "+b1+" and y = "+m1+"x + "+b2]);
+          explain="Line 1: slope = ("+(b1+2*m1)+" − "+b1+") / (2 − 0) = "+m1+". Line 2: slope = ("+(b2+2*m2)+" − "+b2+") / (2 − 0) = "+m2+". Write y = mx + b for each.";
+          hints=["Use slope = (y₂ − y₁) / (x₂ − x₁) for each line.","Line 1: rise = "+(2*m1)+", run = 2, slope = "+m1+".","Line 1: y = "+m1+"x + "+b1+". Line 2: y = "+m2+"x + "+b2+"."];
+          break;
+        }
+        case 3:{
+          var jCost=rInt(15,25);var cCost=rInt(5,10);var total=rInt(4,8);var jNum=rInt(1,total-1);var cNum=total-jNum;var money=jCost*jNum+cCost*cNum;
+          stem="A fan shop sells jerseys for $"+jCost+" and caps for $"+cCost+". A customer buys "+total+" items for $"+money+". Write a system to find how many of each item they bought.";
+          correct="j + c = "+total+" and "+jCost+"j + "+cCost+"c = "+money;
+          choices=shuffle(["j + c = "+total+" and "+jCost+"j + "+cCost+"c = "+money,"j + c = "+money+" and "+jCost+"j + "+cCost+"c = "+total,jCost+"j + "+jCost+"c = "+total+" and j + c = "+money,"j − c = "+total+" and "+jCost+"j + "+cCost+"c = "+money]);
+          explain="Let j = jerseys, c = caps. Total items: j + c = "+total+". Total cost: "+jCost+"j + "+cCost+"c = "+money+".";
+          hints=["Define variables: j = jerseys, c = caps.","Total items equation: j + c = "+total+".","Total cost equation: "+jCost+"j + "+cCost+"c = "+money+"."];
+          break;
+        }
+        default:{
+          var m1=rInt(1,3);var b1=rInt(5,12);var m2=m1+rInt(1,3);var b2=rInt(1,b1-1);
+          stem="STAAR: A table shows Plan A costs $"+(b1+m1*2)+" for 2 uses and $"+(b1+m1*4)+" for 4 uses. Plan B costs $"+(b2+m2*2)+" for 2 uses and $"+(b2+m2*4)+" for 4 uses. Which system represents these plans?";
+          correct="y = "+m1+"x + "+b1+" and y = "+m2+"x + "+b2;
+          choices=shuffle(["y = "+m1+"x + "+b1+" and y = "+m2+"x + "+b2,"y = "+b1+"x + "+m1+" and y = "+b2+"x + "+m2,"y = "+(m1+b1)+"x and y = "+(m2+b2)+"x","y = "+m1+"x − "+b1+" and y = "+m2+"x − "+b2]);
+          explain="Plan A: slope = Δcost/Δuse = "+m1+", at x=0 cost = "+b1+". Plan B: slope = "+m2+", intercept = "+b2+". System: y = "+m1+"x + "+b1+" and y = "+m2+"x + "+b2+".";
+          hints=["Find slope for each plan: Δy ÷ Δx between two rows.","Plan A slope = "+m1+", intercept = "+b1+".","y = "+m1+"x + "+b1+" and y = "+m2+"x + "+b2+"."];
+        }
+      }
+      return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"2f",level:level};
+    }
+  },
+
   {
     id:"2a",name:"Solving Systems by Graphing",teks:"A.3F",
     explanation:"A system of equations is two equations with two unknowns. When you graph both equations on the same coordinate plane, the point where the lines cross is the solution — it's the (x, y) that makes BOTH equations true at the same time.",
@@ -810,6 +1620,70 @@ const UNITS=[
         }
       }
       return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"2a",level:level};
+    }
+  },
+  {
+    id:"2g",name:"Estimating Graphical Solutions",teks:"A.3G",
+    explanation:"When the intersection of two lines doesn't land on a neat integer, you can still estimate the solution by reading approximate coordinates from a graph. Look at the grid — the x-value of the crossing is somewhere between two gridlines, and so is the y-value. Use the equations to verify your estimate by checking which substitution gives the closest result.",
+    realWorld:"Two food trucks' cost equations cross at x ≈ 2.3 tacos and y ≈ $7.60 — not whole numbers! In real life, you'd round to the nearest practical value and say: 'After about 2 tacos, they cost roughly the same.'",
+    prereqs:["2a"],
+    levels:[
+      {title:"Intuition",time:"~2 min",html:'<h4>Good Enough vs. Exact</h4><div class="analogy-box"><strong>Think about this:</strong> You\'re tracking two car rental costs on a graph. The lines clearly cross somewhere around x = 2.3 days, y ≈ $67. You can\'t rent a fraction of a day — so you round and say "around 2 days." The answer doesn\'t need to be exact to be useful!<br><br>Graphical estimation is a legitimate math skill. STAAR sometimes shows a graph where the answer is <strong>between grid squares</strong> and asks you to identify the best estimate.</div><p>How to estimate from a graph:</p><ol style="margin:8px 0 8px 18px;font-size:.95rem;line-height:1.8"><li>Find where the two lines cross (intersect)</li><li>Read the x-value: between which two integers does it fall?</li><li>Read the y-value: between which two integers does it fall?</li><li>State the estimate as decimals or fractions</li></ol>'},
+      {title:"Understanding",time:"~3 min",html:'<h4>Reading Between the Gridlines</h4><div class="math-box"><strong>The method:</strong><br>1. Identify the intersection region<br>2. Estimate x to the nearest half (or tenth)<br>3. Substitute your x-estimate into either equation to estimate y<br>4. Report as an ordered pair (~x, ~y)</div><p><strong>Worked example:</strong> Lines y = 3x + 1 and y = x + 5 appear to cross around x = 1.8 on a graph.</p><ol class="step-list"><li>Estimate x ≈ 2 from graph</li><li>Plug into Line 1: y ≈ 3(2) + 1 = 7</li><li>Plug into Line 2: y ≈ 2 + 5 = 7 ✓</li><li>Report: solution ≈ (2, 7)</li></ol><p><em>Here the exact answer IS (2, 7) — graphical estimation agrees. But when the intersection is between grid squares, your estimate will be approximate.</em></p><p><strong>Verify with algebra:</strong> Set 3x + 1 = x + 5 → 2x = 4 → x = 2 ✓</p>'},
+      {title:"Mastery",time:"~4 min",html:'<h4>Non-Integer Intersections &amp; STAAR Strategies</h4><div class="math-box"><strong>When the crossing is between grid lines:</strong><br>y = 2x − 1 and y = −x + 4 cross at x = 5/3 ≈ 1.67<br>Estimate from graph: x ≈ 1.7, y ≈ 2.3<br>Exact (algebraic): 2x − 1 = −x + 4 → 3x = 5 → x = 5/3, y = 7/3</div><p><strong>Is your graphical estimate reasonable?</strong></p><ul style="margin:6px 0 6px 18px;font-size:.9rem;line-height:1.7"><li>Plug estimate into both equations — do they give approximately the same y?</li><li>If y-values differ by more than 1 grid square, refine your estimate</li><li>Algebraic solution is always more precise — use graphing to <em>check</em></li></ul><div class="staar-box"><strong>STAAR Tip:</strong> "Estimate the solution from the graph" questions show two lines crossing between gridlines. The answer choices will be close to each other. Look carefully: read the x-coordinate of the crossing, then check each answer choice by substituting back into one equation. The correct answer gives the y that best matches the graph.</div>'}
+    ],
+    generate:function(level){
+      var stem,choices,correct,explain,hints;
+      switch(level){
+        case 0:{
+          var m1=rInt(1,3);var b1=rInt(0,3);var m2=-rInt(1,3);var b2=rInt(5,10);
+          var xEx=(b2-b1)/(m1-m2);var yEx=m1*xEx+b1;
+          var xRnd=Math.round(xEx*10)/10;var yRnd=Math.round(yEx*10)/10;
+          stem="Lines y = "+m1+"x + "+b1+" and y = "+m2+"x + "+b2+" cross at approximately x ≈ "+xRnd+". Which ordered pair best estimates the solution?";
+          correct="("+xRnd+", "+yRnd+")";
+          choices=shuffle(["("+xRnd+", "+yRnd+")","("+xRnd+", "+(yRnd+1)+")","("+(xRnd+0.5)+", "+yRnd+")","(0, "+b1+")"]);
+          explain="Substitute x ≈ "+xRnd+" into y = "+m1+"x + "+b1+": y ≈ "+m1+"("+xRnd+") + "+b1+" ≈ "+yRnd+". Solution ≈ ("+xRnd+", "+yRnd+").";
+          hints=["Substitute x ≈ "+xRnd+" into one of the equations.","y ≈ "+m1+"("+xRnd+") + "+b1+".","Solution ≈ ("+xRnd+", "+yRnd+")."];
+          break;
+        }
+        case 1:{
+          stem="Two lines on a graph appear to cross between x = 2 and x = 3, closer to x = 2.5. The y-value at the crossing looks like it's between 4 and 5. Which is the best estimate for the solution?";
+          correct="(2.5, 4.5)";
+          choices=shuffle(["(2.5, 4.5)","(2, 5)","(3, 4)","(0, 4.5)"]);
+          explain="The x-value is midway between 2 and 3 → x ≈ 2.5. The y-value is midway between 4 and 5 → y ≈ 4.5. Best estimate: (2.5, 4.5).";
+          hints=["Read the x-value of the crossing: between 2 and 3.","Read the y-value: between 4 and 5.","Midpoints: x ≈ 2.5, y ≈ 4.5."];
+          break;
+        }
+        case 2:{
+          var m1=2;var b1=rInt(0,2);var m2=-1;var b2=rInt(6,9);
+          var xEx=(b2-b1)/(m1-m2);var yEx=m1*xEx+b1;
+          stem="Two car rental agencies: Agency A charges $"+b1+" per day plus $"+m1+" per hour. Agency B charges $"+b2+" per day and $"+(-m2)+" per hour less. At approximately how many hours are they equal?";
+          correct="≈ "+Math.round(xEx*10)/10+" hours";
+          choices=shuffle(["≈ "+Math.round(xEx*10)/10+" hours","≈ "+(Math.round(xEx*10)/10+1)+" hours","≈ "+(Math.round(xEx*10)/10-1)+" hours","They are never equal"]);
+          explain="Set "+m1+"x + "+b1+" = "+m2+"x + "+b2+" → "+((m1-m2))+"x = "+(b2-b1)+" → x ≈ "+Math.round(xEx*10)/10+" hours.";
+          hints=["Set the two cost equations equal.",""+m1+"x + "+b1+" = "+m2+"x + "+b2+".","x ≈ "+Math.round(xEx*10)/10+" hours."];
+          break;
+        }
+        case 3:{
+          stem="A student estimates a system's solution as (3, 7) from a graph. They check: in y = 2x + 1, x=3 gives y=7 ✓. In y = −x + 9, x=3 gives y=6 ✗. Is their estimate valid? What should the exact x-value be?";
+          correct="Estimate is off; exact x = 8/3 ≈ 2.67";
+          choices=shuffle(["Estimate is off; exact x = 8/3 ≈ 2.67","Estimate is correct; both equations check out","Estimate is off; exact x = 4","Estimate is off; exact x = 3.5"]);
+          explain="Set 2x + 1 = −x + 9 → 3x = 8 → x = 8/3 ≈ 2.67. At x = 8/3, y = 2(8/3) + 1 = 19/3 ≈ 6.33. The estimate (3, 7) was close but not exact.";
+          hints=["Plug the estimate into BOTH equations to verify.","y = −x + 9 gives y = 6, not 7, so the estimate is slightly off.","Solve algebraically: 2x + 1 = −x + 9 → x = 8/3."];
+          break;
+        }
+        default:{
+          var m1=rInt(1,3);var b1=rInt(1,4);var m2=-rInt(1,2);var b2=rInt(5,9);
+          var xEx=(b2-b1)/(m1-m2);var yEx=m1*xEx+b1;
+          var xRnd=Math.round(xEx*10)/10;var yRnd=Math.round(yEx*10)/10;
+          stem="[STAAR] A graph shows lines y = "+m1+"x + "+b1+" and y = "+m2+"x + "+b2+". Which ordered pair best represents the solution?";
+          correct="("+xRnd+", "+yRnd+")";
+          choices=shuffle(["("+xRnd+", "+yRnd+")","("+Math.round((xRnd+0.5)*10)/10+", "+yRnd+")","("+xRnd+", "+Math.round((yRnd+1)*10)/10+")","(0, "+b1+")"]);
+          explain="Algebraic solution: "+m1+"x + "+b1+" = "+m2+"x + "+b2+" → "+(m1-m2)+"x = "+(b2-b1)+" → x = "+xEx.toFixed(2)+", y = "+yEx.toFixed(2)+". Closest answer: ("+xRnd+", "+yRnd+").";
+          hints=["Set the equations equal and solve algebraically.","x = "+(b2-b1)+" ÷ "+(m1-m2)+" ≈ "+xRnd+".","Substitute to find y ≈ "+yRnd+". Answer: ("+xRnd+", "+yRnd+")."];
+        }
+      }
+      return{stem:stem,choices:choices,correct:correct,explain:explain,hints:hints,concept:"2g",level:level};
     }
   },
   {
@@ -944,7 +1818,7 @@ const UNITS=[
     }
   },
   {
-    id:"2d",name:"Applications of Systems",teks:"A.2I",
+    id:"2d",name:"Applications of Systems",teks:"A.2I, A.5C",
     explanation:"Systems of equations pop up whenever two relationships share the same unknowns. The key is identifying what your variables represent, writing two equations from the given information, then choosing the best method to solve. Real life rarely gives you neat equations — you have to build them yourself!",
     realWorld:"Two pizza delivery services in Flower Mound: Sal's charges $8 per pizza plus $5 delivery, Marco's charges $6 per pizza plus $11 delivery. How many pizzas make them the same price? System: y = 8x + 5, y = 6x + 11.",
     prereqs:["2b","2c"],
@@ -1666,7 +2540,7 @@ const UNITS=[
     }
   },
   {
-    id:"4c",name:"Solving Quadratics by Factoring",teks:"A.8A",
+    id:"4c",name:"Solving Quadratics by Factoring",teks:"A.8A, A.7B",
     explanation:"To solve ax² + bx + c = 0 by factoring: (1) look for a GCF first, (2) factor the trinomial into two binomials, (3) set each factor equal to zero (Zero Product Property), (4) solve each mini-equation. This only works when the quadratic factors neatly — otherwise you need the quadratic formula!",
     realWorld:"You're designing a rectangular Texas-shaped garden bed. The length is (x + 5) feet and the width is (x + 2) feet. If the area must be 40 sq ft, you solve (x+5)(x+2) = 40, which leads to a quadratic equation.",
     prereqs:["4a","1b"],
@@ -1870,7 +2744,7 @@ const UNITS=[
     }
   },
   {
-    id:"4f",name:"Writing Quadratic Equations",teks:"A.6B",
+    id:"4f",name:"Writing Quadratic Equations",teks:"A.6B, A.6C",
     explanation:"You can write a quadratic equation if you are given the vertex and a point, or the x-intercepts. If given the vertex (h, k), start with y = a(x - h)² + k, plug in the other point for x and y, and solve for 'a'. If you have roots, start with y = a(x - r1)(x - r2).",
     realWorld:"If you know a launched firework reaches a peak of 200 feet after 4 seconds (vertex: 4, 200) and it was launched from the ground at 0 seconds (point: 0, 0), you can build the exact quadratic formula that models its flight.",
     prereqs:["4b"],
@@ -2313,7 +3187,7 @@ const UNITS=[
     }
   },
   {
-    id:"5d",name:"Factoring GCF & Trinomials",teks:"A.10E",
+    id:"5d",name:"Factoring GCF & Trinomials",teks:"A.10E, A.10D",
     explanation:"Factoring is the reverse of multiplying. Step 1: Always check for a GCF (greatest common factor) first. Step 2: For x\u00B2 + bx + c, find two numbers that multiply to c and add to b. Step 3: Write as (x + p)(x + q). For ax\u00B2 + bx + c (a \u2260 1), the process takes more trial or you can use grouping.",
     realWorld:"If a ball\u2019s height is h = -16t\u00B2 + 48t, factoring gives h = -16t(t - 3). Setting each factor to zero tells you the ball is on the ground at t = 0 (launch) and t = 3 seconds (landing).",
     prereqs:["5c","4c"],
@@ -2930,13 +3804,49 @@ function renderDashboard(){
   UNITS.forEach(function(u){
     var mastery=calcUnitMastery(u);
     var c=el("div","unit-card"+(u.locked?" locked":""));
+    var chipsHtml = "";
+    if(!u.locked && u.concepts) {
+      chipsHtml = '<div class="concept-mega-btn" data-unit="'+u.id+'">Explore '+u.concepts.length+' Concepts <span class="mega-caret" style="font-size:0.6rem">▼</span></div>' +
+        '<div class="concept-mega-wrapper"><div class="concept-mega-content">' + 
+        u.concepts.map(function(cc){
+          return '<span class="concept-chip" data-cid="'+cc.id+'" title="'+cc.teks+': '+(cc.explanation||'').replace(/"/g,'&quot;')+'" style="font-size:.75rem;background:#e2e8f0;padding:4px 8px;border-radius:12px;cursor:pointer;color:#334155;border:1px solid #cbd5e1;transition:all 0.2s;">'+cc.name+' <span style="font-size:0.65rem;color:#64748b;font-weight:600;margin-left:2px;">'+cc.teks+'</span></span>';
+        }).join('') + '</div></div>';
+    }
     c.innerHTML='<div class="unit-num">'+u.id+'</div>'+
       '<h3>'+u.name+'</h3>'+
       '<div class="teks">'+u.teks+'</div>'+
       (u.locked?'<span class="lock-label">Coming Soon</span>':'')+
       '<div class="prog-bar"><div class="prog-fill" style="width:'+mastery+'%"></div></div>'+
-      '<div class="prog-text">'+mastery+'% mastery</div>';
-    if(!u.locked)c.addEventListener("click",function(){openUnit(u);});
+      '<div class="prog-text">'+mastery+'% mastery</div>'+chipsHtml;
+    if(!u.locked){
+      c.addEventListener("click",function(e){
+        var megaBtn = e.target.closest(".concept-mega-btn");
+        if(megaBtn){
+          e.stopPropagation();
+          var isForced = c.classList.contains("force-mega");
+          document.querySelectorAll(".unit-card").forEach(function(card){ card.classList.remove("force-mega"); card.querySelector(".mega-caret") && (card.querySelector(".mega-caret").textContent="▼"); });
+          if(!isForced){
+            c.classList.add("force-mega");
+            megaBtn.querySelector(".mega-caret").textContent = "▲";
+          }
+          return;
+        }
+        var chip = e.target.closest(".concept-chip");
+        if(!chip && e.target.closest(".concept-mega-wrapper")) return; // clicked inside wrapper but not on chip
+        
+        openUnit(u);
+        if(chip){
+          var cid = chip.dataset.cid;
+          setTimeout(function(){
+            var card = document.querySelector("#concept-"+cid);
+            if(card){
+              if(!card.classList.contains("open")) card.querySelector(".concept-hdr").click();
+              card.scrollIntoView({behavior:"smooth",block:"center"});
+            }
+          },250);
+        }
+      });
+    }
     grid.appendChild(c);
   });
 
@@ -2972,7 +3882,20 @@ function renderConceptMap(){
       var conf=S.confidence[c.id]||0;
       var cls=conf>=80?"green":conf>=30?"yellow":S.attempted[c.id]>0?"red":"gray";
       var d=el("div","cm-dot "+cls,c.name);
-      d.title=c.name+": "+conf+"% confidence";
+      d.title=c.name+" ("+conf+"% confidence) — click to study";
+      d.style.cursor="pointer";
+      (function(unit,concept){
+        d.addEventListener("click",function(){
+          openUnit(unit);
+          setTimeout(function(){
+            var card=document.querySelector("#concept-"+concept.id);
+            if(card){
+              if(!card.classList.contains("open")) card.querySelector(".concept-hdr").click();
+              card.scrollIntoView({behavior:"smooth",block:"center"});
+            }
+          },250);
+        });
+      })(u,c);
       cm.appendChild(d);
     });
   });
@@ -3277,6 +4200,332 @@ function renderMiniViz(cid){
     }
     ["mv1fA","mv1fB","mv1fC"].forEach(function(id){$(id).addEventListener("input",upd1f);});
     upd1f();
+  }else if(cid==="1g"){
+    // Slope: axes + line + rise/run triangle
+    container.innerHTML='<canvas id="mvC-1g"></canvas><div id="mvF-1g" style="margin-top:6px;font-size:.85rem;color:var(--muted)">Slope = rise / run = 2/1 = 2</div>';
+    var cv=$("mvC-1g");sizeCanvas(cv,320,220);
+    var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+    var ox=W*0.25,oy=H*0.75,sc=28;
+    // Grid
+    cx.strokeStyle="#e2e8f0";cx.lineWidth=1;
+    for(var i=-2;i<=8;i++){cx.beginPath();cx.moveTo(ox+i*sc,0);cx.lineTo(ox+i*sc,H);cx.stroke();}
+    for(var j=-4;j<=4;j++){cx.beginPath();cx.moveTo(0,oy-j*sc);cx.lineTo(W,oy-j*sc);cx.stroke();}
+    // Axes
+    cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+    cx.beginPath();cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+    cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.stroke();
+    cx.fillStyle="#64748b";cx.font="10px system-ui";cx.textAlign="center";
+    for(var i=-2;i<=8;i++){if(i!==0)cx.fillText(i,ox+i*sc,oy+14);}
+    cx.textAlign="right";
+    for(var j=-3;j<=4;j++){if(j!==0)cx.fillText(j,ox-4,oy-j*sc+4);}
+    // Line y=2x+1
+    cx.strokeStyle="#2563eb";cx.lineWidth=2.5;cx.beginPath();
+    cx.moveTo(0,oy-(2*(-ox/sc)+1)*sc);cx.lineTo(W,oy-(2*((W-ox)/sc)+1)*sc);cx.stroke();
+    // Rise/run triangle at x=1,y=3 to x=2,y=5
+    var x1p=ox+1*sc,y1p=oy-3*sc,x2p=ox+2*sc,y2p=oy-5*sc;
+    cx.strokeStyle="#e8722a";cx.lineWidth=1.5;cx.setLineDash([4,3]);
+    cx.beginPath();cx.moveTo(x1p,y1p);cx.lineTo(x2p,y1p);cx.stroke();
+    cx.beginPath();cx.moveTo(x2p,y1p);cx.lineTo(x2p,y2p);cx.stroke();
+    cx.setLineDash([]);
+    cx.fillStyle="#e8722a";cx.font="bold 11px system-ui";cx.textAlign="center";
+    cx.fillText("run=1",(x1p+x2p)/2,y1p+14);
+    cx.textAlign="left";cx.fillText("rise=2",x2p+3,(y1p+y2p)/2);
+    // Label
+    cx.fillStyle="#2563eb";cx.font="bold 11px system-ui";cx.textAlign="left";
+    cx.fillText("y=2x+1",ox+3*sc,oy-7*sc+10);
+  }else if(cid==="1h"){
+    // Rate of change: two points with delta bracket
+    container.innerHTML='<canvas id="mvC-1h"></canvas><div style="margin-top:6px;font-size:.85rem;color:var(--muted)">Rate of change = &Delta;y / &Delta;x = earnings per hour</div>';
+    var cv=$("mvC-1h");sizeCanvas(cv,320,200);
+    var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+    var ox=W*0.15,oy=H*0.85,sc=22;
+    cx.strokeStyle="#e2e8f0";cx.lineWidth=1;
+    for(var i=0;i<=12;i++){cx.beginPath();cx.moveTo(ox+i*sc,0);cx.lineTo(ox+i*sc,H);cx.stroke();}
+    for(var j=0;j<=7;j++){cx.beginPath();cx.moveTo(0,oy-j*sc);cx.lineTo(W,oy-j*sc);cx.stroke();}
+    cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+    cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.stroke();
+    cx.beginPath();cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+    // Axis labels
+    cx.fillStyle="#64748b";cx.font="9px system-ui";cx.textAlign="center";
+    for(var i=1;i<=10;i++)cx.fillText(i,ox+i*sc,oy+12);
+    cx.textAlign="right";
+    for(var j=1;j<=6;j++)cx.fillText(j*10,ox-3,oy-j*sc/10*10+4);
+    // Line
+    cx.strokeStyle="#2563eb";cx.lineWidth=2;cx.beginPath();
+    cx.moveTo(ox,oy);cx.lineTo(ox+10*sc,oy-6*sc);cx.stroke();
+    // Two points at (2,2*6=12 but scaled) — plot at hours 2 and 5
+    var scale=sc/10;
+    var p1x=ox+2*sc,p1y=oy-2*6*scale*10;
+    var p2x=ox+5*sc,p2y=oy-5*6*scale*10;
+    cx.fillStyle="#dc2626";cx.beginPath();cx.arc(p1x,p1y,5,0,Math.PI*2);cx.fill();
+    cx.fillStyle="#16a34a";cx.beginPath();cx.arc(p2x,p2y,5,0,Math.PI*2);cx.fill();
+    // Delta brackets
+    cx.strokeStyle="#e8722a";cx.lineWidth=1.5;cx.setLineDash([3,3]);
+    cx.beginPath();cx.moveTo(p1x,p1y);cx.lineTo(p2x,p1y);cx.stroke();
+    cx.beginPath();cx.moveTo(p2x,p1y);cx.lineTo(p2x,p2y);cx.stroke();
+    cx.setLineDash([]);
+    cx.fillStyle="#e8722a";cx.font="bold 10px system-ui";cx.textAlign="center";
+    cx.fillText("Δx=3",(p1x+p2x)/2,p1y+13);
+    cx.textAlign="left";cx.fillText("Δy",(p2x+3),(p1y+p2y)/2);
+    cx.fillStyle="#334155";cx.font="bold 11px system-ui";cx.textAlign="left";
+    cx.fillText("Rate = Δy/Δx",ox+sc*6,oy-sc*5);
+  }else if(cid==="1i"){
+    // Graphing: y=2x+1 with intercepts marked
+    container.innerHTML='<canvas id="mvC-1i"></canvas><div style="margin-top:6px;font-size:.85rem;color:var(--muted)">y = 2x + 1: y-intercept (0,1), x-intercept (&minus;0.5, 0)</div>';
+    var cv=$("mvC-1i");sizeCanvas(cv,320,240);
+    var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+    var ox=W/2,oy=H/2,sc=25;
+    cx.strokeStyle="#e2e8f0";cx.lineWidth=1;
+    for(var i=-6;i<=6;i++){cx.beginPath();cx.moveTo(ox+i*sc,0);cx.lineTo(ox+i*sc,H);cx.stroke();}
+    for(var j=-5;j<=5;j++){cx.beginPath();cx.moveTo(0,oy-j*sc);cx.lineTo(W,oy-j*sc);cx.stroke();}
+    cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+    cx.beginPath();cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+    cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.stroke();
+    cx.fillStyle="#64748b";cx.font="9px system-ui";cx.textAlign="center";
+    for(var i=-5;i<=5;i++){if(i!==0)cx.fillText(i,ox+i*sc,oy+13);}
+    // Line y=2x+1
+    cx.strokeStyle="#2563eb";cx.lineWidth=2.5;cx.beginPath();
+    cx.moveTo(0,oy-(2*(-ox/sc)+1)*sc);cx.lineTo(W,oy-(2*((W-ox)/sc)+1)*sc);cx.stroke();
+    // y-intercept (0,1)
+    cx.fillStyle="#16a34a";cx.beginPath();cx.arc(ox,oy-1*sc,7,0,Math.PI*2);cx.fill();
+    cx.fillStyle="#16a34a";cx.font="bold 10px system-ui";cx.textAlign="left";cx.fillText("y-int (0,1)",ox+10,oy-1*sc+4);
+    // x-intercept (-0.5,0)
+    cx.fillStyle="#dc2626";cx.beginPath();cx.arc(ox-0.5*sc,oy,7,0,Math.PI*2);cx.fill();
+    cx.fillStyle="#dc2626";cx.font="bold 10px system-ui";cx.textAlign="left";cx.fillText("x-int (−0.5,0)",ox-0.5*sc+10,oy-8);
+  }else if(cid==="1j"){
+    // Domain & Range: number line with shaded interval
+    container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:6px">Domain [0, 8] for V=200h (pool filling)</p><canvas id="mvC-1j"></canvas><div style="margin-top:6px;font-size:.85rem;color:var(--muted)">Shaded region = valid hours; range 0 &le; V &le; 1600</div>';
+    var cv=$("mvC-1j");sizeCanvas(cv,320,80);
+    var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+    var pad=30,nlY=H/2,nlW=W-2*pad;
+    // Number line
+    cx.strokeStyle="#94a3b8";cx.lineWidth=2;cx.beginPath();cx.moveTo(pad,nlY);cx.lineTo(pad+nlW,nlY);cx.stroke();
+    for(var i=0;i<=10;i++){
+      var px=pad+i*nlW/10;
+      cx.beginPath();cx.moveTo(px,nlY-5);cx.lineTo(px,nlY+5);cx.stroke();
+      cx.fillStyle="#64748b";cx.font="10px system-ui";cx.textAlign="center";cx.fillText(i,px,nlY+18);
+    }
+    // Shade [0,8]
+    var x0=pad,x8=pad+8*nlW/10;
+    cx.fillStyle="rgba(37,99,235,0.2)";cx.fillRect(x0,nlY-10,x8-x0,20);
+    // Closed circles
+    cx.fillStyle="#2563eb";cx.beginPath();cx.arc(x0,nlY,6,0,Math.PI*2);cx.fill();
+    cx.beginPath();cx.arc(x8,nlY,6,0,Math.PI*2);cx.fill();
+    cx.fillStyle="#2563eb";cx.font="bold 10px system-ui";cx.textAlign="center";
+    cx.fillText("Domain: 0 ≤ h ≤ 8",(x0+x8)/2,nlY-15);
+  }else if(cid==="1k"){
+    // Slope-intercept: line with b labeled on y-axis and m labeled
+    container.innerHTML='<canvas id="mvC-1k"></canvas><div style="margin-top:6px;font-size:.85rem;color:var(--muted)">y = 2x + 3: slope m=2, y-intercept b=3</div>';
+    var cv=$("mvC-1k");sizeCanvas(cv,320,240);
+    var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+    var ox=W/2,oy=H/2,sc=22;
+    cx.strokeStyle="#e2e8f0";cx.lineWidth=1;
+    for(var i=-7;i<=7;i++){cx.beginPath();cx.moveTo(ox+i*sc,0);cx.lineTo(ox+i*sc,H);cx.stroke();}
+    for(var j=-5;j<=5;j++){cx.beginPath();cx.moveTo(0,oy-j*sc);cx.lineTo(W,oy-j*sc);cx.stroke();}
+    cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+    cx.beginPath();cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+    cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.stroke();
+    cx.fillStyle="#64748b";cx.font="9px system-ui";cx.textAlign="center";
+    for(var i=-6;i<=6;i++){if(i!==0)cx.fillText(i,ox+i*sc,oy+13);}
+    // Line y=2x+3
+    cx.strokeStyle="#2563eb";cx.lineWidth=2.5;cx.beginPath();
+    cx.moveTo(0,oy-(2*(-ox/sc)+3)*sc);cx.lineTo(W,oy-(2*((W-ox)/sc)+3)*sc);cx.stroke();
+    // y-intercept b=3
+    cx.fillStyle="#16a34a";cx.beginPath();cx.arc(ox,oy-3*sc,7,0,Math.PI*2);cx.fill();
+    cx.fillStyle="#16a34a";cx.font="bold 11px system-ui";cx.textAlign="left";cx.fillText("b=3",ox+10,oy-3*sc+4);
+    // Slope arrow from (0,3) to (1,5)
+    cx.strokeStyle="#e8722a";cx.lineWidth=2;cx.setLineDash([3,3]);
+    cx.beginPath();cx.moveTo(ox,oy-3*sc);cx.lineTo(ox+sc,oy-3*sc);cx.stroke();
+    cx.beginPath();cx.moveTo(ox+sc,oy-3*sc);cx.lineTo(ox+sc,oy-5*sc);cx.stroke();
+    cx.setLineDash([]);
+    cx.fillStyle="#e8722a";cx.font="bold 10px system-ui";cx.textAlign="center";
+    cx.fillText("run=1",ox+sc/2,oy-3*sc+14);
+    cx.textAlign="left";cx.fillText("rise=2",ox+sc+3,oy-4*sc);
+    cx.fillStyle="#334155";cx.font="bold 11px system-ui";cx.textAlign="left";
+    cx.fillText("m=2",ox+2*sc,oy-6*sc);
+  }else if(cid==="1l"){
+    // Table → equation: show a 2-column HTML table
+    container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:6px">From table to equation: constant &Delta;y/&Delta;x = slope</p>'+
+      '<table style="border-collapse:collapse;font-size:.95rem;margin:0 auto"><tr style="background:#dbeafe"><th style="padding:6px 16px;border:1px solid #93c5fd">x</th><th style="padding:6px 16px;border:1px solid #93c5fd">y</th><th style="padding:6px 16px;border:1px solid #93c5fd">&Delta;y/&Delta;x</th></tr>'+
+      '<tr><td style="padding:6px 16px;border:1px solid #cbd5e1;text-align:center">0</td><td style="padding:6px 16px;border:1px solid #cbd5e1;text-align:center">3</td><td style="padding:6px 16px;border:1px solid #cbd5e1;text-align:center">&mdash;</td></tr>'+
+      '<tr><td style="padding:6px 16px;border:1px solid #cbd5e1;text-align:center">1</td><td style="padding:6px 16px;border:1px solid #cbd5e1;text-align:center">5</td><td style="padding:6px 16px;border:1px solid #cbd5e1;text-align:center;color:#2563eb;font-weight:700">2</td></tr>'+
+      '<tr><td style="padding:6px 16px;border:1px solid #cbd5e1;text-align:center">2</td><td style="padding:6px 16px;border:1px solid #cbd5e1;text-align:center">7</td><td style="padding:6px 16px;border:1px solid #cbd5e1;text-align:center;color:#2563eb;font-weight:700">2</td></tr>'+
+      '<tr><td style="padding:6px 16px;border:1px solid #cbd5e1;text-align:center">3</td><td style="padding:6px 16px;border:1px solid #cbd5e1;text-align:center">9</td><td style="padding:6px 16px;border:1px solid #cbd5e1;text-align:center;color:#2563eb;font-weight:700">2</td></tr>'+
+      '</table>'+
+      '<div style="margin-top:8px;font-size:.9rem;text-align:center">slope = <strong style="color:#2563eb">2</strong>, b = <strong style="color:#16a34a">3</strong> &rarr; y = <strong>2x + 3</strong></div>';
+  }else if(cid==="1m"){
+    // Standard form: two intercepts on axes
+    container.innerHTML='<canvas id="mvC-1m"></canvas><div style="margin-top:6px;font-size:.85rem;color:var(--muted)">2x + 3y = 12: x-intercept (6,0), y-intercept (0,4)</div>';
+    var cv=$("mvC-1m");sizeCanvas(cv,320,220);
+    var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+    var ox=W*0.2,oy=H*0.8,sc=28;
+    cx.strokeStyle="#e2e8f0";cx.lineWidth=1;
+    for(var i=0;i<=9;i++){cx.beginPath();cx.moveTo(ox+i*sc,0);cx.lineTo(ox+i*sc,H);cx.stroke();}
+    for(var j=0;j<=6;j++){cx.beginPath();cx.moveTo(0,oy-j*sc);cx.lineTo(W,oy-j*sc);cx.stroke();}
+    cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+    cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.stroke();
+    cx.beginPath();cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+    cx.fillStyle="#64748b";cx.font="10px system-ui";cx.textAlign="center";
+    for(var i=1;i<=8;i++)cx.fillText(i,ox+i*sc,oy+13);
+    cx.textAlign="right";
+    for(var j=1;j<=5;j++)cx.fillText(j,ox-4,oy-j*sc+4);
+    // Line from (0,4) to (6,0) — 2x+3y=12
+    cx.strokeStyle="#2563eb";cx.lineWidth=2.5;cx.beginPath();
+    cx.moveTo(ox,oy-4*sc);cx.lineTo(ox+6*sc,oy);cx.stroke();
+    // x-intercept (6,0)
+    cx.fillStyle="#dc2626";cx.beginPath();cx.arc(ox+6*sc,oy,7,0,Math.PI*2);cx.fill();
+    cx.fillStyle="#dc2626";cx.font="bold 10px system-ui";cx.textAlign="center";cx.fillText("(6, 0)",ox+6*sc,oy+18);
+    // y-intercept (0,4)
+    cx.fillStyle="#16a34a";cx.beginPath();cx.arc(ox,oy-4*sc,7,0,Math.PI*2);cx.fill();
+    cx.fillStyle="#16a34a";cx.font="bold 10px system-ui";cx.textAlign="left";cx.fillText("(0, 4)",ox+8,oy-4*sc-8);
+    cx.fillStyle="#2563eb";cx.font="bold 11px system-ui";cx.textAlign="left";cx.fillText("2x+3y=12",ox+sc,oy-5*sc);
+  }else if(cid==="1n"){
+    // Direct variation: line through origin
+    container.innerHTML='<canvas id="mvC-1n"></canvas><div style="margin-top:6px;font-size:.85rem;color:var(--muted)">y = 3x passes through origin (direct variation)</div>';
+    var cv=$("mvC-1n");sizeCanvas(cv,320,220);
+    var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+    var ox=W/2,oy=H/2,sc=22;
+    cx.strokeStyle="#e2e8f0";cx.lineWidth=1;
+    for(var i=-7;i<=7;i++){cx.beginPath();cx.moveTo(ox+i*sc,0);cx.lineTo(ox+i*sc,H);cx.stroke();}
+    for(var j=-5;j<=5;j++){cx.beginPath();cx.moveTo(0,oy-j*sc);cx.lineTo(W,oy-j*sc);cx.stroke();}
+    cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+    cx.beginPath();cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+    cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.stroke();
+    cx.fillStyle="#64748b";cx.font="9px system-ui";cx.textAlign="center";
+    for(var i=-6;i<=6;i++){if(i!==0)cx.fillText(i,ox+i*sc,oy+13);}
+    // y=3x
+    cx.strokeStyle="#2563eb";cx.lineWidth=2.5;cx.beginPath();
+    cx.moveTo(0,oy-(3*(-ox/sc))*sc);cx.lineTo(W,oy-(3*((W-ox)/sc))*sc);cx.stroke();
+    // Origin dot
+    cx.fillStyle="#dc2626";cx.beginPath();cx.arc(ox,oy,8,0,Math.PI*2);cx.fill();
+    cx.fillStyle="#dc2626";cx.font="bold 11px system-ui";cx.textAlign="left";cx.fillText("(0,0)",ox+10,oy-10);
+    cx.fillStyle="#2563eb";cx.font="bold 11px system-ui";cx.textAlign="left";cx.fillText("y=3x",ox+2*sc,oy-5*sc);
+    cx.fillStyle="#64748b";cx.font="10px system-ui";cx.textAlign="left";cx.fillText("through origin → direct variation",ox-6*sc,oy+H*0.35);
+  }else if(cid==="1o"){
+    // Horizontal and vertical lines on same axes
+    container.innerHTML='<canvas id="mvC-1o"></canvas><div style="margin-top:6px;font-size:.85rem;color:var(--muted)">y = 3 (horizontal, slope 0) &nbsp;|&nbsp; x = &minus;2 (vertical, undefined slope)</div>';
+    var cv=$("mvC-1o");sizeCanvas(cv,320,220);
+    var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+    var ox=W/2,oy=H/2,sc=25;
+    cx.strokeStyle="#e2e8f0";cx.lineWidth=1;
+    for(var i=-6;i<=6;i++){cx.beginPath();cx.moveTo(ox+i*sc,0);cx.lineTo(ox+i*sc,H);cx.stroke();}
+    for(var j=-4;j<=4;j++){cx.beginPath();cx.moveTo(0,oy-j*sc);cx.lineTo(W,oy-j*sc);cx.stroke();}
+    cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+    cx.beginPath();cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+    cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.stroke();
+    cx.fillStyle="#64748b";cx.font="9px system-ui";cx.textAlign="center";
+    for(var i=-5;i<=5;i++){if(i!==0)cx.fillText(i,ox+i*sc,oy+13);}
+    // Horizontal line y=3
+    cx.strokeStyle="#2563eb";cx.lineWidth=2.5;cx.beginPath();cx.moveTo(0,oy-3*sc);cx.lineTo(W,oy-3*sc);cx.stroke();
+    cx.fillStyle="#2563eb";cx.font="bold 11px system-ui";cx.textAlign="left";cx.fillText("y = 3 (slope 0)",ox+sc,oy-3*sc-8);
+    // Vertical line x=-2
+    cx.strokeStyle="#e8722a";cx.lineWidth=2.5;cx.beginPath();cx.moveTo(ox-2*sc,0);cx.lineTo(ox-2*sc,H);cx.stroke();
+    cx.fillStyle="#e8722a";cx.font="bold 11px system-ui";cx.textAlign="left";cx.fillText("x = −2",ox-2*sc+5,20);
+    cx.fillStyle="#e8722a";cx.font="10px system-ui";cx.fillText("(undef. slope)",ox-2*sc+5,32);
+  }else if(cid==="1p"){
+    // Transformations: f(x)=x and 2x+1 overlaid
+    container.innerHTML='<canvas id="mvC-1p"></canvas><div style="margin-top:6px;font-size:.85rem;color:var(--muted)">Blue: f(x)=x (parent) &nbsp; Orange: g(x)=2x+1 (stretched &amp; shifted)</div>';
+    var cv=$("mvC-1p");sizeCanvas(cv,320,220);
+    var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+    var ox=W/2,oy=H/2,sc=22;
+    cx.strokeStyle="#e2e8f0";cx.lineWidth=1;
+    for(var i=-7;i<=7;i++){cx.beginPath();cx.moveTo(ox+i*sc,0);cx.lineTo(ox+i*sc,H);cx.stroke();}
+    for(var j=-5;j<=5;j++){cx.beginPath();cx.moveTo(0,oy-j*sc);cx.lineTo(W,oy-j*sc);cx.stroke();}
+    cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+    cx.beginPath();cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+    cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.stroke();
+    cx.fillStyle="#64748b";cx.font="9px system-ui";cx.textAlign="center";
+    for(var i=-6;i<=6;i++){if(i!==0)cx.fillText(i,ox+i*sc,oy+13);}
+    // f(x)=x (parent)
+    cx.strokeStyle="#94a3b8";cx.lineWidth=2;cx.beginPath();
+    cx.moveTo(0,oy-(-ox/sc)*sc);cx.lineTo(W,oy-((W-ox)/sc)*sc);cx.stroke();
+    cx.fillStyle="#94a3b8";cx.font="11px system-ui";cx.textAlign="right";cx.fillText("f(x)=x",ox-sc,oy+2*sc-8);
+    // g(x)=2x+1
+    cx.strokeStyle="#2563eb";cx.lineWidth=2.5;cx.beginPath();
+    cx.moveTo(0,oy-(2*(-ox/sc)+1)*sc);cx.lineTo(W,oy-(2*((W-ox)/sc)+1)*sc);cx.stroke();
+    cx.fillStyle="#2563eb";cx.font="bold 11px system-ui";cx.textAlign="left";cx.fillText("g(x)=2x+1",ox+sc,oy-3*sc);
+  }else if(cid==="1q"){
+    // Parallel lines: two lines with same slope
+    container.innerHTML='<canvas id="mvC-1q"></canvas><div style="margin-top:6px;font-size:.85rem;color:var(--muted)">Both lines have slope 2 — they never intersect!</div>';
+    var cv=$("mvC-1q");sizeCanvas(cv,320,220);
+    var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+    var ox=W/2,oy=H/2,sc=22;
+    cx.strokeStyle="#e2e8f0";cx.lineWidth=1;
+    for(var i=-7;i<=7;i++){cx.beginPath();cx.moveTo(ox+i*sc,0);cx.lineTo(ox+i*sc,H);cx.stroke();}
+    for(var j=-5;j<=5;j++){cx.beginPath();cx.moveTo(0,oy-j*sc);cx.lineTo(W,oy-j*sc);cx.stroke();}
+    cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+    cx.beginPath();cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+    cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.stroke();
+    cx.fillStyle="#64748b";cx.font="9px system-ui";cx.textAlign="center";
+    for(var i=-6;i<=6;i++){if(i!==0)cx.fillText(i,ox+i*sc,oy+13);}
+    // Line 1: y=2x+1
+    cx.strokeStyle="#2563eb";cx.lineWidth=2.5;cx.beginPath();
+    cx.moveTo(0,oy-(2*(-ox/sc)+1)*sc);cx.lineTo(W,oy-(2*((W-ox)/sc)+1)*sc);cx.stroke();
+    cx.fillStyle="#2563eb";cx.font="bold 10px system-ui";cx.textAlign="left";cx.fillText("y=2x+1",ox+sc,oy-3*sc);
+    // Line 2: y=2x-3
+    cx.strokeStyle="#e8722a";cx.lineWidth=2.5;cx.beginPath();
+    cx.moveTo(0,oy-(2*(-ox/sc)-3)*sc);cx.lineTo(W,oy-(2*((W-ox)/sc)-3)*sc);cx.stroke();
+    cx.fillStyle="#e8722a";cx.font="bold 10px system-ui";cx.textAlign="left";cx.fillText("y=2x−3",ox+2*sc,oy+2*sc);
+    // Parallel label
+    cx.fillStyle="#334155";cx.font="10px system-ui";cx.textAlign="center";cx.fillText("Same slope m=2",W/2,12);
+  }else if(cid==="1r"){
+    // Perpendicular lines forming a cross
+    container.innerHTML='<canvas id="mvC-1r"></canvas><div style="margin-top:6px;font-size:.85rem;color:var(--muted)">Blue slope=2, Orange slope=&minus;1/2: product = &minus;1 (perpendicular)</div>';
+    var cv=$("mvC-1r");sizeCanvas(cv,320,220);
+    var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+    var ox=W/2,oy=H/2,sc=22;
+    cx.strokeStyle="#e2e8f0";cx.lineWidth=1;
+    for(var i=-7;i<=7;i++){cx.beginPath();cx.moveTo(ox+i*sc,0);cx.lineTo(ox+i*sc,H);cx.stroke();}
+    for(var j=-5;j<=5;j++){cx.beginPath();cx.moveTo(0,oy-j*sc);cx.lineTo(W,oy-j*sc);cx.stroke();}
+    cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+    cx.beginPath();cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+    cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.stroke();
+    cx.fillStyle="#64748b";cx.font="9px system-ui";cx.textAlign="center";
+    for(var i=-6;i<=6;i++){if(i!==0)cx.fillText(i,ox+i*sc,oy+13);}
+    // y=2x-1 (slope 2)
+    cx.strokeStyle="#2563eb";cx.lineWidth=2.5;cx.beginPath();
+    cx.moveTo(0,oy-(2*(-ox/sc)-1)*sc);cx.lineTo(W,oy-(2*((W-ox)/sc)-1)*sc);cx.stroke();
+    cx.fillStyle="#2563eb";cx.font="bold 10px system-ui";cx.textAlign="left";cx.fillText("m=2",ox+2*sc,oy-4*sc);
+    // y=-0.5x+2 (slope -1/2)
+    cx.strokeStyle="#e8722a";cx.lineWidth=2.5;cx.beginPath();
+    cx.moveTo(0,oy-(-0.5*(-ox/sc)+2)*sc);cx.lineTo(W,oy-(-0.5*((W-ox)/sc)+2)*sc);cx.stroke();
+    cx.fillStyle="#e8722a";cx.font="bold 10px system-ui";cx.textAlign="right";cx.fillText("m=−1/2",ox-2*sc,oy-2*sc);
+    // Right angle marker at intersection
+    var ix=(2-(-1))/(-0.5-2);var iy=2*(ix)+(-1);// wait compute: 2x-1=-0.5x+2 => 2.5x=3 => x=1.2
+    var intX=3/2.5;var intY=2*intX-1;
+    var px=ox+intX*sc,py=oy-intY*sc,s=10;
+    cx.strokeStyle="#334155";cx.lineWidth=1.5;cx.beginPath();
+    cx.moveTo(px+s,py);cx.lineTo(px+s,py-s);cx.lineTo(px,py-s);cx.stroke();
+    cx.fillStyle="#334155";cx.font="bold 9px system-ui";cx.textAlign="center";cx.fillText("90°",px+s+12,py-s-2);
+  }else if(cid==="1s"){
+    // Inequality: line with half-plane shaded
+    container.innerHTML='<canvas id="mvC-1s"></canvas><div style="margin-top:6px;font-size:.85rem;color:var(--muted)">y &gt; x + 1: dashed boundary, shaded region above</div>';
+    var cv=$("mvC-1s");sizeCanvas(cv,320,220);
+    var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+    var ox=W/2,oy=H/2,sc=22;
+    cx.strokeStyle="#e2e8f0";cx.lineWidth=1;
+    for(var i=-7;i<=7;i++){cx.beginPath();cx.moveTo(ox+i*sc,0);cx.lineTo(ox+i*sc,H);cx.stroke();}
+    for(var j=-5;j<=5;j++){cx.beginPath();cx.moveTo(0,oy-j*sc);cx.lineTo(W,oy-j*sc);cx.stroke();}
+    cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+    cx.beginPath();cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+    cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.stroke();
+    cx.fillStyle="#64748b";cx.font="9px system-ui";cx.textAlign="center";
+    for(var i=-6;i<=6;i++){if(i!==0)cx.fillText(i,ox+i*sc,oy+13);}
+    // Shade above y = x+1 (y > x+1)
+    cx.save();
+    cx.beginPath();
+    cx.moveTo(0,0);cx.lineTo(W,0);
+    cx.lineTo(W,oy-((W-ox)/sc+1)*sc);
+    cx.lineTo(0,oy-((-ox/sc)+1)*sc);
+    cx.closePath();
+    cx.fillStyle="rgba(37,99,235,0.15)";cx.fill();
+    cx.restore();
+    // Dashed boundary y=x+1
+    cx.strokeStyle="#2563eb";cx.lineWidth=2;cx.setLineDash([6,4]);cx.beginPath();
+    cx.moveTo(0,oy-((-ox/sc)+1)*sc);cx.lineTo(W,oy-(((W-ox)/sc)+1)*sc);cx.stroke();
+    cx.setLineDash([]);
+    cx.fillStyle="#2563eb";cx.font="bold 10px system-ui";cx.textAlign="left";cx.fillText("y=x+1 (dashed boundary)",ox-5*sc,20);
+    cx.fillStyle="rgba(37,99,235,0.7)";cx.font="bold 12px system-ui";cx.textAlign="center";cx.fillText("y > x+1 (shaded above)",W/2,H*0.2);
   }else if(cid==="2a"){
     // Two-line graph for systems by graphing
     container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Interactive Graph: see where two lines intersect</p>'+
@@ -3486,6 +4735,82 @@ function renderMiniViz(cid){
     }
     ["mv2em1","mv2eb1","mv2em2","mv2eb2"].forEach(function(id){$(id).addEventListener("input",upd2e);});
     upd2e();
+  }else if(cid==="2f"){
+    // Writing systems: interactive table showing two plans side-by-side
+    container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Adjust rates and flat fees to see how each plan\'s equation is built from the table.</p>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">'+
+        '<label style="font-size:.85rem;color:#2563eb;font-weight:600">Plan A: $<input type="number" id="mv2fB1" value="10" min="0" max="30" style="width:45px"> flat + $<input type="number" id="mv2fM1" value="2" min="1" max="10" style="width:35px">/use</label>'+
+        '<label style="font-size:.85rem;color:#e8722a;font-weight:600">Plan B: $<input type="number" id="mv2fB2" value="4" min="0" max="30" style="width:45px"> flat + $<input type="number" id="mv2fM2" value="4" min="1" max="10" style="width:35px">/use</label>'+
+      '</div>'+
+      '<div id="mv2fTable"></div>'+
+      '<div id="mv2fEq" style="font-weight:700;font-size:.95rem;margin-top:8px"></div>';
+    function upd2f(){
+      var b1=parseInt($("mv2fB1").value)||0,m1=parseInt($("mv2fM1").value)||1;
+      var b2=parseInt($("mv2fB2").value)||0,m2=parseInt($("mv2fM2").value)||1;
+      var html='<table style="border-collapse:collapse;font-size:.85rem;width:100%;max-width:380px"><tr style="background:#e2e8f0"><th style="padding:4px 10px;border:1px solid #cbd5e1">Uses (x)</th><th style="padding:4px 10px;border:1px solid #cbd5e1;color:#2563eb">Plan A ($)</th><th style="padding:4px 10px;border:1px solid #cbd5e1;color:#e8722a">Plan B ($)</th></tr>';
+      for(var i=0;i<=4;i++){
+        var a=m1*i+b1,b=m2*i+b2;
+        var bg=Math.abs(a-b)<0.01?'background:#dcfce7;':'';
+        html+='<tr style="'+bg+'"><td style="padding:3px 10px;border:1px solid #cbd5e1;text-align:center">'+i+'</td><td style="padding:3px 10px;border:1px solid #cbd5e1;text-align:center">$'+a+'</td><td style="padding:3px 10px;border:1px solid #cbd5e1;text-align:center">$'+b+'</td></tr>';
+      }
+      html+='</table>';
+      $("mv2fTable").innerHTML=html;
+      var xSol=(b2-b1)/(m1-m2);
+      var eq='Plan A: <span style="color:#2563eb;font-weight:700">y = '+m1+'x + '+b1+'</span>  &nbsp;|&nbsp;  Plan B: <span style="color:#e8722a;font-weight:700">y = '+m2+'x + '+b2+'</span>';
+      if(m1!==m2){eq+='<br><span style="color:var(--green)">Equal at x = '+xSol.toFixed(2)+' uses</span>';}
+      else if(b1===b2){eq+='<br><span style="color:var(--green)">Same equation — always equal!</span>';}
+      else{eq+='<br><span style="color:var(--red)">Parallel lines — never equal.</span>';}
+      $("mv2fEq").innerHTML=eq;
+    }
+    ["mv2fB1","mv2fM1","mv2fB2","mv2fM2"].forEach(function(id){$(id).addEventListener("input",upd2f);});
+    upd2f();
+  }else if(cid==="2g"){
+    // Estimating graphical solutions: canvas with two lines, shows intersection with crosshairs
+    container.innerHTML='<p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Drag the sliders to see where two lines intersect — practice estimating coordinates.</p>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px">'+
+        '<label style="font-size:.82rem;color:#2563eb">y = <input type="range" id="mv2gm1" min="-3" max="4" value="2" style="width:55px;vertical-align:middle">x + <input type="range" id="mv2gb1" min="-4" max="5" value="0" style="width:55px;vertical-align:middle"></label>'+
+        '<label style="font-size:.82rem;color:#e8722a">y = <input type="range" id="mv2gm2" min="-4" max="3" value="-1" style="width:55px;vertical-align:middle">x + <input type="range" id="mv2gb2" min="-3" max="8" value="6" style="width:55px;vertical-align:middle"></label>'+
+      '</div>'+
+      '<canvas id="mvC-2g"></canvas>'+
+      '<div id="mv2gResult" style="margin-top:6px;font-weight:600;font-size:.9rem"></div>';
+    function draw2g(){
+      var m1=parseInt($("mv2gm1").value),b1=parseInt($("mv2gb1").value);
+      var m2=parseInt($("mv2gm2").value),b2=parseInt($("mv2gb2").value);
+      var cv=$("mvC-2g");sizeCanvas(cv,320,220);
+      var cx=cv.getContext("2d"),W=cv.width,H=cv.height;
+      var sc=22,ox=W/2,oy=H/2;
+      cx.clearRect(0,0,W,H);
+      cx.strokeStyle="#e2e8f0";cx.lineWidth=1;
+      for(var i=-7;i<=7;i++){cx.beginPath();cx.moveTo(ox+i*sc,0);cx.lineTo(ox+i*sc,H);cx.stroke();cx.beginPath();cx.moveTo(0,oy-i*sc);cx.lineTo(W,oy-i*sc);cx.stroke();}
+      cx.strokeStyle="#94a3b8";cx.lineWidth=2;
+      cx.beginPath();cx.moveTo(0,oy);cx.lineTo(W,oy);cx.stroke();
+      cx.beginPath();cx.moveTo(ox,0);cx.lineTo(ox,H);cx.stroke();
+      cx.fillStyle="#64748b";cx.font="9px system-ui";cx.textAlign="center";
+      for(var i=-6;i<=6;i+=2){if(i!==0){cx.fillText(i,ox+i*sc,oy+12);cx.textAlign="right";cx.fillText(i,ox-3,oy-i*sc+3);cx.textAlign="center";}}
+      function drawLine(m,b,color){
+        cx.strokeStyle=color;cx.lineWidth=2.5;cx.beginPath();
+        var x0=-ox/sc,x1=(W-ox)/sc;
+        cx.moveTo(0,oy-(m*x0+b)*sc);cx.lineTo(W,oy-(m*x1+b)*sc);cx.stroke();
+      }
+      drawLine(m1,b1,"#2563eb");drawLine(m2,b2,"#e8722a");
+      var res=$("mv2gResult");
+      if(m1===m2){
+        if(b1===b2){res.innerHTML='<span style="color:var(--green)">Same line — infinitely many solutions</span>';}
+        else{res.innerHTML='<span style="color:var(--red)">Parallel lines — no solution</span>';}
+      }else{
+        var xSol=(b2-b1)/(m1-m2);var ySol=m1*xSol+b1;
+        var px=ox+xSol*sc,py=oy-ySol*sc;
+        cx.strokeStyle="#dc2626";cx.lineWidth=1;cx.setLineDash([4,3]);
+        cx.beginPath();cx.moveTo(px,oy);cx.lineTo(px,py);cx.stroke();
+        cx.beginPath();cx.moveTo(ox,py);cx.lineTo(px,py);cx.stroke();
+        cx.setLineDash([]);
+        cx.fillStyle="#dc2626";cx.beginPath();cx.arc(px,py,5,0,Math.PI*2);cx.fill();
+        var xD=Math.round(xSol*100)/100,yD=Math.round(ySol*100)/100;
+        res.innerHTML='Intersection ≈ (<strong>'+xD+'</strong>, <strong>'+yD+'</strong>) &nbsp;— '+(Number.isInteger(xSol)&&Number.isInteger(ySol)?'exact!':'estimate');
+      }
+    }
+    ["mv2gm1","mv2gb1","mv2gm2","mv2gb2"].forEach(function(id){$(id).addEventListener("input",draw2g);});
+    draw2g();
   }else if(cid==="3a"||cid==="3b"){
     // Exponential growth/decay curve visualizer
     var isGrowth=cid==="3a";
@@ -4375,8 +5700,21 @@ function renderPracticeTab(u){
 
   $("tabPractice").querySelectorAll(".filter-chip").forEach(function(b){
     b.addEventListener("click",function(){
-      practiceFilter=b.dataset.f||null;
-      renderPracticeTab(u);
+      var cid=b.dataset.f||null;
+      if(!cid){
+        practiceFilter=null;
+        renderPracticeTab(u);
+      } else {
+        // Navigate to the concept's lesson in the Learn tab
+        showTab("learn");
+        setTimeout(function(){
+          var card=document.querySelector("#concept-"+cid);
+          if(card){
+            if(!card.classList.contains("open")) card.querySelector(".concept-hdr").click();
+            card.scrollIntoView({behavior:"smooth",block:"center"});
+          }
+        },250);
+      }
     });
   });
 
