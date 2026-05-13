@@ -37,6 +37,7 @@ body{
 .stat-l{font-size:9px;text-transform:uppercase;color:#8D6E63;letter-spacing:1px;display:block}
 .stat-v{font-size:1.2rem;font-weight:900;color:#E65100;display:block;line-height:1.1}
 /* LAYOUT */
+#mob-lvl-bar{display:none} /* hidden on desktop, shown by media query on mobile */
 #layout{display:flex;height:calc(100vh - 56px);overflow:hidden}
 /* SIDEBAR */
 #sidebar{
@@ -369,9 +370,44 @@ body{
 .tb-pronoun{border-color:var(--pron)}.tb-verbal{border-color:var(--verbal)}
 .tb-punctuation{border-color:var(--punct)}
 @media(max-width:700px){
+  /* layout: stack vertically, scroll freely */
+  #layout{height:auto;overflow:visible;display:block}
   #sidebar{display:none}
-  #content{width:100%}
-  .tab{padding:8px 10px;font-size:.72rem}
+  #content{width:100%;height:auto;overflow:visible}
+  #pane-ws,#pane-diag,#pane-det,#pane-prac,#pane-tn{
+    height:auto;overflow:visible;
+  }
+  /* horizontal level chip bar */
+  #mob-lvl-bar{
+    display:flex;gap:8px;padding:8px 12px;
+    overflow-x:auto;background:rgba(255,255,255,.92);
+    border-bottom:1px solid #e0e0e0;flex-shrink:0;
+    -webkit-overflow-scrolling:touch;
+  }
+  .mob-chip{
+    flex-shrink:0;padding:5px 14px;border-radius:20px;
+    font-size:.72rem;font-weight:700;cursor:pointer;
+    background:#f3f4f6;border:2px solid #d1d5db;color:#374151;
+    white-space:nowrap;
+  }
+  .mob-chip.active{background:var(--indigo,#4338ca);border-color:var(--indigo,#4338ca);color:#fff}
+  /* bigger touch targets for tiles */
+  .tile{padding:10px 14px 6px;min-height:52px;cursor:pointer}
+  .tile.selected{
+    outline:3px solid var(--indigo,#4338ca);
+    box-shadow:0 0 0 5px rgba(99,102,241,.18);
+    transform:translateY(-3px);
+  }
+  /* drop zones easier to tap */
+  .dz{min-height:52px;padding:8px}
+  .tab{padding:10px 12px;font-size:.72rem}
+  /* header wraps gracefully */
+  #hdr{flex-wrap:wrap;gap:6px}
+  .stats{gap:6px}
+  .stat{min-width:50px;padding:3px 10px}
+  /* gen bar stacks */
+  .gen-bar{flex-direction:column;gap:8px;align-items:stretch}
+  .gen-bar select,.gen-bar button{width:100%}
 }
 
 /* ═══════════════════════════════════════════
@@ -477,6 +513,7 @@ body{
   </div>
 </div>
 
+<div id="mob-lvl-bar"></div>
 <div id="layout">
   <aside id="sidebar">
     <h2>Level Map</h2>
@@ -964,6 +1001,7 @@ const S = {
  dragWord: null,
  dragIdx: null,
  activeWordIdx: null,
+ selTile: null,
  quiz: { q:0, answered:false, sel:null, correct:0, shown:false }
 };
 
@@ -985,6 +1023,21 @@ function updateHeader(){
  $('g-streak').textContent = S.streak;
 }
 
+function isTouchDev(){ return navigator.maxTouchPoints > 0; }
+
+function renderMobLvlBar(){
+ const bar=$('mob-lvl-bar'); if(!bar) return;
+ bar.innerHTML='';
+ LEVELS.filter(l=>l.id!=='random').forEach(lv=>{
+  const chip=document.createElement('div');
+  chip.className='mob-chip'+(S.level===lv.level?' active':'');
+  chip.textContent='L'+lv.level+': '+lv.title.replace(/^(Build|Add|Connect|Words|Action|Linking|Adverb|Adjective|Noun|Verbals)\s/,'');
+  chip.title=lv.title;
+  chip.addEventListener('click',()=>loadLevel(lv.level));
+  bar.appendChild(chip);
+ });
+}
+
 // ==========================  LEVEL MAP  ==========================
 function renderLevelMap(){
  const list = $('lvl-list'); list.innerHTML='';
@@ -1003,9 +1056,11 @@ function renderLevelMap(){
 // ==========================  LOAD LEVEL  ==========================
 function loadLevel(n){
  S.level=n; S.placements={}; S.dragWord=null; S.dragIdx=null;
- S.activeWordIdx=null; S.quiz={q:0,answered:false,sel:null,correct:0,shown:false};
+ S.activeWordIdx=null; S.selTile=null;
+ S.quiz={q:0,answered:false,sel:null,correct:0,shown:false};
  const lv = LEVELS.find(l=>l.level===n);
  renderLevelMap();
+ renderMobLvlBar();
  renderSentence(lv);
  renderTiles(lv);
  renderWorkspace(lv);
@@ -1045,11 +1100,26 @@ function renderTiles(lv){
   });
   t.addEventListener('dragend',()=>t.classList.remove('dragging'));
   t.addEventListener('click',()=>{
-   document.querySelectorAll('.tile').forEach(x=>x.classList.remove('lit'));
-   t.classList.add('lit');
-   S.activeWordIdx=i;
-   renderDetective(word, lv);
-   switchTab('det');
+   if(isTouchDev()){
+    // tap-to-select mode on touch devices
+    if(S.selTile===i){
+     // second tap = deselect
+     S.selTile=null;
+     document.querySelectorAll('.tile').forEach(x=>x.classList.remove('selected','lit'));
+    } else {
+     S.selTile=i; S.dragWord=word.w; S.dragIdx=i;
+     document.querySelectorAll('.tile').forEach(x=>x.classList.remove('selected','lit'));
+     t.classList.add('selected','lit');
+     S.activeWordIdx=i;
+     renderDetective(word,lv);
+    }
+   } else {
+    document.querySelectorAll('.tile').forEach(x=>x.classList.remove('lit'));
+    t.classList.add('lit');
+    S.activeWordIdx=i;
+    renderDetective(word, lv);
+    switchTab('det');
+   }
   });
   box.appendChild(t);
  });
@@ -1072,7 +1142,10 @@ function unmarkPlaced(word){
 // ==========================  WORKSPACE  ==========================
 function renderWorkspace(lv){
  const pane=$('pane-ws');
- pane.innerHTML=`<p class="ws-hint">Drag word tiles from above into the correct zones, then click <strong>Check</strong>.</p>
+ const hint=isTouchDev()
+  ?'Tap a word tile to select it (highlighted), then tap a zone to place it. Tap <strong>Check</strong> when done.'
+  :'Drag word tiles from above into the correct zones, then click <strong>Check</strong>.';
+ pane.innerHTML=`<p class="ws-hint">${hint}</p>
   <div class="dz-grid" id="dz-grid"></div>
   <div class="ws-actions">
    <button class="btn btn-p" onclick="checkZones()">✓ Check</button>
@@ -1104,14 +1177,35 @@ function renderWorkspace(lv){
    e.preventDefault(); dz.classList.remove('over');
    if(!S.dragWord) return;
    const zid=dz.dataset.zone;
-   const zone=LEVELS.find(l=>l.level===S.level).zones.find(z=>z.id===zid);
-   if(!zone.multi && S.placements[zid].length>0) return; // single slot full
+   const lvObj=LEVELS.find(l=>l.level===S.level||l.id==='random'&&S.level===99);
+   const zone=lvObj.zones.find(z=>z.id===zid);
+   if(!zone.multi && S.placements[zid].length>0) return;
    if(!S.placements[zid].includes(S.dragWord)){
     S.placements[zid].push(S.dragWord);
     addToZone(zid, S.dragWord);
     markPlaced(S.dragWord);
    }
    S.dragWord=null;
+  });
+  // tap-to-place on touch devices
+  dz.addEventListener('click',e=>{
+   if(!isTouchDev()) return;
+   if(S.selTile===null || !S.dragWord) return;
+   e.stopPropagation();
+   const zid=dz.dataset.zone;
+   const lvObj=LEVELS.find(l=>l.level===S.level||l.id==='random'&&S.level===99);
+   if(!lvObj) return;
+   const zone=lvObj.zones.find(z=>z.id===zid);
+   if(!zone) return;
+   if(!zone.multi && S.placements[zid].length>0) return;
+   if(!S.placements[zid].includes(S.dragWord)){
+    S.placements[zid].push(S.dragWord);
+    addToZone(zid, S.dragWord);
+    markPlaced(S.dragWord);
+   }
+   // deselect tile
+   document.querySelectorAll('.tile').forEach(x=>x.classList.remove('selected','lit'));
+   S.selTile=null; S.dragWord=null; S.dragIdx=null;
   });
  });
 }
@@ -1972,7 +2066,9 @@ function loadCustomLevel(sentObj){
  if(idx>=0) LEVELS.splice(idx,1);
  LEVELS.push(sentObj);
  S.level=99; S.placements={}; S.dragWord=null; S.dragIdx=null;
- S.activeWordIdx=null; S.quiz={q:0,answered:false,sel:null,correct:0,shown:false};
+ S.activeWordIdx=null; S.selTile=null;
+ S.quiz={q:0,answered:false,sel:null,correct:0,shown:false};
+ renderMobLvlBar();
  renderSentence(sentObj);
  renderTiles(sentObj);
  renderWorkspace(sentObj);
@@ -1986,6 +2082,7 @@ function loadCustomLevel(sentObj){
 
 // ==========================  INIT  ==========================
 renderLevelMap();
+renderMobLvlBar();
 loadLevel(1);
 </script>
 </body>
