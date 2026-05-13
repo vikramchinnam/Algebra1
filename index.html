@@ -2,29 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Learning Hub — Interactive Course Catalog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Learning Hub — LISD &amp; Kumon</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --elementary-primary: #f97316;
-      --elementary-light: #fff7ed;
-      --elementary-accent: #fb923c;
-      --elementary-dark: #c2410c;
-      --middle-primary: #6366f1;
-      --middle-light: #eef2ff;
-      --middle-accent: #818cf8;
-      --middle-dark: #4338ca;
-      --bg: #f8fafc;
-      --surface: #ffffff;
-      --text: #0f172a;
-      --text-muted: #64748b;
+      --navy:   #1e1b4b;
+      --indigo: #4338ca;
+      --violet: #6366f1;
+      --violet-lt: #eef2ff;
+      --orange: #f97316;
+      --orange-lt: #fff7ed;
+      --amber:  #f59e0b;
+      --green:  #22c55e;
+      --green-lt: #f0fdf4;
+      --sky:    #0ea5e9;
+      --bg:     #f1f5f9;
+      --surface:#ffffff;
+      --text:   #0f172a;
+      --muted:  #64748b;
       --border: #e2e8f0;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
-      --shadow-md: 0 4px 16px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06);
-      --shadow-lg: 0 10px 40px rgba(0,0,0,.14), 0 4px 12px rgba(0,0,0,.08);
-      --radius: 16px;
+      --r:      14px;
     }
 
     html { scroll-behavior: smooth; }
@@ -33,22 +32,20 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.5;
       min-height: 100vh;
+      padding-bottom: env(safe-area-inset-bottom);
     }
 
-    /* ── Hero ── */
+    /* ═══════════════════════════
+       HERO
+    ═══════════════════════════ */
     .hero {
+      background: linear-gradient(145deg, #1e1b4b 0%, #312e81 45%, #4c1d95 100%);
+      color: #fff;
+      padding: 32px 24px 28px;
       position: relative;
       overflow: hidden;
-      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 70%, #6366f1 100%);
-      color: #fff;
-      padding: 14px 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
     }
 
     .hero::before {
@@ -56,266 +53,344 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse at 15% 50%, rgba(251,146,60,.20) 0%, transparent 55%),
-        radial-gradient(ellipse at 85% 50%, rgba(99,102,241,.30) 0%, transparent 50%);
+        radial-gradient(ellipse 80% 60% at 10% 120%, rgba(251,146,60,.25) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 60% at 90% -10%, rgba(139,92,246,.35) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 40% at 50% 50%,  rgba(99,102,241,.15) 0%, transparent 70%);
       pointer-events: none;
     }
 
-    .hero-left { display: flex; align-items: center; gap: 14px; position: relative; }
+    .hero-inner {
+      position: relative;
+      max-width: 720px;
+      margin: 0 auto;
+    }
 
-    .hero-icon {
-      width: 38px; height: 38px;
-      background: rgba(255,255,255,.15);
-      border: 1px solid rgba(255,255,255,.25);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem;
-      flex-shrink: 0;
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 100px;
+      padding: 4px 12px;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.85);
+      margin-bottom: 14px;
     }
 
     .hero h1 {
-      font-size: 1.25rem;
-      font-weight: 800;
-      line-height: 1.2;
-      letter-spacing: -.02em;
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -.03em;
+      margin-bottom: 10px;
     }
 
-    .hero h1 span {
-      background: linear-gradient(90deg, #fcd34d, #fb923c);
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(90deg, #fcd34d 0%, #fb923c 60%, #f472b6 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .hero-sub {
-      font-size: .75rem;
-      color: rgba(255,255,255,.60);
-      letter-spacing: .04em;
+      font-size: .9rem;
+      color: rgba(255,255,255,.62);
+      margin-bottom: 24px;
+      max-width: 380px;
     }
 
-    .hero-stats {
+    .hero-pills {
       display: flex;
-      gap: 28px;
-      position: relative;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
-    .stat {
-      text-align: center;
+    .hero-pill {
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-size: .78rem;
+      font-weight: 600;
+      color: rgba(255,255,255,.80);
     }
 
-    .stat-number {
-      font-size: 1.3rem;
-      font-weight: 800;
-      display: block;
-      line-height: 1.1;
+    /* ═══════════════════════════
+       FILTER TABS
+    ═══════════════════════════ */
+    .filter-bar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
     }
 
-    .stat-label {
-      font-size: .65rem;
-      color: rgba(255,255,255,.60);
-      letter-spacing: .07em;
-      text-transform: uppercase;
-    }
-
-    /* ── Layout ── */
-    .container {
-      max-width: 1280px;
+    .filter-tabs {
+      max-width: 720px;
       margin: 0 auto;
-      padding: 0 24px;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .filter-tabs::-webkit-scrollbar { display: none; }
+
+    .filter-tab {
+      flex-shrink: 0;
+      padding: 12px 18px;
+      font-size: .83rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: color .15s, border-color .15s;
+      white-space: nowrap;
     }
 
-    .sections {
-      padding: 20px 0 24px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      align-items: start;
+    .filter-tab:hover { color: var(--text); }
+    .filter-tab.active { color: var(--indigo); border-bottom-color: var(--indigo); }
+
+    /* ═══════════════════════════
+       MAIN CONTENT
+    ═══════════════════════════ */
+    .main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
     }
 
-    /* ── Section header ── */
-    .section-header {
+    /* ═══════════════════════════
+       SECTION
+    ═══════════════════════════ */
+    .section { margin-bottom: 28px; }
+
+    /* elementary sections visible by default; JS controls filter */
+
+    .section-hdr {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
+      gap: 10px;
+      margin-bottom: 12px;
     }
 
     .section-icon {
-      width: 40px;
-      height: 40px;
+      width: 36px; height: 36px;
       border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
       flex-shrink: 0;
     }
 
-    .elementary .section-icon { background: linear-gradient(135deg, #fed7aa, #fb923c); }
-    .middle      .section-icon { background: linear-gradient(135deg, #c7d2fe, #6366f1); }
+    .section[data-band="middle"] .section-icon    { background: linear-gradient(135deg,#c7d2fe,#6366f1); }
+    .section[data-band="elementary"] .section-icon { background: linear-gradient(135deg,#fed7aa,#fb923c); }
 
-    .section-title-group { flex: 1; }
+    .section-meta { flex: 1; }
 
     .section-label {
-      font-size: .7rem;
+      font-size: .68rem;
       font-weight: 700;
-      letter-spacing: .12em;
+      letter-spacing: .1em;
       text-transform: uppercase;
-      margin-bottom: 2px;
+      color: var(--muted);
     }
 
-    .elementary .section-label { color: var(--elementary-dark); }
-    .middle      .section-label { color: var(--middle-dark); }
-
-    .section-title {
-      font-size: 1.25rem;
+    .section-name {
+      font-size: 1.05rem;
       font-weight: 800;
-      line-height: 1.2;
       letter-spacing: -.02em;
+      line-height: 1.2;
     }
 
-    .section-count {
-      font-size: .85rem;
-      font-weight: 600;
-      padding: 4px 14px;
+    .section-badge {
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 3px 12px;
       border-radius: 100px;
     }
 
-    .elementary .section-count { background: var(--elementary-light); color: var(--elementary-dark); }
-    .middle      .section-count { background: var(--middle-light);      color: var(--middle-dark); }
+    .section[data-band="middle"] .section-badge    { background: var(--violet-lt); color: var(--indigo); }
+    .section[data-band="elementary"] .section-badge { background: var(--orange-lt); color: #c2410c; }
 
-    /* ── Divider ── */
-    .section-divider {
-      height: 3px;
-      border-radius: 2px;
-      margin-bottom: 14px;
-    }
+    /* ═══════════════════════════
+       CARD
+    ═══════════════════════════ */
+    .cards { display: flex; flex-direction: column; gap: 10px; }
 
-    .elementary .section-divider { background: linear-gradient(90deg, var(--elementary-primary), var(--elementary-light)); }
-    .middle      .section-divider { background: linear-gradient(90deg, var(--middle-primary),      var(--middle-light)); }
-
-    /* ── Card grid ── */
-    .cards {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    /* ── Card ── */
     .card {
       background: var(--surface);
-      border-radius: var(--radius);
+      border-radius: var(--r);
       border: 1.5px solid var(--border);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
       text-decoration: none;
       color: inherit;
       display: flex;
-      flex-direction: column;
+      align-items: stretch;
+      overflow: hidden;
       transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
       position: relative;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-lg);
+    .card:active { transform: scale(.98); }
+
+    @media (hover:hover) {
+      .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 28px rgba(0,0,0,.12);
+      }
+      .section[data-band="middle"] .card:hover    { border-color: #818cf8; }
+      .section[data-band="elementary"] .card:hover { border-color: #fb923c; }
     }
 
-    .elementary .card:hover { border-color: var(--elementary-accent); }
-    .middle      .card:hover { border-color: var(--middle-accent); }
-
-    .card-stripe {
-      height: 5px;
-      width: 100%;
+    .card.coming-soon {
+      opacity: .6;
+      cursor: default;
+      pointer-events: none;
     }
 
-    .elementary .card-stripe { background: linear-gradient(90deg, var(--elementary-primary), var(--elementary-accent)); }
-    .middle      .card-stripe { background: linear-gradient(90deg, var(--middle-primary), var(--middle-accent)); }
-
-    .card-body {
-      padding: 12px 16px 10px;
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .card-emoji {
-      font-size: 1.5rem;
-      line-height: 1;
+    .card-accent {
+      width: 5px;
       flex-shrink: 0;
     }
+
+    .section[data-band="middle"] .card-accent    { background: linear-gradient(180deg, var(--violet), #818cf8); }
+    .section[data-band="elementary"] .card-accent { background: linear-gradient(180deg, var(--orange), var(--amber)); }
+
+    .card-body {
+      flex: 1;
+      padding: 14px 14px 12px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .card-icon {
+      width: 46px; height: 46px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .section[data-band="middle"] .card-icon    { background: var(--violet-lt); }
+    .section[data-band="elementary"] .card-icon { background: var(--orange-lt); }
 
     .card-text { flex: 1; min-width: 0; }
 
     .card-title {
-      font-size: .95rem;
+      font-size: .93rem;
       font-weight: 700;
       line-height: 1.25;
       letter-spacing: -.01em;
+      margin-bottom: 3px;
     }
 
     .card-desc {
-      font-size: .78rem;
-      color: var(--text-muted);
+      font-size: .77rem;
+      color: var(--muted);
       line-height: 1.4;
-      margin-top: 2px;
-      white-space: nowrap;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
       overflow: hidden;
-      text-overflow: ellipsis;
     }
 
-    .card-footer {
-      padding: 8px 16px;
-      border-top: 1px solid var(--border);
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 6px;
+    }
+
+    .tag {
+      font-size: .66rem;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 100px;
+    }
+
+    .section[data-band="middle"] .tag    { background: var(--violet-lt); color: var(--indigo); }
+    .section[data-band="elementary"] .tag { background: var(--orange-lt); color: #c2410c; }
+
+    .tag.green { background: var(--green-lt); color: #166534; }
+    .tag.sky   { background: #e0f2fe; color: #0369a1; }
+    .tag.soon  { background: #f1f5f9; color: var(--muted); }
+
+    .card-right {
+      padding: 0 14px 0 4px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      flex-shrink: 0;
     }
 
-    .card-tag {
-      font-size: .7rem;
-      font-weight: 600;
-      letter-spacing: .08em;
-      text-transform: uppercase;
+    .card-arrow {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem;
+      transition: transform .15s ease, background .15s ease;
+    }
+
+    .section[data-band="middle"] .card-arrow    { background: var(--violet-lt); color: var(--indigo); }
+    .section[data-band="elementary"] .card-arrow { background: var(--orange-lt); color: #c2410c; }
+
+    @media (hover:hover) {
+      .card:hover .card-arrow { transform: translateX(4px); }
+    }
+
+    .soon-badge {
+      font-size: .68rem;
+      font-weight: 700;
+      background: #f1f5f9;
+      color: var(--muted);
       padding: 3px 10px;
       border-radius: 100px;
     }
 
-    .elementary .card-tag { background: var(--elementary-light); color: var(--elementary-dark); }
-    .middle      .card-tag { background: var(--middle-light);      color: var(--middle-dark); }
-
-    .card-arrow {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform .15s ease;
-    }
-
-    .elementary .card-arrow { background: var(--elementary-light); color: var(--elementary-dark); }
-    .middle      .card-arrow { background: var(--middle-light);      color: var(--middle-dark); }
-
-    .card:hover .card-arrow { transform: translateX(4px); }
-
-    /* ── Footer ── */
+    /* ═══════════════════════════
+       FOOTER
+    ═══════════════════════════ */
     footer {
-      background: #0f172a;
-      color: rgba(255,255,255,.5);
+      background: var(--navy);
+      color: rgba(255,255,255,.45);
       text-align: center;
-      padding: 16px 24px;
-      font-size: .8rem;
+      padding: 20px 24px calc(20px + env(safe-area-inset-bottom));
+      font-size: .78rem;
+      line-height: 1.7;
     }
 
-    footer strong { color: rgba(255,255,255,.85); }
+    footer strong { color: rgba(255,255,255,.80); }
 
-    /* ── Responsive ── */
-    @media (max-width: 768px) {
-      .sections { grid-template-columns: 1fr; }
-      .hero { padding: 12px 16px; }
-      .hero-stats { gap: 16px; }
+    footer a {
+      color: rgba(255,255,255,.55);
+      text-decoration: none;
+    }
+
+    footer a:hover { color: rgba(255,255,255,.85); }
+
+    /* ═══════════════════════════
+       RESPONSIVE
+    ═══════════════════════════ */
+    @media (max-width: 480px) {
+      .hero { padding: 24px 16px 20px; }
+      .hero h1 { font-size: 1.55rem; }
+      .hero-sub { font-size: .82rem; margin-bottom: 18px; }
+      .card-body { padding: 12px 10px 10px; gap: 10px; }
+      .card-icon { width: 40px; height: 40px; font-size: 1.25rem; border-radius: 10px; }
+      .card-title { font-size: .88rem; }
     }
   </style>
 </head>
@@ -323,177 +398,210 @@
 
 <!-- ── Hero ── -->
 <header class="hero">
-  <div class="hero-left">
-    <div class="hero-icon">🏫</div>
-    <div>
-      <h1>Your <span>Learning Hub</span></h1>
-      <div class="hero-sub">Interactive · LISD &amp; Kumon · K–8</div>
-    </div>
-  </div>
-  <div class="hero-stats">
-    <div class="stat">
-      <span class="stat-number">7</span>
-      <span class="stat-label">Courses</span>
-    </div>
-    <div class="stat">
-      <span class="stat-number">2</span>
-      <span class="stat-label">Grade Bands</span>
-    </div>
-    <div class="stat">
-      <span class="stat-number">100%</span>
-      <span class="stat-label">Interactive</span>
+  <div class="hero-inner">
+    <div class="hero-badge">🏫 &nbsp;LISD &amp; Kumon</div>
+    <h1>Your <em>Learning Hub</em></h1>
+    <p class="hero-sub">Interactive courses and activities built for curious minds — from counting to calculus.</p>
+    <div class="hero-pills">
+      <span class="hero-pill">✦ Texas TEKS Aligned</span>
+      <span class="hero-pill">🎮 Gamified</span>
+      <span class="hero-pill">📱 Mobile Ready</span>
+      <span class="hero-pill">🆓 Free to Use</span>
     </div>
   </div>
 </header>
 
-<!-- ── Main ── -->
-<main class="container">
-  <div class="sections">
-
-    <!-- ── Middle School (LEFT) ── -->
-    <section class="middle">
-      <div class="section-header">
-        <div class="section-icon">🎓</div>
-        <div class="section-title-group">
-          <div class="section-label">Grade 6–8</div>
-          <h2 class="section-title">Middle School</h2>
-        </div>
-        <span class="section-count">2 Courses</span>
-      </div>
-      <div class="section-divider"></div>
-      <div class="cards">
-
-        <a class="card" href="lisd-algebra1-course.html">
-          <div class="card-stripe"></div>
-          <div class="card-body">
-            <div class="card-emoji">📐</div>
-            <div class="card-text">
-              <div class="card-title">LISD Honors Algebra 1</div>
-              <div class="card-desc">Linear equations, systems, quadratics, polynomials &amp; STAAR EOC prep</div>
-            </div>
-          </div>
-          <div class="card-footer">
-            <span class="card-tag">LISD · Algebra 1</span>
-            <span class="card-arrow">→</span>
-          </div>
-        </a>
-
-        <a class="card" href="lisd-honors-geometry-course.html">
-          <div class="card-stripe"></div>
-          <div class="card-body">
-            <div class="card-emoji">🔷</div>
-            <div class="card-text">
-              <div class="card-title">LISD Honors Geometry</div>
-              <div class="card-desc">Proofs, coordinate geometry, transformations &amp; STAAR assessments</div>
-            </div>
-          </div>
-          <div class="card-footer">
-            <span class="card-tag">LISD · Geometry</span>
-            <span class="card-arrow">→</span>
-          </div>
-        </a>
-
-      </div>
-    </section>
-
-    <!-- ── Elementary (RIGHT) ── -->
-    <section class="elementary">
-      <div class="section-header">
-        <div class="section-icon">🌟</div>
-        <div class="section-title-group">
-          <div class="section-label">Grade K–5</div>
-          <h2 class="section-title">Elementary School</h2>
-        </div>
-        <span class="section-count">5 Activities</span>
-      </div>
-      <div class="section-divider"></div>
-      <div class="cards">
-
-        <a class="card" href="kumon-addition-app.html">
-          <div class="card-stripe"></div>
-          <div class="card-body">
-            <div class="card-emoji">➕</div>
-            <div class="card-text">
-              <div class="card-title">Kumon Addition App</div>
-              <div class="card-desc">Interactive addition exercises modeled after the Kumon method</div>
-            </div>
-          </div>
-          <div class="card-footer">
-            <span class="card-tag">Kumon · Math</span>
-            <span class="card-arrow">→</span>
-          </div>
-        </a>
-
-        <a class="card" href="kumon-b2-regrouping-lesson.html">
-          <div class="card-stripe"></div>
-          <div class="card-body">
-            <div class="card-emoji">🔢</div>
-            <div class="card-text">
-              <div class="card-title">Kumon B2 Regrouping Lesson</div>
-              <div class="card-desc">Step-by-step carrying and borrowing practice</div>
-            </div>
-          </div>
-          <div class="card-footer">
-            <span class="card-tag">Kumon · Math</span>
-            <span class="card-arrow">→</span>
-          </div>
-        </a>
-
-        <a class="card" href="kumon-base10-blocks-demo.html">
-          <div class="card-stripe"></div>
-          <div class="card-body">
-            <div class="card-emoji">🧱</div>
-            <div class="card-text">
-              <div class="card-title">Kumon Base-10 Blocks Demo</div>
-              <div class="card-desc">Animated base-10 blocks for place value understanding</div>
-            </div>
-          </div>
-          <div class="card-footer">
-            <span class="card-tag">Kumon · Math</span>
-            <span class="card-arrow">→</span>
-          </div>
-        </a>
-
-        <a class="card" href="kumon-base10-subtraction-demo.html">
-          <div class="card-stripe"></div>
-          <div class="card-body">
-            <div class="card-emoji">➖</div>
-            <div class="card-text">
-              <div class="card-title">Kumon Base-10 Subtraction Demo</div>
-              <div class="card-desc">Visual subtraction with base-10 borrowing models</div>
-            </div>
-          </div>
-          <div class="card-footer">
-            <span class="card-tag">Kumon · Math</span>
-            <span class="card-arrow">→</span>
-          </div>
-        </a>
-
-        <a class="card" href="kumon-grade1-reading.html">
-          <div class="card-stripe"></div>
-          <div class="card-body">
-            <div class="card-emoji">📖</div>
-            <div class="card-text">
-              <div class="card-title">Kumon Grade 1 Reading</div>
-              <div class="card-desc">Early reading comprehension activities for Grade 1</div>
-            </div>
-          </div>
-          <div class="card-footer">
-            <span class="card-tag">Kumon · Reading</span>
-            <span class="card-arrow">→</span>
-          </div>
-        </a>
-
-      </div>
-    </section>
-
+<!-- ── Filter Bar ── -->
+<nav class="filter-bar" aria-label="Filter courses">
+  <div class="filter-tabs" role="tablist">
+    <button class="filter-tab active" data-filter="all"   role="tab" aria-selected="true">All Courses</button>
+    <button class="filter-tab"        data-filter="middle" role="tab" aria-selected="false">Middle School</button>
+    <button class="filter-tab"        data-filter="elementary" role="tab" aria-selected="false">Elementary</button>
   </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <!-- ── Middle School ── -->
+  <section class="section" data-band="middle">
+    <div class="section-hdr">
+      <div class="section-icon">🎓</div>
+      <div class="section-meta">
+        <div class="section-label">Grade 6–8</div>
+        <div class="section-name">Middle School</div>
+      </div>
+      <span class="section-badge">2 Courses</span>
+    </div>
+
+    <div class="cards">
+
+      <a class="card" href="lisd-algebra1-course.html">
+        <div class="card-accent"></div>
+        <div class="card-body">
+          <div class="card-icon">📐</div>
+          <div class="card-text">
+            <div class="card-title">LISD Honors Algebra 1</div>
+            <div class="card-desc">Linear equations, systems, quadratics, polynomials &amp; STAAR EOC prep</div>
+            <div class="card-tags">
+              <span class="tag">Algebra 1</span>
+              <span class="tag green">STAAR Prep</span>
+              <span class="tag sky">Grade 8</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a class="card" href="lisd-honors-geometry-course.html">
+        <div class="card-accent"></div>
+        <div class="card-body">
+          <div class="card-icon">🔷</div>
+          <div class="card-text">
+            <div class="card-title">LISD Honors Geometry</div>
+            <div class="card-desc">Proofs, coordinate geometry, transformations &amp; STAAR assessments</div>
+            <div class="card-tags">
+              <span class="tag">Geometry</span>
+              <span class="tag green">STAAR Prep</span>
+              <span class="tag sky">Grade 9</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ── Elementary ── -->
+  <section class="section" data-band="elementary">
+    <div class="section-hdr">
+      <div class="section-icon">🌟</div>
+      <div class="section-meta">
+        <div class="section-label">Grade K–5</div>
+        <div class="section-name">Elementary School</div>
+      </div>
+      <span class="section-badge">5 Activities</span>
+    </div>
+
+    <div class="cards">
+
+      <a class="card" href="kumon-addition-app.html">
+        <div class="card-accent"></div>
+        <div class="card-body">
+          <div class="card-icon">➕</div>
+          <div class="card-text">
+            <div class="card-title">Kumon Addition App</div>
+            <div class="card-desc">Interactive addition exercises modeled after the Kumon method</div>
+            <div class="card-tags">
+              <span class="tag">Kumon</span>
+              <span class="tag sky">Grade K–2</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-right"><div class="card-arrow">→</div></div>
+      </a>
+
+      <a class="card" href="kumon-b2-regrouping-lesson.html">
+        <div class="card-accent"></div>
+        <div class="card-body">
+          <div class="card-icon">🔢</div>
+          <div class="card-text">
+            <div class="card-title">Kumon B2 Regrouping Lesson</div>
+            <div class="card-desc">Step-by-step carrying and borrowing practice</div>
+            <div class="card-tags">
+              <span class="tag">Kumon</span>
+              <span class="tag sky">Grade 2–3</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-right"><div class="card-arrow">→</div></div>
+      </a>
+
+      <a class="card" href="kumon-base10-blocks-demo.html">
+        <div class="card-accent"></div>
+        <div class="card-body">
+          <div class="card-icon">🧱</div>
+          <div class="card-text">
+            <div class="card-title">Base-10 Blocks Demo</div>
+            <div class="card-desc">Animated base-10 blocks for place value understanding</div>
+            <div class="card-tags">
+              <span class="tag">Kumon</span>
+              <span class="tag sky">Grade 1–2</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-right"><div class="card-arrow">→</div></div>
+      </a>
+
+      <a class="card" href="kumon-base10-subtraction-demo.html">
+        <div class="card-accent"></div>
+        <div class="card-body">
+          <div class="card-icon">➖</div>
+          <div class="card-text">
+            <div class="card-title">Base-10 Subtraction Demo</div>
+            <div class="card-desc">Visual subtraction with base-10 borrowing models</div>
+            <div class="card-tags">
+              <span class="tag">Kumon</span>
+              <span class="tag sky">Grade 2–3</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-right"><div class="card-arrow">→</div></div>
+      </a>
+
+      <a class="card" href="kumon-grade1-reading.html">
+        <div class="card-accent"></div>
+        <div class="card-body">
+          <div class="card-icon">📖</div>
+          <div class="card-text">
+            <div class="card-title">Kumon Grade 1 Reading</div>
+            <div class="card-desc">Early reading comprehension activities for Grade 1</div>
+            <div class="card-tags">
+              <span class="tag">Kumon</span>
+              <span class="tag sky">Grade 1</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-right"><div class="card-arrow">→</div></div>
+      </a>
+
+    </div>
+  </section>
+
 </main>
 
 <!-- ── Footer ── -->
 <footer>
-  <strong>Learning Hub</strong> · Lewisville ISD &amp; Kumon · Built for curious minds ✦ 2026
+  <strong>Learning Hub</strong> &nbsp;·&nbsp; Lewisville ISD &amp; Kumon &nbsp;·&nbsp; Built for curious minds<br>
+  Texas TEKS Aligned &nbsp;✦&nbsp; 2026
 </footer>
+
+<script>
+  // Filter tabs
+  var tabs = document.querySelectorAll('.filter-tab');
+  var sections = document.querySelectorAll('.section[data-band]');
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      tabs.forEach(function(t) { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected','true');
+
+      var filter = tab.dataset.filter;
+      sections.forEach(function(sec) {
+        sec.style.display = (filter === 'all' || sec.dataset.band === filter) ? 'block' : 'none';
+      });
+    });
+  });
+
+  // Show all sections initially
+  sections.forEach(function(sec) { sec.style.display = ''; });
+</script>
 
 </body>
 </html>
