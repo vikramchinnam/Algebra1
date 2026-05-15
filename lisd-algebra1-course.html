@@ -41,14 +41,8 @@ canvas{display:block;max-width:100%}
 
 /* ── DASHBOARD ── */
 .dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:16px}
-.unit-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative;}
-.unit-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.12);z-index:10;}
-.concept-mega-btn{font-size:.8rem;color:var(--blue);font-weight:700;display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border-radius:8px;background:var(--blue-lt);transition:.2s;margin-top:12px;cursor:pointer;}
-.concept-mega-btn:hover{background:#bfdbfe;}
-.concept-mega-wrapper{position:absolute;top:calc(100% - 10px);left:0;width:100%;padding-top:10px;z-index:100;opacity:0;visibility:hidden;pointer-events:none;transition:all .2s;}
-.concept-mega-content{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:0 10px 25px rgba(0,0,0,.15);display:flex;flex-wrap:wrap;gap:6px;}
-@media(hover:hover){.unit-card:hover .concept-mega-wrapper{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(5px);}}
-.unit-card.force-mega .concept-mega-wrapper{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(5px);}
+.unit-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden}
+.unit-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.12)}
 .unit-card.locked{opacity:.55;cursor:not-allowed}
 .unit-card.locked:hover{transform:none;box-shadow:var(--shadow)}
 .unit-num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;font-size:.85rem;margin-bottom:8px}
@@ -85,11 +79,6 @@ canvas{display:block;max-width:100%}
 .concept-body canvas{max-width:100%}
 .practice-btn{display:inline-block;padding:8px 20px;background:var(--orange);color:#fff;border:none;border-radius:8px;font-weight:600;font-size:.88rem;transition:.2s;margin-top:6px}
 .practice-btn:hover{background:var(--orange-dark)}
-.level-toggle-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:12px;}
-.level-btn{padding:8px 14px;border:1px solid var(--border);border-radius:8px;background:#f8fafc;font-weight:600;font-size:.85rem;color:var(--muted);transition:.2s;display:flex;flex-direction:column;align-items:flex-start;text-align:left;}
-.level-btn:hover{border-color:var(--blue);color:var(--blue);background:#fff;}
-.level-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 4px 10px rgba(37,99,235,0.2);}
-.lvl-time{font-size:.7rem;opacity:.8;font-weight:500;margin-top:2px;}
 
 /* ── PRACTICE TAB ── */
 .practice-filter{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
@@ -164,6 +153,18 @@ canvas{display:block;max-width:100%}
 .badges{display:flex;flex-wrap:wrap;gap:10px}
 .badge{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:.82rem;font-weight:600;background:#f1f5f9;color:var(--muted);border:1px solid var(--border);transition:.3s}
 .badge.earned{background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;border-color:var(--gold);box-shadow:0 0 8px rgba(245,158,11,.25);animation:popIn .4s}
+
+/* ── ROADMAP MODAL ── */
+.roadmap-btn{display:flex;align-items:center;gap:10px;padding:10px 20px;background:linear-gradient(135deg,var(--navy),var(--navy-light));color:#fff;border:none;border-radius:8px;font-weight:600;font-size:.93rem;transition:.2s;cursor:pointer}
+.roadmap-btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.roadmap-preview{width:100%;max-height:90px;object-fit:cover;object-position:top;border-radius:6px;margin-top:10px;cursor:pointer;border:2px solid var(--border);transition:.2s}
+.roadmap-preview:hover{border-color:var(--orange);box-shadow:0 2px 10px rgba(232,114,42,.25)}
+.rm-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s;cursor:zoom-out}
+.rm-modal-box{background:#fff;border-radius:16px;max-width:95vw;max-height:92vh;overflow:auto;padding:16px;position:relative;cursor:default;box-shadow:0 24px 80px rgba(0,0,0,.4);animation:popIn .25s}
+.rm-modal-box img{display:block;width:100%;height:auto;border-radius:8px}
+.rm-close{position:absolute;top:10px;right:12px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:1.1rem;line-height:32px;text-align:center;cursor:pointer;z-index:1;transition:.2s}
+.rm-close:hover{background:rgba(0,0,0,.8)}
+.rm-modal-title{font-weight:700;color:var(--navy);font-size:1rem;margin-bottom:10px}
 
 /* ── TOAST ── */
 .toast{position:fixed;top:70px;right:20px;padding:12px 20px;border-radius:10px;font-weight:700;color:#fff;z-index:200;animation:toastIn .4s;box-shadow:0 6px 20px rgba(0,0,0,.15);font-size:.9rem}
@@ -326,6 +327,27 @@ canvas{display:block;max-width:100%}
       <h2>Welcome, Mathematician!</h2>
       <p>Math is an adventure, not a chore! Pick a unit below to start exploring Algebra 1. Master concepts, earn points, and unlock achievements on your way to STAAR success.</p>
     </div>
+
+    <!-- Roadmap card -->
+    <div class="card" style="border-left:4px solid var(--navy-light);display:flex;flex-wrap:wrap;gap:14px;align-items:center">
+      <div style="flex:1;min-width:180px">
+        <h2 style="margin-bottom:4px">&#128506; Course Roadmap</h2>
+        <p style="font-size:.88rem;color:var(--muted);margin-bottom:10px">See the big picture — how all 6 units connect on your path to STAAR Algebra 1.</p>
+        <button class="roadmap-btn" id="openRoadmap" aria-label="Open course roadmap">
+          &#128506; View Full Roadmap
+        </button>
+      </div>
+      <div style="flex:1;min-width:200px;max-width:340px">
+        <img src="images/Grade8_Honors_Algebra_Roadmap.png"
+             alt="Preview of the Grade 8 Honors Algebra 1 course roadmap"
+             class="roadmap-preview"
+             id="roadmapPreview"
+             tabindex="0"
+             role="button"
+             aria-label="Open course roadmap image">
+      </div>
+    </div>
+
     <div id="unitGrid" class="dash-grid"></div>
 
     <!-- Analytics summary -->
@@ -355,6 +377,17 @@ canvas{display:block;max-width:100%}
 
 <!-- ═══ STRUGGLE MODAL ═══ -->
 <div id="struggleModal" style="display:none"></div>
+
+<!-- ═══ ROADMAP MODAL ═══ -->
+<div id="roadmapModal" class="rm-modal-overlay" style="display:none" role="dialog" aria-modal="true" aria-label="Course Roadmap">
+  <div class="rm-modal-box" id="roadmapModalBox">
+    <button class="rm-close" id="closeRoadmap" aria-label="Close roadmap">&times;</button>
+    <div class="rm-modal-title">&#128506; Grade 8 Honors Algebra 1 — Course Roadmap</div>
+    <img src="images/Grade8_Honors_Algebra_Roadmap.png"
+         alt="Full Grade 8 Honors Algebra 1 course roadmap showing all 6 units and their connections"
+         style="width:100%;height:auto;border-radius:8px">
+  </div>
+</div>
 
 <script>
 (function(){
@@ -394,7 +427,7 @@ const UNITS=[
   {
     id:"1g",name:"Slope",teks:"A.3A",
     explanation:"Slope measures steepness: rise ÷ run = (y₂−y₁)/(x₂−x₁). Positive slope rises left-to-right, negative falls, zero is flat (horizontal), undefined is vertical.",
-    realWorld:"<strong>The Scenario:</strong> You are designing a wheelchair ramp for a new building.<br><br><strong>The Conflict:</strong> If the ramp is too steep, it's unsafe and violates ADA regulations. If it's too flat, it takes up too much space.<br><br><strong>The Resolution:</strong> Slope (rise over run) ensures the perfect angle. By setting the slope to exactly 1/12, the ramp rises 1 inch for every 12 inches forward, ensuring accessibility.",
+    realWorld:"A wheelchair ramp rises 1 inch per 12 inches forward — slope 1/12, the ADA standard for accessibility.",
     prereqs:[],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>Rise Over Run</h4><div class="analogy-box"><strong>Imagine hiking a trail:</strong> For every step forward (run), how many steps do you go up (rise)? That ratio is the <strong>slope</strong>!<br><br>Rise &uarr; &divide; Run &rarr; = Slope</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0"><div style="background:#dcfce7;border-radius:8px;padding:8px;text-align:center"><strong>Positive (+)</strong><br>&#8599; Goes up left&rarr;right<br><em>hiking uphill</em></div><div style="background:#fee2e2;border-radius:8px;padding:8px;text-align:center"><strong>Negative (&minus;)</strong><br>&#8600; Goes down left&rarr;right<br><em>hiking downhill</em></div><div style="background:#dbeafe;border-radius:8px;padding:8px;text-align:center"><strong>Zero (0)</strong><br>&#8594; Perfectly flat<br><em>flat road</em></div><div style="background:#fef9c3;border-radius:8px;padding:8px;text-align:center"><strong>Undefined</strong><br>&#8597; Straight up/down<br><em>cliff face</em></div></div>'},
@@ -451,7 +484,7 @@ const UNITS=[
   {
     id:"1h",name:"Rate of Change",teks:"A.3B",
     explanation:"Rate of change = slope in context. It describes how one quantity changes per unit of another. Always include units: $/hour, miles/gallon, degrees/min.",
-    realWorld:"<strong>The Scenario:</strong> You're planning a massive 300-mile road trip across Texas.<br><br><strong>The Conflict:</strong> You only have $40 for gas, and you need to know exactly how fast your car burns fuel so you don't get stranded.<br><br><strong>The Resolution:</strong> By calculating the rate of change (&minus;15 gallons / 300 miles = &minus;1/20 gal/mile), you can predict exactly how much fuel you'll lose per mile and budget your gas money perfectly.",
+    realWorld:"A car burns fuel at 1/20 gallon per mile (−15 gallons per 300 miles). Negative because the tank depletes.",
     prereqs:["1g"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>Slope Has Meaning</h4><div class="analogy-box"><strong>Your speedometer</strong> shows miles per hour — that is a rate of change! It tells you how fast distance changes over time.<br><br>Slope = (change in output) ÷ (change in input) = <strong>rate of change</strong></div><table style="border-collapse:collapse;font-size:.9rem;margin:10px 0;width:100%"><tr style="background:#e2e8f0"><th style="padding:5px 8px;border:1px solid #cbd5e1">Situation</th><th style="padding:5px 8px;border:1px solid #cbd5e1">Rate of Change</th></tr><tr><td style="padding:5px 8px;border:1px solid #cbd5e1">Distance vs. Time</td><td style="padding:5px 8px;border:1px solid #cbd5e1">mph (speed)</td></tr><tr><td style="padding:5px 8px;border:1px solid #cbd5e1">Cost vs. Items</td><td style="padding:5px 8px;border:1px solid #cbd5e1">$/item (price)</td></tr><tr><td style="padding:5px 8px;border:1px solid #cbd5e1">Temp vs. Time</td><td style="padding:5px 8px;border:1px solid #cbd5e1">&deg;F/hour (heating rate)</td></tr></table>'},
@@ -507,7 +540,7 @@ const UNITS=[
   {
     id:"1i",name:"Graphing Linear Functions",teks:"A.3C",
     explanation:"Graph y=mx+b by plotting (0,b) then using rise/run to find a second point. The x-intercept is where y=0 (solve mx+b=0). The y-intercept is (0,b).",
-    realWorld:"<strong>The Scenario:</strong> You just started a custom t-shirt business and spent $48 on your first batch of supplies.<br><br><strong>The Conflict:</strong> You need to know exactly when you'll stop losing money and start making a profit.<br><br><strong>The Resolution:</strong> Graphing your profit (p = 12s &minus; 48) gives you two critical points: the y-intercept (&minus;48) shows your initial debt, and the x-intercept (4) tells you exactly when you break even. Sell 5 shirts, and you're in the green!",
+    realWorld:"Profit p = 12s − 48: y-intercept −48 means $48 fixed loss; x-intercept s=4 means break-even after 4 shirts sold.",
     prereqs:["1g","1h"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>Two Key Points</h4><div class="analogy-box">To draw a line you only need <strong>two points</strong>. The easiest two to find are the <strong>intercepts</strong>:<br><br>&bull; <strong>y-intercept:</strong> where the line crosses the y-axis (set x = 0)<br>&bull; <strong>x-intercept:</strong> where the line crosses the x-axis (set y = 0)</div><p>For y = 2x + 4:<br>&bull; y-intercept: set x=0 &rarr; y = 4 &rarr; point (0, 4)<br>&bull; x-intercept: set y=0 &rarr; 0 = 2x+4 &rarr; x = &minus;2 &rarr; point (&minus;2, 0)</p>'},
@@ -565,7 +598,7 @@ const UNITS=[
   {
     id:"1j",name:"Domain & Range of Linear Functions",teks:"A.2A",
     explanation:"Domain = valid input (x) values; range = valid output (y) values. Unrestricted linear functions: domain and range are all reals. In context, restrict based on what makes sense.",
-    realWorld:"<strong>The Scenario:</strong> You are filling an enormous 1,600-gallon swimming pool with a hose that pumps 200 gallons an hour.<br><br><strong>The Conflict:</strong> The math equation V = 200h works forever, but in reality, the pool will overflow if you leave the hose running indefinitely.<br><br><strong>The Resolution:</strong> Domain and range restrict the math to reality. The domain (0 &le; h &le; 8) stops time at 8 hours, and the range (0 &le; V &le; 1600) ensures the water volume never exceeds the pool's capacity.",
+    realWorld:"Pool fills at 200 gal/hr: V=200h. Domain 0≤h≤8 (hours to fill); Range 0≤V≤1600 (gallons).",
     prereqs:["1i"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>Inputs &amp; Outputs</h4><div class="analogy-box"><strong>Think of a function like a vending machine:</strong><br>&bull; Domain = the buttons you can press (valid inputs)<br>&bull; Range = the snacks that can come out (possible outputs)<br><br>For a <em>linear</em> function with no restrictions, you can press any button &rarr; any output is possible!</div><p>In math: unrestricted linear function &rarr; Domain = all real numbers, Range = all real numbers.</p>'},
@@ -616,7 +649,7 @@ const UNITS=[
   {
     id:"1k",name:"Slope-Intercept Form",teks:"A.2B",
     explanation:"y = mx + b: m = slope, b = y-intercept. Identify both from an equation. Write equations given slope+intercept, slope+point, or two points.",
-    realWorld:"<strong>The Scenario:</strong> You're choosing a new cell phone plan that charges a base fee plus a cost per text message.<br><br><strong>The Conflict:</strong> With thousands of texts sent a month, it's impossible to calculate your total bill by adding up individual charges.<br><br><strong>The Resolution:</strong> Slope-intercept form (C = 0.05t + 30) gives you a predictive model. The y-intercept (30) is your fixed monthly fee, and the slope (0.05) is the rate per text, allowing you to instantly project your bill.",
+    realWorld:"Phone plan: C = 0.05t + 30. Slope 0.05 = cost per text; y-intercept 30 = monthly base fee.",
     prereqs:["1g","1i"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>y = mx + b Decoded</h4><div class="analogy-box"><strong>y = mx + b is a recipe:</strong><br>&bull; <strong>m</strong> = slope (how steep, positive/negative/zero)<br>&bull; <strong>b</strong> = y-intercept (where you start on the y-axis)<br><br>Example: y = 3x + 2<br>&bull; Slope = 3 (go up 3 for each step right)<br>&bull; y-intercept = 2 (cross y-axis at 2)</div>'},
@@ -673,7 +706,7 @@ const UNITS=[
   {
     id:"1l",name:"Writing Equations from Tables & Graphs",teks:"A.2C",
     explanation:"From table: compute Δy/Δx for slope, use a point to find b. From graph: read y-intercept directly, count slope. Always verify with a second point.",
-    realWorld:"<strong>The Scenario:</strong> You jump into a taxi, and the meter shows $6.50 at mile 1, $9 at mile 2, and $11.50 at mile 3.<br><br><strong>The Conflict:</strong> You only have a $20 bill, and you need to know if you can afford the 7-mile ride home.<br><br><strong>The Resolution:</strong> By analyzing the table, you find the slope ($2.50/mile) and the base fee ($4). You write the equation C = 2.5m + 4, plug in 7 miles, and discover the fare is $21.50. Time to find an ATM!",
+    realWorld:"A taxi table shows: 1mi=$6.50, 2mi=$9, 3mi=$11.50. Rate = $2.50/mi, base = $4. Equation: C=2.5m+4.",
     prereqs:["1k"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>Equation Detective</h4><div class="analogy-box"><strong>From a table:</strong> Find the pattern! Look for how y changes as x increases by 1. That change is your <strong>slope</strong>.<br><br><strong>From a graph:</strong> Where does the line cross the y-axis? That\'s your <strong>b</strong>. Then count how far up (rise) for how far right (run).</div>'},
@@ -730,7 +763,7 @@ const UNITS=[
   {
     id:"1m",name:"Standard Form",teks:"A.2B",
     explanation:"Ax + By = C where A≥0, all integers. Convert from slope-intercept by moving x-term. Find x-intercept (set y=0) and y-intercept (set x=0).",
-    realWorld:"<strong>The Scenario:</strong> You're organizing a school festival and need to raise exactly $400 by selling adult tickets for $8 and child tickets for $5.<br><br><strong>The Conflict:</strong> You have two completely different unknowns (adults vs. children) that both contribute to a single fixed goal.<br><br><strong>The Resolution:</strong> Standard form (8A + 5C = 400) perfectly models this budget constraint. It allows you to easily find the intercepts (e.g., selling 0 adult tickets means you need 80 child tickets) to understand your extreme options.",
+    realWorld:"Festival: 8A + 5C = 400 (adult $8, child $5, raise $400). Standard form shows both ticket types symmetrically.",
     prereqs:["1k","1f"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>Two Variables, One Constraint</h4><div class="analogy-box"><strong>Standard form Ax + By = C</strong> is like a budget:<br>"I have $400. Adult tickets cost $8, child tickets cost $5."<br>8A + 5C = 400<br><br>Both unknowns are on the same side — showing they both contribute to the total!</div><p>Rules: A &ge; 0 (positive leading coefficient), all coefficients are integers (no fractions).</p>'},
@@ -783,7 +816,7 @@ const UNITS=[
   {
     id:"1n",name:"Direct Variation",teks:"A.2D",
     explanation:"y = kx: b=0, line through origin. k = constant of variation = y/x for any point. Recognize from table (y/x constant) or graph (through origin).",
-    realWorld:"<strong>The Scenario:</strong> You're cruising down the highway on cruise control at exactly 60 mph.<br><br><strong>The Conflict:</strong> You need to know how far you'll travel over various hours, but without any complicated starting values to track.<br><br><strong>The Resolution:</strong> Direct variation (d = 60t) is the purest form of linear math. Because you started at mile 0 at hour 0, the graph passes perfectly through the origin, making predictions effortless.",
+    realWorld:"d = 60t (driving at 60 mph). At t=0 d=0; the graph passes through origin.",
     prereqs:["1k"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>Zero Starting Point</h4><div class="analogy-box"><strong>Direct variation:</strong> when x = 0, y = 0. Always through the origin!<br><br>Real examples:<br>&bull; d = 60t: no time = no distance<br>&bull; tax = 0.08 &times; price: no purchase = no tax<br>&bull; area = s²: side length 0 = area 0</div><p>Key formula: <strong>y = kx</strong> (no extra constant b). The number k is called the <strong>constant of variation</strong>.</p>'},
@@ -838,7 +871,7 @@ const UNITS=[
   {
     id:"1o",name:"Horizontal & Vertical Lines",teks:"A.2G",
     explanation:"Horizontal y=k: slope 0, parallel to x-axis. Vertical x=h: undefined slope, parallel to y-axis. Vertical lines cannot be written as y=mx+b.",
-    realWorld:"<strong>The Scenario:</strong> You are graphing the speed of a car that is stuck driving exactly 65 mph on the highway.<br><br><strong>The Conflict:</strong> The car never speeds up or slows down, meaning there is zero change in its speed over time.<br><br><strong>The Resolution:</strong> This creates a perfectly horizontal line (y = 65). The slope is 0 because the rise (change in speed) is completely flat, proving mathematically that the speed is constant.",
+    realWorld:"Speed limit sign y=65 on a speed graph. A doorway at x=0 on a position graph.",
     prereqs:["1g"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>Flat and Steep</h4><div class="analogy-box"><strong>Horizontal line y = k:</strong> Every point has the same y-value. Like a table surface — perfectly flat!<br><br><strong>Vertical line x = h:</strong> Every point has the same x-value. Like a wall — perfectly upright!</div><p>&bull; y = 3: points (−2, 3), (0, 3), (5, 3) &mdash; all have y = 3<br>&bull; x = 4: points (4, −1), (4, 0), (4, 7) &mdash; all have x = 4</p>'},
@@ -891,7 +924,7 @@ const UNITS=[
   {
     id:"1p",name:"Transformations of f(x)=x",teks:"A.3E",
     explanation:"Parent: f(x)=x (slope 1, through origin). Transformations: vertical stretch (af(x)=ax), reflection (−f(x)=−x), vertical shift (f(x)+k=x+k), combinations.",
-    realWorld:"<strong>The Scenario:</strong> You and a friend are racing. A normal running pace is modeled by the simple function f(x) = x.<br><br><strong>The Conflict:</strong> Your friend is much faster than you, and they also gave you a 3-mile head start to make it fair.<br><br><strong>The Resolution:</strong> Transformations let us modify the math to match reality! Your friend running twice as fast is a vertical stretch (2x), and your head start is a vertical shift (x + 3).",
+    realWorld:"Normal pace: f(x)=x miles in x hours. Double speed: 2f(x)=2x. 3-mile head start: f(x)+3=x+3.",
     prereqs:["1k"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>The Parent Function</h4><div class="analogy-box"><strong>f(x) = x</strong> is the simplest possible line: every output equals its input. It’s like a perfect mirror — slope = 1, through the origin.<br><br>Transformations change it:<br>&bull; Multiply by a &rarr; <strong>steeper or flatter</strong> (stretch/compress)<br>&bull; Negate &rarr; <strong>flip</strong> (reflect over x-axis)<br>&bull; Add constant &rarr; <strong>shift up/down</strong></div>'},
@@ -947,7 +980,7 @@ const UNITS=[
   {
     id:"1q",name:"Parallel Lines",teks:"A.2E",
     explanation:"Parallel lines: same slope (m), different y-intercepts. To write parallel line through point (x₁,y₁): keep slope m, substitute point into y=mx+b to find new b.",
-    realWorld:"<strong>The Scenario:</strong> Two trains are barreling down adjacent, perfectly straight tracks at exactly the same speed.<br><br><strong>The Conflict:</strong> You need to guarantee mathematically that these two massive trains will never, ever collide.<br><br><strong>The Resolution:</strong> Because their speeds (slopes) are identical but their starting positions (y-intercepts) are different, their paths form parallel lines. They will travel forever without intersecting.",
+    realWorld:"Two trains on parallel tracks: same direction (slope), different starting positions.",
     prereqs:["1k"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>Same Direction, Different Path</h4><div class="analogy-box"><strong>Parallel lines never meet</strong> because they always go in exactly the same direction — same slope!<br><br>Like two cars driving side by side at the same speed: they travel together but never collide.</div><p>Parallel lines: <strong>m₁ = m₂</strong> but <strong>b₁ &ne; b₂</strong><br>Example: y = 2x + 1 and y = 2x − 5 are parallel (both have slope 2)</p>'},
@@ -1003,7 +1036,7 @@ const UNITS=[
   {
     id:"1r",name:"Perpendicular Lines",teks:"A.2F",
     explanation:"Perpendicular lines: slopes are negative reciprocals (m₁×m₂=−1). If slope=3, perpendicular slope=−1/3. To write: find negative reciprocal of slope, then use point to find b.",
-    realWorld:"<strong>The Scenario:</strong> City planners are designing a new intersection where a side street must cross a major highway at a perfect 90-degree angle.<br><br><strong>The Conflict:</strong> If the angle is even slightly off, visibility is compromised, leading to dangerous traffic accidents.<br><br><strong>The Resolution:</strong> By ensuring the side street's slope is the negative reciprocal of the highway's slope, engineers mathematically guarantee a perfect, safe right angle.",
+    realWorld:"A road crossing a highway at 90°: if highway has slope 2, road has slope −1/2.",
     prereqs:["1q"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>Right-Angle Partners</h4><div class="analogy-box"><strong>Perpendicular lines meet at a 90° angle.</strong><br><br>Their slopes are <strong>negative reciprocals</strong>:<br>&bull; Slope 2 &harr; perpendicular slope −1/2<br>&bull; Slope −3 &harr; perpendicular slope 1/3<br>&bull; Slope 4/5 &harr; perpendicular slope −5/4<br><br>Quick check: multiply the two slopes &rarr; should get −1.</div>'},
@@ -1055,7 +1088,7 @@ const UNITS=[
   {
     id:"1s",name:"Linear Inequalities in Two Variables",teks:"A.2H",
     explanation:"Graph y>mx+b: dashed boundary line, shade above. Graph y<mx+b: dashed line, shade below. For ≤/≥: solid line. Test (0,0) to confirm shading.",
-    realWorld:"<strong>The Scenario:</strong> You have $50 to spend on a party, and you're buying burgers for $3 and fries for $2.<br><br><strong>The Conflict:</strong> You aren't forced to spend exactly $50—you just can't spend *more* than $50. An equation only gives you the exact $50 combinations.<br><br><strong>The Resolution:</strong> Graphing the inequality (3b + 2f &le; 50) shades an entire region of the graph. Every single point inside that shaded zone represents a valid, affordable combination of food!",
+    realWorld:"Budget: 3b+2f<50. The shaded region below the line shows all affordable (burgers, fries) combinations.",
     prereqs:["1e","1k"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>More Than a Line</h4><div class="analogy-box"><strong>An inequality in two variables describes a whole region</strong> of the coordinate plane, not just a line!<br><br>&bull; <strong>Dashed line</strong>: > or < (boundary NOT included)<br>&bull; <strong>Solid line</strong>: ≥ or ≤ (boundary included)<br>&bull; <strong>Shade above</strong>: y > (or y ≥)<br>&bull; <strong>Shade below</strong>: y < (or y ≤)</div>'},
@@ -1116,7 +1149,7 @@ const UNITS=[
   {
     id:"1a",name:"One-Step Equations",teks:"A.5A",
     explanation:"A one-step equation needs just one operation to solve. If something is added to x, subtract it from both sides. If x is multiplied by something, divide both sides. Think of it like a balance scale — keep both sides equal!",
-    realWorld:"<strong>The Scenario:</strong> You and your best friend decided to split the cost of a giant pizza equally, and the total receipt was $18.<br><br><strong>The Conflict:</strong> The receipt doesn't tell you how much each of you owes individually, and nobody wants to overpay.<br><br><strong>The Resolution:</strong> A one-step equation (2x = 18) perfectly balances the situation. By performing one inverse operation (dividing by 2), you instantly discover that each person owes exactly $9.",
+    realWorld:"You and your friend split the cost of a pizza equally. The total was $18. How much did each person pay? That's the equation 2x = 18.",
     prereqs:[],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>The Balance Scale</h4><div class="analogy-box"><strong>Picture this:</strong> You have a balance scale. On the left side sits a mystery box (that\'s <strong>x</strong>) and on the right side sit 5 one-pound weights. The scale is perfectly balanced, so the mystery box must weigh <strong>5 pounds</strong>!<br><br>That\'s literally what x = 5 means. An equation is a <strong>balance</strong> — both sides are equal.</div><div style="text-align:center;margin:14px 0"><svg width="240" height="100" viewBox="0 0 240 100" style="max-width:100%"><rect width="240" height="100" rx="10" fill="#f8fafc"/><line x1="120" y1="15" x2="120" y2="55" stroke="#64748b" stroke-width="3"/><polygon points="100,15 140,15 120,5" fill="#64748b"/><line x1="40" y1="22" x2="200" y2="22" stroke="#334155" stroke-width="2.5"/><rect x="40" y="22" width="60" height="30" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="2"><animate attributeName="y" values="24;22;24" dur="2s" repeatCount="indefinite"/></rect><text x="70" y="42" text-anchor="middle" font-size="14" fill="#2563eb" font-weight="700">x</text><g><circle cx="160" cy="37" r="8" fill="#fde68a" stroke="#d97706" stroke-width="1.5"/><text x="160" y="41" text-anchor="middle" font-size="8" fill="#92400e" font-weight="700">5</text><circle cx="180" cy="37" r="8" fill="#fde68a" stroke="#d97706" stroke-width="1.5"/><text x="180" y="41" text-anchor="middle" font-size="8" fill="#92400e" font-weight="700">5</text></g><rect x="80" y="70" width="80" height="25" rx="12" fill="#334155"/></svg></div><p>To solve a one-step equation, you just need <strong>one move</strong>: undo whatever is happening to x. Added something? <strong>Subtract</strong> it. Multiplied? <strong>Divide</strong>. That\'s it!</p>'},
@@ -1173,7 +1206,7 @@ const UNITS=[
   {
     id:"1b",name:"Two-Step Equations",teks:"A.5A",
     explanation:"A two-step equation has two operations applied to x. To solve, undo them in reverse order: first undo addition or subtraction, then undo multiplication or division. Always do the same thing to both sides!",
-    realWorld:"<strong>The Scenario:</strong> You are desperately trying to buy a $47 video game. You already have $11 in your piggy bank and you earn $6 an hour mowing lawns.<br><br><strong>The Conflict:</strong> You need to know exactly how many lawns to mow this weekend so you don't waste time working more than you have to.<br><br><strong>The Resolution:</strong> A two-step equation (6h + 11 = 47) strips away the mystery. First, you subtract the $11 you already have. Then, you divide the remaining $36 by your $6 hourly rate to find you only need 6 hours of work!",
+    realWorld:"You're saving up for a $47 video game. You already have $11 saved and earn $6 per hour mowing lawns. How many hours do you need to work? That's 6h + 11 = 47.",
     prereqs:["1a"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>Two Locks, Two Keys</h4><div class="analogy-box"><strong>Think of it this way:</strong> Imagine x is locked inside <strong>two layers</strong> of protection. First it got multiplied by 3, then 4 was added on top. To free x, you undo the layers in <strong>reverse order</strong>:<br><br>1. Peel off the +4 (subtract 4)<br>2. Undo the &times;3 (divide by 3)<br><br>It\'s like taking off your shoes and socks — you put socks on first, but you take shoes off first!</div><p><strong>The pattern:</strong></p><div style="text-align:center;margin:10px 0;padding:10px;background:#f0fdf4;border-radius:8px;font-size:.95rem"><strong>ax + b = c</strong><br><span style="font-size:.85rem;color:var(--muted)">Step 1: Subtract b &rarr; Step 2: Divide by a</span></div><p>Two operations were done to x, so you need <strong>two steps</strong> to undo them. Always undo addition/subtraction first, then multiplication/division.</p>'},
@@ -1229,7 +1262,7 @@ const UNITS=[
   {
     id:"1c",name:"Multi-Step Equations",teks:"A.5A",
     explanation:"Sometimes equations have variables on both sides, or need you to distribute first. The goal is always the same: get all the x-terms on one side and all the numbers on the other. Combine like terms, then solve step by step.",
-    realWorld:"<strong>The Scenario:</strong> You're caught between two cell phone plans. Plan A is a $30 flat fee plus $5 per GB. Plan B is a cheap $10 flat fee but a pricey $9 per GB.<br><br><strong>The Conflict:</strong> Plan B looks cheaper up front, but if you watch too many TikToks, it will quickly become the more expensive option. When exactly does Plan A become the better deal?<br><br><strong>The Resolution:</strong> By setting them equal (5g + 30 = 9g + 10), you gather the variables to find the exact crossover point. At exactly 5 GB of data, they cost the same. If you use more than 5 GB, Plan A is the winner!",
+    realWorld:"Two cell phone plans: Plan A charges $30 plus $5 per GB of data. Plan B charges $10 plus $9 per GB. When do they cost the same? Solve 5g + 30 = 9g + 10.",
     prereqs:["1b"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>Variables on Both Sides</h4><div class="analogy-box"><strong>Picture this:</strong> Two cell phone plans are competing for your money.<br><br><strong style="color:#2563eb">Plan A:</strong> $30/month + $5 per GB<br><strong style="color:#e8722a">Plan B:</strong> $10/month + $9 per GB<br><br>Plan B looks cheaper up front, but costs more per GB. At some point, they\'ll cost the <strong>same</strong>. That\'s the moment where: 5g + 30 = 9g + 10</div><p>When x appears on <strong>both sides</strong>, you need to <strong>collect all the x-terms on one side</strong> first. Think of it as herding all the x\'s into one pen, then solving like a two-step equation.</p><div style="text-align:center;margin:10px 0;padding:10px;background:#f0fdf4;border-radius:8px;font-size:.9rem"><strong>Move x-terms to one side → Move numbers to the other → Solve</strong></div>'},
@@ -1294,7 +1327,7 @@ const UNITS=[
   {
     id:"1d",name:"Writing Equations from Situations",teks:"A.5A",
     explanation:"Translating words into math is a superpower! Look for key phrases: 'total' means the answer, 'per' or 'each' means multiplication, 'more than' means addition, 'less than' means subtraction. Set up the equation, then solve.",
-    realWorld:"<strong>The Scenario:</strong> Your school is running a fundraiser. You need $210 to fund the field trip, you already have a $50 donation, and you're selling candles for $8 each.<br><br><strong>The Conflict:</strong> The principal wants a concrete goal for the students: exactly how many candles do they need to sell to guarantee the trip?<br><br><strong>The Resolution:</strong> By translating the English words into math vocabulary (8c + 50 = 210), you create a solvable puzzle. Solving it reveals that the class must sell exactly 20 candles to pack their bags.",
+    realWorld:"Your school fundraiser sells candles at $8 each. The class has a $50 head start from donations. They need $210 total. How many candles must they sell? Equation: 8c + 50 = 210.",
     prereqs:["1b"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>Words → Math</h4><div class="analogy-box"><strong>Think of it this way:</strong> Math is just a <strong>language</strong>. When someone says "five more than a number," math writes <strong>x + 5</strong>. When they say "twice a number decreased by 3," math writes <strong>2x &minus; 3</strong>.<br><br>Translating word problems into equations is like translating English into Spanish — once you know the vocabulary, it\'s straightforward!</div><p><strong>The key vocabulary:</strong></p><ul style="margin:8px 0 8px 18px;font-size:.95rem;line-height:1.8"><li><strong>"per," "each," "every"</strong> → multiply (&times;)</li><li><strong>"total," "altogether," "sum"</strong> → add (+) or the answer</li><li><strong>"more than," "increased by"</strong> → add (+)</li><li><strong>"less than," "decreased by"</strong> → subtract (&minus;)</li><li><strong>"is," "equals," "was"</strong> → equals sign (=)</li></ul>'},
@@ -1358,7 +1391,7 @@ const UNITS=[
   {
     id:"1e",name:"Solving & Graphing Inequalities",teks:"A.5B",
     explanation:"Inequalities are like equations but with < , > , ≤ , or ≥ instead of =. Solve them the same way, with one important rule: if you multiply or divide by a negative number, flip the inequality sign! Graph the solution on a number line — open circle for < or >, closed circle for ≤ or ≥.",
-    realWorld:"<strong>The Scenario:</strong> It's the end of the semester, and you need at least a 70 average to pass Algebra. Your first two tests were a 65 and an 80.<br><br><strong>The Conflict:</strong> There is one final test remaining, and you are terrified. You don't need a perfect 100—you just need to know the absolute minimum score to survive.<br><br><strong>The Resolution:</strong> An inequality ((65 + 80 + x) / 3 &ge; 70) models this life-or-death situation. Solving it shows that x &ge; 65. As long as you score a 65 or higher, you pass the class!",
+    realWorld:"You need at least a 70 average to pass. You scored 65 and 80 on two tests. What must you score on the third test? (65 + 80 + x) / 3 ≥ 70.",
     prereqs:["1b"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>More Than One Answer</h4><div class="analogy-box"><strong>Picture this:</strong> A roller coaster says "You must be <strong>at least 48 inches tall</strong>." That doesn\'t mean you have to be <em>exactly</em> 48 inches — 48, 50, 55, 72 all work! There\'s a whole <strong>range</strong> of valid answers.<br><br>That\'s an inequality: height &ge; 48. Instead of one answer, you get <strong>infinitely many</strong>.</div><p>Inequalities use four symbols:</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0;font-size:.9rem"><div style="background:#dbeafe;padding:8px;border-radius:6px;text-align:center"><strong>&lt;</strong> less than</div><div style="background:#dbeafe;padding:8px;border-radius:6px;text-align:center"><strong>&gt;</strong> greater than</div><div style="background:#dcfce7;padding:8px;border-radius:6px;text-align:center"><strong>&le;</strong> less than or equal</div><div style="background:#dcfce7;padding:8px;border-radius:6px;text-align:center"><strong>&ge;</strong> greater than or equal</div></div><p>On a number line: <strong>open circle</strong> = not included (&lt; or &gt;), <strong>closed circle</strong> = included (&le; or &ge;).</p>'},
@@ -1421,7 +1454,7 @@ const UNITS=[
   {
     id:"1f",name:"Literal Equations",teks:"A.12E",
     explanation:"A literal equation is a formula with mostly letters (variables) instead of numbers. To solve for a specific letter, you use the exact same inverse operations as normal equations! It's just rearranging the furniture — moving pieces across the equals sign to isolate the target variable.",
-    realWorld:"<strong>The Scenario:</strong> You are a contractor building dozens of rectangular fences. You know the total Perimeter (P) and the Length (L) requested by the client, but you always have to calculate the Width (W).<br><br><strong>The Conflict:</strong> Plugging numbers into P = 2L + 2W and solving for W every single time a client asks for a quote is incredibly tedious and prone to errors.<br><br><strong>The Resolution:</strong> By solving the literal equation for W *first* (W = (P - 2L) / 2), you create a master formula. Now, you can instantly plug in the perimeter and length to generate quotes in seconds!",
+    realWorld:"The perimeter of a rectangle is P = 2L + 2W. If you have 100 feet of fencing (P) and want the length to be 30 feet, what is the width? Instead of solving it every time, you can rearrange the formula to W = (P - 2L) / 2 and just plug the numbers in once!",
     prereqs:["1b"],
     levels:[
       {title:"Intuition",time:"~2 min",html:'<h4>Rearranging the Furniture</h4><div class="analogy-box"><strong>Think of it this way:</strong> Imagine you are packing a suitcase. You put your shoes in first, then your shirts on top.<br><br>To get your shoes back out, you have to undo what you did in reverse order: take the shirts out first, then grab the shoes.<br><br>Literal equations are the same! If your target variable is $y$, and the formula says $2x + y = 10$, someone added $2x$ to your $y$. To get $y$ by itself, just do the reverse: subtract $2x$ from both sides!</div><p>Treat the other variables just like regular numbers. You can add them, subtract them, divide by them — they just don\'t combine into a single number.</p>'},
@@ -1823,7 +1856,7 @@ const UNITS=[
     }
   },
   {
-    id:"2d",name:"Applications of Systems",teks:"A.2I, A.5C",
+    id:"2d",name:"Applications of Systems",teks:"A.2I",
     explanation:"Systems of equations pop up whenever two relationships share the same unknowns. The key is identifying what your variables represent, writing two equations from the given information, then choosing the best method to solve. Real life rarely gives you neat equations — you have to build them yourself!",
     realWorld:"Two pizza delivery services in Flower Mound: Sal's charges $8 per pizza plus $5 delivery, Marco's charges $6 per pizza plus $11 delivery. How many pizzas make them the same price? System: y = 8x + 5, y = 6x + 11.",
     prereqs:["2b","2c"],
@@ -2545,7 +2578,7 @@ const UNITS=[
     }
   },
   {
-    id:"4c",name:"Solving Quadratics by Factoring",teks:"A.8A, A.7B",
+    id:"4c",name:"Solving Quadratics by Factoring",teks:"A.8A",
     explanation:"To solve ax² + bx + c = 0 by factoring: (1) look for a GCF first, (2) factor the trinomial into two binomials, (3) set each factor equal to zero (Zero Product Property), (4) solve each mini-equation. This only works when the quadratic factors neatly — otherwise you need the quadratic formula!",
     realWorld:"You're designing a rectangular Texas-shaped garden bed. The length is (x + 5) feet and the width is (x + 2) feet. If the area must be 40 sq ft, you solve (x+5)(x+2) = 40, which leads to a quadratic equation.",
     prereqs:["4a","1b"],
@@ -2749,7 +2782,7 @@ const UNITS=[
     }
   },
   {
-    id:"4f",name:"Writing Quadratic Equations",teks:"A.6B, A.6C",
+    id:"4f",name:"Writing Quadratic Equations",teks:"A.6B",
     explanation:"You can write a quadratic equation if you are given the vertex and a point, or the x-intercepts. If given the vertex (h, k), start with y = a(x - h)² + k, plug in the other point for x and y, and solve for 'a'. If you have roots, start with y = a(x - r1)(x - r2).",
     realWorld:"If you know a launched firework reaches a peak of 200 feet after 4 seconds (vertex: 4, 200) and it was launched from the ground at 0 seconds (point: 0, 0), you can build the exact quadratic formula that models its flight.",
     prereqs:["4b"],
@@ -3192,7 +3225,7 @@ const UNITS=[
     }
   },
   {
-    id:"5d",name:"Factoring GCF & Trinomials",teks:"A.10E, A.10D",
+    id:"5d",name:"Factoring GCF & Trinomials",teks:"A.10E",
     explanation:"Factoring is the reverse of multiplying. Step 1: Always check for a GCF (greatest common factor) first. Step 2: For x\u00B2 + bx + c, find two numbers that multiply to c and add to b. Step 3: Write as (x + p)(x + q). For ax\u00B2 + bx + c (a \u2260 1), the process takes more trial or you can use grouping.",
     realWorld:"If a ball\u2019s height is h = -16t\u00B2 + 48t, factoring gives h = -16t(t - 3). Setting each factor to zero tells you the ball is on the ground at t = 0 (launch) and t = 3 seconds (landing).",
     prereqs:["5c","4c"],
@@ -3809,49 +3842,13 @@ function renderDashboard(){
   UNITS.forEach(function(u){
     var mastery=calcUnitMastery(u);
     var c=el("div","unit-card"+(u.locked?" locked":""));
-    var chipsHtml = "";
-    if(!u.locked && u.concepts) {
-      chipsHtml = '<div class="concept-mega-btn" data-unit="'+u.id+'">Explore '+u.concepts.length+' Concepts <span class="mega-caret" style="font-size:0.6rem">▼</span></div>' +
-        '<div class="concept-mega-wrapper"><div class="concept-mega-content">' + 
-        u.concepts.map(function(cc){
-          return '<span class="concept-chip" data-cid="'+cc.id+'" title="'+cc.teks+': '+(cc.explanation||'').replace(/"/g,'&quot;')+'" style="font-size:.75rem;background:#e2e8f0;padding:4px 8px;border-radius:12px;cursor:pointer;color:#334155;border:1px solid #cbd5e1;transition:all 0.2s;">'+cc.name+' <span style="font-size:0.65rem;color:#64748b;font-weight:600;margin-left:2px;">'+cc.teks+'</span></span>';
-        }).join('') + '</div></div>';
-    }
     c.innerHTML='<div class="unit-num">'+u.id+'</div>'+
       '<h3>'+u.name+'</h3>'+
       '<div class="teks">'+u.teks+'</div>'+
       (u.locked?'<span class="lock-label">Coming Soon</span>':'')+
       '<div class="prog-bar"><div class="prog-fill" style="width:'+mastery+'%"></div></div>'+
-      '<div class="prog-text">'+mastery+'% mastery</div>'+chipsHtml;
-    if(!u.locked){
-      c.addEventListener("click",function(e){
-        var megaBtn = e.target.closest(".concept-mega-btn");
-        if(megaBtn){
-          e.stopPropagation();
-          var isForced = c.classList.contains("force-mega");
-          document.querySelectorAll(".unit-card").forEach(function(card){ card.classList.remove("force-mega"); card.querySelector(".mega-caret") && (card.querySelector(".mega-caret").textContent="▼"); });
-          if(!isForced){
-            c.classList.add("force-mega");
-            megaBtn.querySelector(".mega-caret").textContent = "▲";
-          }
-          return;
-        }
-        var chip = e.target.closest(".concept-chip");
-        if(!chip && e.target.closest(".concept-mega-wrapper")) return; // clicked inside wrapper but not on chip
-        
-        openUnit(u);
-        if(chip){
-          var cid = chip.dataset.cid;
-          setTimeout(function(){
-            var card = document.querySelector("#concept-"+cid);
-            if(card){
-              if(!card.classList.contains("open")) card.querySelector(".concept-hdr").click();
-              card.scrollIntoView({behavior:"smooth",block:"center"});
-            }
-          },250);
-        }
-      });
-    }
+      '<div class="prog-text">'+mastery+'% mastery</div>';
+    if(!u.locked)c.addEventListener("click",function(){openUnit(u);});
     grid.appendChild(c);
   });
 
@@ -3973,21 +3970,13 @@ function renderLearnTab(u){
         '</div>'+
         '<div class="concept-body">';
       if(lvls.length){
-        var augLvls = lvls.slice();
-        if(c.realWorld) {
-          augLvls.push({
-            title: "Why Learn This?",
-            time: "Real World",
-            html: '<h4>The Real-World Connection</h4><div class="rw-example" style="font-size:.95rem;line-height:1.6;margin-top:12px;padding:16px;background:#f0fdfa;border-left:4px solid #0d9488;border-radius:0 8px 8px 0;color:#115e59;"><strong>Why do we care?</strong><br><br>' + c.realWorld + '</div>'
-          });
-        }
         html+='<div class="level-toggle-bar" data-concept="'+c.id+'">';
-        augLvls.forEach(function(lv,li){
+        lvls.forEach(function(lv,li){
           html+='<button class="level-btn'+(li===0?' active':'')+'" data-level="'+li+'" aria-label="'+lv.title+' level">'+
-            lv.title+'<span class="lvl-time">'+(lv.time||'')+'</span></button>';
+            lv.title+'<span class="lvl-time">'+lv.time+'</span></button>';
         });
         html+='</div>';
-        augLvls.forEach(function(lv,li){
+        lvls.forEach(function(lv,li){
           html+='<div class="level-content" data-concept="'+c.id+'" data-level="'+li+'" style="'+(li>0?'display:none':'')+'">';
           html+=lv.html;
           html+='</div>';
@@ -6053,6 +6042,20 @@ function findConcept(id){
 $("dPts").textContent=S.points;
 $("dStrk").textContent=S.streak;
 renderDashboard();
+
+/* ── ROADMAP MODAL ── */
+(function(){
+  var overlay=$("roadmapModal");
+  var box=$("roadmapModalBox");
+  function openRM(){overlay.style.display="flex";document.body.style.overflow="hidden";$("closeRoadmap").focus();}
+  function closeRM(){overlay.style.display="none";document.body.style.overflow="";}
+  $("openRoadmap").addEventListener("click",openRM);
+  $("roadmapPreview").addEventListener("click",openRM);
+  $("roadmapPreview").addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();openRM();}});
+  $("closeRoadmap").addEventListener("click",closeRM);
+  overlay.addEventListener("click",function(e){if(e.target===overlay)closeRM();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&overlay.style.display!=="none")closeRM();});
+})();
 
 })();
 </script>
