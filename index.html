@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Learning Hub — LISD &amp; basic</title>
+  <title>Learning Hub — LISD</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -193,6 +193,7 @@
 
     .section[data-band="middle"] .section-icon    { background: linear-gradient(135deg,#c7d2fe,#6366f1); }
     .section[data-band="elementary"] .section-icon { background: linear-gradient(135deg,#fed7aa,#fb923c); }
+    .section[data-band="ela"] .section-icon        { background: linear-gradient(135deg,#bbf7d0,#22c55e); }
 
     .section-meta { flex: 1; }
 
@@ -220,6 +221,7 @@
 
     .section[data-band="middle"] .section-badge    { background: var(--violet-lt); color: var(--indigo); }
     .section[data-band="elementary"] .section-badge { background: var(--orange-lt); color: #c2410c; }
+    .section[data-band="ela"] .section-badge        { background: var(--green-lt); color: #166534; }
 
     /* ═══════════════════════════
        CARD
@@ -265,6 +267,7 @@
 
     .section[data-band="middle"] .card-accent    { background: linear-gradient(180deg, var(--violet), #818cf8); }
     .section[data-band="elementary"] .card-accent { background: linear-gradient(180deg, var(--orange), var(--amber)); }
+    .section[data-band="ela"] .card-accent        { background: linear-gradient(180deg, var(--green), #86efac); }
 
     .card-body {
       flex: 1;
@@ -285,6 +288,7 @@
 
     .section[data-band="middle"] .card-icon    { background: var(--violet-lt); }
     .section[data-band="elementary"] .card-icon { background: var(--orange-lt); }
+    .section[data-band="ela"] .card-icon        { background: var(--green-lt); }
 
     .card-text { flex: 1; min-width: 0; }
 
@@ -324,6 +328,7 @@
 
     .section[data-band="middle"] .tag    { background: var(--violet-lt); color: var(--indigo); }
     .section[data-band="elementary"] .tag { background: var(--orange-lt); color: #c2410c; }
+    .section[data-band="ela"] .tag        { background: var(--green-lt); color: #166534; }
 
     .tag.green { background: var(--green-lt); color: #166534; }
     .tag.sky   { background: #e0f2fe; color: #0369a1; }
@@ -346,9 +351,11 @@
 
     .section[data-band="middle"] .card-arrow    { background: var(--violet-lt); color: var(--indigo); }
     .section[data-band="elementary"] .card-arrow { background: var(--orange-lt); color: #c2410c; }
+    .section[data-band="ela"] .card-arrow        { background: var(--green-lt); color: #166534; }
 
     @media (hover:hover) {
       .card:hover .card-arrow { transform: translateX(4px); }
+      .section[data-band="ela"] .card:hover { border-color: #22c55e; }
     }
 
     .soon-badge {
@@ -399,7 +406,7 @@
 <!-- ── Hero ── -->
 <header class="hero">
   <div class="hero-inner">
-    <div class="hero-badge">🏫 &nbsp;LISD &amp; basic</div>
+    <div class="hero-badge">🏫 &nbsp;LISD</div>
     <h1>Your <em>Learning Hub</em></h1>
     <p class="hero-sub">Interactive courses and activities built for curious minds — from counting to calculus.</p>
     <div class="hero-pills">
@@ -414,9 +421,10 @@
 <!-- ── Filter Bar ── -->
 <nav class="filter-bar" aria-label="Filter courses">
   <div class="filter-tabs" role="tablist">
-    <button class="filter-tab active" data-filter="all"   role="tab" aria-selected="true">All Courses</button>
-    <button class="filter-tab"        data-filter="middle" role="tab" aria-selected="false">Middle School</button>
+    <button class="filter-tab active" data-filter="all"        role="tab" aria-selected="true">All Courses</button>
+    <button class="filter-tab"        data-filter="middle"     role="tab" aria-selected="false">Middle School</button>
     <button class="filter-tab"        data-filter="elementary" role="tab" aria-selected="false">Elementary</button>
+    <button class="filter-tab"        data-filter="ela"        role="tab" aria-selected="false">Language Arts</button>
   </div>
 </nav>
 
@@ -431,7 +439,7 @@
         <div class="section-label">Grade 6–8</div>
         <div class="section-name">Middle School</div>
       </div>
-      <span class="section-badge">3 Courses</span>
+      <span class="section-badge">2 Courses</span>
     </div>
 
     <div class="cards">
@@ -474,25 +482,6 @@
         </div>
       </a>
 
-      <a class="card" href="grammar-doodle-lab.html">
-        <div class="card-accent"></div>
-        <div class="card-body">
-          <div class="card-icon">&#x1F4DD;</div>
-          <div class="card-text">
-            <div class="card-title">Grammar Doodle Lab</div>
-            <div class="card-desc">Sentence diagramming playground — drag words, detect parts of speech &amp; practice with random sentence generation</div>
-            <div class="card-tags">
-              <span class="tag">ELA</span>
-              <span class="tag sky">Grades 6–8</span>
-              <span class="tag green">11 Levels</span>
-            </div>
-          </div>
-        </div>
-        <div class="card-right">
-          <div class="card-arrow">→</div>
-        </div>
-      </a>
-
     </div>
   </section>
 
@@ -509,15 +498,15 @@
 
     <div class="cards">
 
-      <a class="card" href="basic-addition-app.html">
+      <a class="card" href="kumon-addition-app.html">
         <div class="card-accent"></div>
         <div class="card-body">
           <div class="card-icon">➕</div>
           <div class="card-text">
-            <div class="card-title">basic Addition App</div>
-            <div class="card-desc">Interactive addition exercises modeled after the basic method</div>
+            <div class="card-title">Addition App</div>
+            <div class="card-desc">Interactive addition exercises with step-by-step practice</div>
             <div class="card-tags">
-              <span class="tag">basic</span>
+              <span class="tag">Math</span>
               <span class="tag sky">Grade K–2</span>
             </div>
           </div>
@@ -525,15 +514,15 @@
         <div class="card-right"><div class="card-arrow">→</div></div>
       </a>
 
-      <a class="card" href="basic-b2-regrouping-lesson.html">
+      <a class="card" href="kumon-b2-regrouping-lesson.html">
         <div class="card-accent"></div>
         <div class="card-body">
           <div class="card-icon">🔢</div>
           <div class="card-text">
-            <div class="card-title">basic B2 Regrouping Lesson</div>
+            <div class="card-title">B2 Regrouping Lesson</div>
             <div class="card-desc">Step-by-step carrying and borrowing practice</div>
             <div class="card-tags">
-              <span class="tag">basic</span>
+              <span class="tag">Math</span>
               <span class="tag sky">Grade 2–3</span>
             </div>
           </div>
@@ -541,7 +530,7 @@
         <div class="card-right"><div class="card-arrow">→</div></div>
       </a>
 
-      <a class="card" href="basic-base10-blocks-demo.html">
+      <a class="card" href="kumon-base10-blocks-demo.html">
         <div class="card-accent"></div>
         <div class="card-body">
           <div class="card-icon">🧱</div>
@@ -549,7 +538,7 @@
             <div class="card-title">Base-10 Blocks Demo</div>
             <div class="card-desc">Animated base-10 blocks for place value understanding</div>
             <div class="card-tags">
-              <span class="tag">basic</span>
+              <span class="tag">Math</span>
               <span class="tag sky">Grade 1–2</span>
             </div>
           </div>
@@ -557,7 +546,7 @@
         <div class="card-right"><div class="card-arrow">→</div></div>
       </a>
 
-      <a class="card" href="basic-base10-subtraction-demo.html">
+      <a class="card" href="kumon-base10-subtraction-demo.html">
         <div class="card-accent"></div>
         <div class="card-body">
           <div class="card-icon">➖</div>
@@ -565,7 +554,7 @@
             <div class="card-title">Base-10 Subtraction Demo</div>
             <div class="card-desc">Visual subtraction with base-10 borrowing models</div>
             <div class="card-tags">
-              <span class="tag">basic</span>
+              <span class="tag">Math</span>
               <span class="tag sky">Grade 2–3</span>
             </div>
           </div>
@@ -573,16 +562,66 @@
         <div class="card-right"><div class="card-arrow">→</div></div>
       </a>
 
-      <a class="card" href="basic-grade1-reading.html">
+      <a class="card" href="kumon-grade1-reading.html">
         <div class="card-accent"></div>
         <div class="card-body">
           <div class="card-icon">📖</div>
           <div class="card-text">
-            <div class="card-title">basic Grade 1 Reading</div>
+            <div class="card-title">Grade 1 Reading</div>
             <div class="card-desc">Early reading comprehension activities for Grade 1</div>
             <div class="card-tags">
-              <span class="tag">basic</span>
+              <span class="tag">ELA</span>
               <span class="tag sky">Grade 1</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-right"><div class="card-arrow">→</div></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ── Language Arts ── -->
+  <section class="section" data-band="ela">
+    <div class="section-hdr">
+      <div class="section-icon">✍️</div>
+      <div class="section-meta">
+        <div class="section-label">Grades 2–8</div>
+        <div class="section-name">Language Arts</div>
+      </div>
+      <span class="section-badge">2 Activities</span>
+    </div>
+
+    <div class="cards">
+
+      <a class="card" href="grammar-doodle-lab.html">
+        <div class="card-accent"></div>
+        <div class="card-body">
+          <div class="card-icon">📝</div>
+          <div class="card-text">
+            <div class="card-title">Grammar Doodle Lab</div>
+            <div class="card-desc">Sentence diagramming playground — drag words, detect parts of speech &amp; practice with random sentence generation</div>
+            <div class="card-tags">
+              <span class="tag">Grammar</span>
+              <span class="tag sky">Grades 6–8</span>
+              <span class="tag green">11 Levels</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-right"><div class="card-arrow">→</div></div>
+      </a>
+
+      <a class="card" href="sentence-diagramming-level1.html">
+        <div class="card-accent"></div>
+        <div class="card-body">
+          <div class="card-icon">🌳</div>
+          <div class="card-text">
+            <div class="card-title">Sentence Diagramming</div>
+            <div class="card-desc">Learn to diagram sentences step by step — subjects, verbs, adjectives &amp; more across 12 progressive levels</div>
+            <div class="card-tags">
+              <span class="tag">Grammar</span>
+              <span class="tag sky">Grades 2–5</span>
+              <span class="tag green">12 Levels</span>
             </div>
           </div>
         </div>
@@ -596,7 +635,7 @@
 
 <!-- ── Footer ── -->
 <footer>
-  <strong>Learning Hub</strong> &nbsp;·&nbsp; Lewisville ISD &amp; basic &nbsp;·&nbsp; Built for curious minds<br>
+  <strong>Learning Hub</strong> &nbsp;·&nbsp; Lewisville ISD &nbsp;·&nbsp; Built for curious minds<br>
   Texas TEKS Aligned &nbsp;✦&nbsp; 2026
 </footer>
 

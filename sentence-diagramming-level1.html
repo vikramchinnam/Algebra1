@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentence Diagramming — Levels 1–12</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:16px}
+.card{background:#fdf6e3;border-radius:20px;padding:22px 28px;max-width:800px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,.35)}
+
+/* LEVEL TABS */
+.tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.tab{flex:1;min-width:100px;padding:8px 4px;border:none;border-radius:10px;font-family:sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;background:#ecf0f1;color:#95a5a6;text-align:center;line-height:1.3}
+.tab:hover{background:#000000;color:#555}
+.tab.active{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;box-shadow:0 4px 14px rgba(118,75,162,.4)}
+.tab.done{background:#27ae60;color:#fff}
+.tab .tnum{font-size:16px;display:block}
+
+/* SCORE */
+.scorebar{display:flex;justify-content:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.pill{background:#fff;border-radius:20px;padding:5px 14px;font-size:13px;font-family:sans-serif;color:#2c3e50;box-shadow:0 2px 8px rgba(0,0,0,.08);font-weight:700}
+
+/* INSTRUCTION */
+.instr{background:#fff;border-left:4px solid #764ba2;border-radius:0 8px 8px 0;padding:11px 15px;margin-bottom:16px;font-size:14px;line-height:1.65;color:#2c3e50}
+.instr b{color:#2c3e50}
+.sw{color:#2980b9;font-weight:700}.vw{color:#c0392b;font-weight:700}
+.aw{color:#8e44ad;font-weight:700}.pw{color:#d35400;font-weight:700}
+.ow{color:#16a085;font-weight:700}.cw{color:#27ae60;font-weight:700}
+.iw{color:#f39c12;font-weight:700}
+
+/* SENTENCE BOX */
+.sbox{text-align:center;font-size:21px;font-style:italic;color:#2c3e50;margin-bottom:14px;padding:12px;background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.sbox small{display:block;font-size:12px;font-style:normal;font-family:sans-serif;color:#bdc3c7;margin-top:5px}
+.diff-badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-family:sans-serif;font-weight:700;margin-left:6px;vertical-align:middle;letter-spacing:.3px}
+.diff-easy{background:#d5f5e3;color:#1e8449}
+.diff-medium{background:#fdebd0;color:#b7770d}
+.diff-hard{background:#fadbd8;color:#c0392b}
+
+/* DIFFICULTY FILTER */
+.dfilter{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.dflabel{font-family:sans-serif;font-size:12px;color:#95a5a6;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.dfbtn{padding:5px 16px;border-radius:20px;border:2px solid transparent;font-size:12px;font-family:sans-serif;font-weight:700;cursor:pointer;opacity:.32;transition:all .2s;outline:none}
+.dfbtn.dfactive{opacity:1;box-shadow:0 2px 10px rgba(0,0,0,.13)}
+.dfbtn.dfactive:hover{transform:translateY(-1px)}
+.dfbtn[data-d=easy]{background:#d5f5e3;color:#1e8449;border-color:#a9dfbf}
+.dfbtn[data-d=medium]{background:#fdebd0;color:#b7770d;border-color:#f5cba7}
+.dfbtn[data-d=hard]{background:#fadbd8;color:#c0392b;border-color:#f1948a}
+
+/* WORD BANK */
+.wordbank{display:flex;justify-content:center;gap:12px;margin-bottom:16px;min-height:52px;align-items:center;flex-wrap:wrap}
+.chip{background:#fff;border:2.5px solid #bdc3c7;border-radius:10px;padding:9px 20px;font-size:18px;font-family:Georgia,serif;cursor:grab;user-select:none;transition:all .15s;box-shadow:0 3px 8px rgba(0,0,0,.1)}
+.chip:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,.15);border-color:#764ba2}
+.chip.sel{border-color:#764ba2;background:#f8f4ff;box-shadow:0 0 0 3px rgba(118,75,162,.25)}
+.chip.drag{opacity:.35}.chip.gone{visibility:hidden}
+
+/* DIAGRAM */
+.dwrap{background:#fff;border-radius:12px;padding:10px;box-shadow:0 2px 10px rgba(0,0,0,.07);margin-bottom:16px}
+.dinner{position:relative;aspect-ratio:700/260}
+.dinner svg{position:absolute;inset:0;width:100%;height:100%}
+.zone{position:absolute;border-radius:8px;cursor:pointer;transition:background .15s;border:2px dashed transparent}
+.zone.over{background:rgba(118,75,162,.1);border-color:rgba(118,75,162,.4)}
+.zone.shake{animation:shake .35s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* CONTROLS */
+.controls{display:flex;justify-content:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+button{font-family:sans-serif;font-size:13px;font-weight:700;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;transition:all .15s}
+button:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.08);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+button:disabled{opacity:.35;cursor:not-allowed}
+#bHint{background:#f39c12;color:#fff}
+#bShow{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
+#bReset{background:#ecf0f1;color:#555}
+#bNext{background:#27ae60;color:#fff}
+
+/* FEEDBACK */
+.fb{text-align:center;min-height:22px;font-size:14px;font-style:italic;color:#7f8c8d;margin-bottom:10px}
+.fb.ok{color:#27ae60}.fb.err{color:#c0392b}.fb.hint{color:#8e44ad}
+
+/* PROGRESS */
+.prow{display:flex;justify-content:space-between;align-items:center;font-family:sans-serif;font-size:12px;color:#bdc3c7}
+.dots{display:flex;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;background:#000000;transition:background .3s}
+.dot.done{background:#27ae60}.dot.cur{background:#764ba2}
+
+/* ACHIEVEMENT */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:1000}
+.overlay[hidden]{display:none}
+.acard{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:320px;box-shadow:0 24px 80px rgba(0,0,0,.4);animation:popIn .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.aicon{font-size:60px;display:block;margin-bottom:10px;animation:bob 1s ease-in-out infinite alternate}
+@keyframes bob{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+.aname{font-size:20px;font-weight:700;color:#2c3e50;margin-bottom:6px}
+.adesc{font-size:13px;color:#7f8c8d;font-style:italic;margin-bottom:20px;line-height:1.5}
+.acard button{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:14px;padding:10px 28px;border-radius:10px}
+
+/* MISC */
+.pop{position:fixed;font-family:sans-serif;font-size:22px;font-weight:700;color:#27ae60;pointer-events:none;z-index:1002;animation:popUp 1s ease forwards}
+@keyframes popUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-65px)}}
+#cnv{position:fixed;inset:0;pointer-events:none;z-index:999}
+</style>
+</head>
+<body>
+<a href="index.html" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;padding:7px 16px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:100px;color:#fff;font-family:sans-serif;font-size:13px;font-weight:700;text-decoration:none;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.28)'" onmouseout="this.style.background='rgba(255,255,255,.18)'">← Learning Hub</a>
+<canvas id="cnv"></canvas>
+<div class="card">
+
+  <!-- LEVEL TABS -->
+  <div class="tabs" role="tablist">
+    <button class="tab active" role="tab" aria-selected="true"  onclick="switchLevel(1)" id="tab1"><span class="tnum">1</span>Main Line</button>
+    <button class="tab"        role="tab" aria-selected="false" onclick="switchLevel(2)" id="tab2"><span class="tnum">2</span>Modifiers</button>
+    <button class="tab"        role="tab" aria-selected="false" onclick="switchLevel(3)" id="tab3"><span class="tnum">3</span>Prep Phrases</button>
+    <button class="tab"        role="tab" aria-selected="false" onclick="switchLevel(4)" id="tab4"><span class="tnum">4</span>Conjunctions</button>
+    <button class="tab"        role="tab" aria-selected="false" onclick="switchLevel(5)" id="tab5"><span class="tnum">5</span>Interjections</button>
+    <button class="tab"        role="tab" aria-selected="false" onclick="switchLevel(6)" id="tab6"><span class="tnum">6</span>Direct Objects</button>
+    <button class="tab"        role="tab" aria-selected="false" onclick="switchLevel(7)" id="tab7"><span class="tnum">7</span>Indirect Obj</button>
+    <button class="tab"        role="tab" aria-selected="false" onclick="switchLevel(8)" id="tab8"><span class="tnum">8</span>Linking Verbs</button>
+    <button class="tab"        role="tab" aria-selected="false" onclick="switchLevel(9)" id="tab9"><span class="tnum">9</span>Adj. Clauses</button>
+    <button class="tab"        role="tab" aria-selected="false" onclick="switchLevel(10)" id="tab10"><span class="tnum">10</span>Noun Clauses</button>
+    <button class="tab"        role="tab" aria-selected="false" onclick="switchLevel(11)" id="tab11"><span class="tnum">11</span>Adverb Clauses</button>
+    <button class="tab"        role="tab" aria-selected="false" onclick="switchLevel(12)" id="tab12"><span class="tnum">12</span>Verbals</button>
+  </div>
+
+  <!-- DIFFICULTY FILTER -->
+  <div class="dfilter" role="group" aria-label="Filter by difficulty">
+    <span class="dflabel">Show:</span>
+    <button class="dfbtn dfactive" data-d="easy"   id="dfbtn-easy"   onclick="toggleDiff('easy')"   aria-pressed="true" >🟢 Easy</button>
+    <button class="dfbtn dfactive" data-d="medium" id="dfbtn-medium" onclick="toggleDiff('medium')" aria-pressed="true" >🟡 Medium</button>
+    <button class="dfbtn dfactive" data-d="hard"   id="dfbtn-hard"   onclick="toggleDiff('hard')"   aria-pressed="true" >🔴 Hard</button>
+  </div>
+
+  <!-- SCORE -->
+  <div class="scorebar">
+    <div class="pill">⭐ <span id="pts">0</span> pts</div>
+    <div class="pill">🔥 <span id="str">0</span> streak</div>
+    <div class="pill" id="donePill">✅ <span id="don">0</span> done</div>
+  </div>
+
+  <!-- INSTRUCTION -->
+  <div class="instr" id="instr"></div>
+
+  <!-- SENTENCE -->
+  <div class="sbox" id="sbox">— — —<small>Loading…</small></div>
+
+  <!-- WORD BANK -->
+  <div class="wordbank" id="wbank" aria-label="Word bank — drag words onto the diagram"></div>
+
+  <!-- DIAGRAM -->
+  <div class="dwrap" role="img" aria-label="Sentence diagram area">
+    <div class="dinner" id="dinner">
+      <svg id="dsvg" viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button id="bHint"  onclick="doHint()"  aria-label="Get a hint">💡 Hint</button>
+    <button id="bShow"  onclick="doShowMe()" aria-label="Show the correct diagram">▶ Show Me</button>
+    <button id="bReset" onclick="doReset()"  aria-label="Reset current sentence">↺ Reset</button>
+    <button id="bNext"  onclick="doNext()"   aria-label="Next sentence" disabled>Next →</button>
+  </div>
+
+  <div class="fb" id="fb" role="status" aria-live="polite"></div>
+
+  <div class="prow">
+    <span>Sentence <span id="cnum">1</span> of <span id="ctot">10</span></span>
+    <div class="dots" id="dots" role="list" aria-label="Progress"></div>
+    <span id="htally">Hints: 0</span>
+  </div>
+</div>
+
+<!-- ACHIEVEMENT -->
+<div class="overlay" id="achOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="aName">
+  <div class="acard">
+    <span class="aicon" id="aIcon" aria-hidden="true">🏆</span>
+    <div class="aname" id="aName"></div>
+    <div class="adesc" id="aDesc"></div>
+    <button onclick="document.getElementById('achOverlay').hidden=true" aria-label="Close achievement">Keep Going!</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════════════
+const DATA = {
+  // ══ LEVEL 1 · Main Line ═══════════════════════════════════════════════
+  // Medium trick: subject is NOT in the normal first position (inverted sentences)
+  // Hard trick:   subject is a gerund/abstract noun; a word looks like it could be the other part
+  1: [
+    // EASY — subject comes first, verb comes second, nothing ambiguous
+    {difficulty:'easy',  display:'Cats meow.',          w:{subject:'Cats',     verb:'meow'}},
+    {difficulty:'easy',  display:'Birds sing.',          w:{subject:'Birds',    verb:'sing'}},
+    {difficulty:'easy',  display:'Dogs bark.',           w:{subject:'Dogs',     verb:'bark'}},
+    {difficulty:'easy',  display:'Fish swim.',           w:{subject:'Fish',     verb:'swim'}},
+    {difficulty:'easy',  display:'Stars shine.',         w:{subject:'Stars',    verb:'shine'}},
+    {difficulty:'easy',  display:'Thunder roars.',       w:{subject:'Thunder',  verb:'roars'}},
+    {difficulty:'easy',  display:'Flowers bloom.',       w:{subject:'Flowers',  verb:'bloom'}},
+    {difficulty:'easy',  display:'Rivers flow.',         w:{subject:'Rivers',   verb:'flow'}},
+    {difficulty:'easy',  display:'Babies sleep.',        w:{subject:'Babies',   verb:'sleep'}},
+    {difficulty:'easy',  display:'Children laugh.',      w:{subject:'Children', verb:'laugh'}},
+    // MEDIUM — inverted word order; subject follows the verb in the sentence
+    {difficulty:'medium',display:'Down the hill rolled the boulder.',  w:{subject:'boulder',   verb:'rolled'},  tip:'Inverted! Ask: what rolled?'},
+    {difficulty:'medium',display:'Here comes the sunrise.',           w:{subject:'sunrise',   verb:'comes'},   tip:'"Here" is an adverb, not the subject.'},
+    {difficulty:'medium',display:'There stood an ancient oak.',       w:{subject:'oak',       verb:'stood'},   tip:'"There" is an adverb. What stood?'},
+    {difficulty:'medium',display:'Into the clearing leaped the deer.',w:{subject:'deer',      verb:'leaped'},  tip:'Prepositional opener — find who acted.'},
+    {difficulty:'medium',display:'Away rushed the frightened crowd.', w:{subject:'crowd',     verb:'rushed'},  tip:'"Away" is an adverb. Who rushed?'},
+    // HARD — gerund subject or a word that moonlights as a noun
+    {difficulty:'hard',  display:'Swimming fatigues the muscles.',    w:{subject:'Swimming',  verb:'fatigues'},tip:'"Swimming" is a gerund acting as subject. "Fatigues" is a verb (not the plural noun).'},
+    {difficulty:'hard',  display:'Running builds endurance.',         w:{subject:'Running',   verb:'builds'},  tip:'"Running" is a gerund subject — it performs the action of "builds".'},
+    {difficulty:'hard',  display:'Silence speaks volumes.',           w:{subject:'Silence',   verb:'speaks'},  tip:'Abstract nouns can be subjects. "Speaks" is a verb here, not a person.'},
+  ],
+  // ══ LEVEL 2 · Modifiers ═══════════════════════════════════════════════
+  // Medium trick: the modifier word (adj or adv) can ALSO be the other type in different sentences
+  // Hard trick:   both a modifier word AND another content word have dual roles
+  2: [
+    // EASY — colour/size adjectives + clearly adverbial -ly adverbs
+    {difficulty:'easy',  display:'Tiny birds sang sweetly.',     w:{adj:'Tiny',   subj:'birds',  verb:'sang',     adv:'sweetly'}},
+    {difficulty:'easy',  display:'Yellow ducks quacked loudly.', w:{adj:'Yellow', subj:'ducks',  verb:'quacked',  adv:'loudly'}},
+    {difficulty:'easy',  display:'Old dogs bark fiercely.',      w:{adj:'Old',    subj:'dogs',   verb:'bark',     adv:'fiercely'}},
+    {difficulty:'easy',  display:'Red fish swim quickly.',       w:{adj:'Red',    subj:'fish',   verb:'swim',     adv:'quickly'}},
+    {difficulty:'easy',  display:'Small cats purr softly.',      w:{adj:'Small',  subj:'cats',   verb:'purr',     adv:'softly'}},
+    {difficulty:'easy',  display:'Bright stars shine clearly.',  w:{adj:'Bright', subj:'stars',  verb:'shine',    adv:'clearly'}},
+    {difficulty:'easy',  display:'Happy babies slept soundly.',  w:{adj:'Happy',  subj:'babies', verb:'slept',    adv:'soundly'}},
+    {difficulty:'easy',  display:'Gentle rain falls quietly.',   w:{adj:'Gentle', subj:'rain',   verb:'falls',    adv:'quietly'}},
+    {difficulty:'easy',  display:'Tall trees swayed gently.',    w:{adj:'Tall',   subj:'trees',  verb:'swayed',   adv:'gently'}},
+    {difficulty:'easy',  display:'Dark clouds gathered fast.',   w:{adj:'Dark',   subj:'clouds', verb:'gathered', adv:'fast'}},
+    // MEDIUM — adj is a word that ALSO works as an adverb (Early, Hard, High, Long, Fast)
+    {difficulty:'medium',display:'Early birds sing cheerfully.',  w:{adj:'Early', subj:'birds',  verb:'sing',  adv:'cheerfully'}, tip:'"Early" modifies "birds" (adj), not "sing" (that would be an adverb).'},
+    {difficulty:'medium',display:'Hard workers succeed daily.',   w:{adj:'Hard',  subj:'workers',verb:'succeed',adv:'daily'},     tip:'"Hard" describes the workers (adj), not how they succeed.'},
+    {difficulty:'medium',display:'High clouds drift endlessly.',  w:{adj:'High',  subj:'clouds', verb:'drift', adv:'endlessly'},  tip:'"High" is an adj here — it answers "what kind of clouds?"'},
+    {difficulty:'medium',display:'Long trains run nightly.',      w:{adj:'Long',  subj:'trains', verb:'run',   adv:'nightly'},    tip:'"Long" describes the trains (adj); "nightly" tells when (adv).'},
+    {difficulty:'medium',display:'Fast runners tire suddenly.',   w:{adj:'Fast',  subj:'runners',verb:'tire',  adv:'suddenly'},   tip:'"Fast" = adj here (it tells what kind of runners).'},
+    // HARD — BOTH a modifier and another word have dual possible roles
+    {difficulty:'hard',  display:'Deep rivers run silently.',     w:{adj:'Deep',  subj:'rivers', verb:'run',   adv:'silently'},   tip:'"Deep" is adj (modifies rivers). "Silently" is adv (modifies run). Don\'t confuse them!'},
+    {difficulty:'hard',  display:'Still waters flow secretly.',   w:{adj:'Still', subj:'waters', verb:'flow',  adv:'secretly'},   tip:'"Still" can be adv/conj/adj — here it modifies "waters" (adj).'},
+    {difficulty:'hard',  display:'Late trains arrive unexpectedly.',w:{adj:'Late', subj:'trains',verb:'arrive',adv:'unexpectedly'},tip:'"Late" = adj (which trains?). Don\'t put it in the adverb slot.'},
+  ],
+  // ══ LEVEL 3 · Prepositional Phrases ══════════════════════════════════
+  // Medium trick: prepositions that also function as other parts (over, through, past)
+  // Hard trick:   the "object" word looks like it could be the subject or verb
+  3: [
+    // EASY — simple, unambiguous prepositions
+    {difficulty:'easy',  display:'Cats sit on mats.',          w:{subj:'Cats',     verb:'sit',    prep:'on',       obj:'mats'}},
+    {difficulty:'easy',  display:'Birds nest in trees.',       w:{subj:'Birds',    verb:'nest',   prep:'in',       obj:'trees'}},
+    {difficulty:'easy',  display:'Fish swim in rivers.',       w:{subj:'Fish',     verb:'swim',   prep:'in',       obj:'rivers'}},
+    {difficulty:'easy',  display:'Dogs sleep on porches.',     w:{subj:'Dogs',     verb:'sleep',  prep:'on',       obj:'porches'}},
+    {difficulty:'easy',  display:'Stars shine in skies.',      w:{subj:'Stars',    verb:'shine',  prep:'in',       obj:'skies'}},
+    {difficulty:'easy',  display:'We walked through forests.', w:{subj:'We',       verb:'walked', prep:'through',  obj:'forests'}},
+    {difficulty:'easy',  display:'Children played in parks.',  w:{subj:'Children', verb:'played', prep:'in',       obj:'parks'}},
+    {difficulty:'easy',  display:'Rain falls from clouds.',    w:{subj:'Rain',     verb:'falls',  prep:'from',     obj:'clouds'}},
+    {difficulty:'easy',  display:'Wind blows across fields.',  w:{subj:'Wind',     verb:'blows',  prep:'across',   obj:'fields'}},
+    {difficulty:'easy',  display:'Boats sail on oceans.',      w:{subj:'Boats',    verb:'sail',   prep:'on',       obj:'oceans'}},
+    // MEDIUM — less obvious prepositions; "of", "over"(=about), "past", "despite"
+    {difficulty:'medium',display:'Students dream of success.',   w:{subj:'Students', verb:'dream',  prep:'of',      obj:'success'},  tip:'"of" is a preposition leading the phrase — "success" is its object.'},
+    {difficulty:'medium',display:'Experts argue over details.',  w:{subj:'Experts',  verb:'argue',  prep:'over',    obj:'details'},  tip:'"over" here means "about" — it\'s still a preposition.'},
+    {difficulty:'medium',display:'Runners race past markers.',   w:{subj:'Runners',  verb:'race',   prep:'past',    obj:'markers'},  tip:'"past" is a preposition here, not an adjective.'},
+    {difficulty:'medium',display:'Success comes despite setbacks.',w:{subj:'Success', verb:'comes', prep:'despite', obj:'setbacks'}, tip:'"despite" is a preposition — it introduces its object "setbacks".'},
+    {difficulty:'medium',display:'Ideas travel between people.',  w:{subj:'Ideas',    verb:'travel', prep:'between', obj:'people'},   tip:'"between" must have an object (people), not stand alone.'},
+    // HARD — abstract nouns as subject AND object; subject could look like verb
+    {difficulty:'hard',  display:'Fear hides beneath courage.',  w:{subj:'Fear',     verb:'hides',  prep:'beneath', obj:'courage'},  tip:'Both "Fear" and "courage" are abstract nouns. Which one is performing the action?'},
+    {difficulty:'hard',  display:'Change begins with choice.',   w:{subj:'Change',   verb:'begins', prep:'with',    obj:'choice'},   tip:'"Change" is the subject (noun), not a verb here. "choice" is the object.'},
+    {difficulty:'hard',  display:'Order emerges from chaos.',    w:{subj:'Order',    verb:'emerges',prep:'from',    obj:'chaos'},    tip:'"Order" and "chaos" are both nouns. Which one is doing the emerging?'},
+  ],
+  // ══ LEVEL 4 · Coordinating Conjunctions ══════════════════════════════
+  // Medium trick: conjunctions other than "and" (but, yet, nor)
+  // Hard trick:   abstract nouns in compound position where both look like verbs
+  4: [
+    // EASY — "and" / "or" only, concrete nouns
+    {difficulty:'easy',  type:'cs',display:'Dogs and cats play.',      w:{s1:'Dogs',    conj:'and',s2:'cats',    verb:'play'}},
+    {difficulty:'easy',  type:'cs',display:'Birds and fish live.',     w:{s1:'Birds',   conj:'and',s2:'fish',    verb:'live'}},
+    {difficulty:'easy',  type:'cs',display:'Boys and girls sang.',     w:{s1:'Boys',    conj:'and',s2:'girls',   verb:'sang'}},
+    {difficulty:'easy',  type:'cs',display:'Rain or snow falls.',      w:{s1:'Rain',    conj:'or', s2:'snow',    verb:'falls'}},
+    {difficulty:'easy',  type:'cs',display:'Cats and dogs sleep.',     w:{s1:'Cats',    conj:'and',s2:'dogs',    verb:'sleep'}},
+    {difficulty:'easy',  type:'cv',display:'Birds sing and fly.',      w:{subj:'Birds',    v1:'sing', conj:'and',v2:'fly'}},
+    {difficulty:'easy',  type:'cv',display:'Dogs bark and run.',       w:{subj:'Dogs',     v1:'bark', conj:'and',v2:'run'}},
+    {difficulty:'easy',  type:'cv',display:'Children laugh and play.', w:{subj:'Children', v1:'laugh',conj:'and',v2:'play'}},
+    {difficulty:'easy',  type:'cv',display:'Fish swim and jump.',      w:{subj:'Fish',     v1:'swim', conj:'and',v2:'jump'}},
+    {difficulty:'easy',  type:'cv',display:'Cats purr and stretch.',   w:{subj:'Cats',     v1:'purr', conj:'and',v2:'stretch'}},
+    // MEDIUM — "but", "yet", "nor" as conjunctions; students must still identify compound type
+    {difficulty:'medium',type:'cv',display:'The ship rose but sank.',   w:{subj:'ship',    v1:'rose',  conj:'but',v2:'sank'},   tip:'"but" is a coordinating conjunction joining two verbs — diagram like compound verb.'},
+    {difficulty:'medium',type:'cv',display:'Rivers flood yet recede.',  w:{subj:'Rivers',  v1:'flood', conj:'yet',v2:'recede'}, tip:'"yet" here is a coordinating conjunction (= "but"). Compound verb diagram.'},
+    {difficulty:'medium',type:'cs',display:'Neither fear nor doubt stopped her.',w:{s1:'fear',conj:'nor',s2:'doubt',verb:'stopped'},tip:'"Neither…nor" is a correlative pair; diagram "nor" on the dashed line.'},
+    {difficulty:'medium',type:'cv',display:'Seasons change yet repeat.',w:{subj:'Seasons', v1:'change',conj:'yet',v2:'repeat'}, tip:'"change" and "repeat" are both verbs. Use compound-verb diagram.'},
+    {difficulty:'medium',type:'cs',display:'Courage or fear decides.',  w:{s1:'Courage',   conj:'or', s2:'fear',   verb:'decides'},tip:'Abstract nouns as compound subject — both go on parallel lines.'},
+    // HARD — abstract subjects that look like verbs; unusual conjunctions
+    {difficulty:'hard',  type:'cv',display:'Truth hurts yet heals.',    w:{subj:'Truth',   v1:'hurts', conj:'yet',v2:'heals'},  tip:'"Truth" is the subject; "hurts" and "heals" are the two verbs joined by "yet".'},
+    {difficulty:'hard',  type:'cs',display:'Neither fire nor ice scares him.',w:{s1:'fire',conj:'nor',s2:'ice',verb:'scares'},  tip:'Careful: "him" is NOT in the compound. Only "fire" and "ice" are joined.'},
+    {difficulty:'hard',  type:'cv',display:'Courage wavers but endures.',w:{subj:'Courage',v1:'wavers',conj:'but',v2:'endures'},tip:'"Courage" is subject. Both "wavers" and "endures" are verbs linked by "but".'},
+  ],
+  // ══ LEVEL 5 · Interjections ═══════════════════════════════════════════
+  // Medium trick: interjection word also works as adverb/adjective in other sentences
+  // Hard trick:   interjection word is usually an adjective; subject is abstract
+  5: [
+    // EASY — classic pure interjections (Wow, Oh, Hey…)
+    {difficulty:'easy',  display:'Wow, the sunset glows!',   w:{intj:'Wow',    subj:'sunset',   verb:'glows'}},
+    {difficulty:'easy',  display:'Oh, the baby cried!',      w:{intj:'Oh',     subj:'baby',     verb:'cried'}},
+    {difficulty:'easy',  display:'Hey, the dog barked!',     w:{intj:'Hey',    subj:'dog',      verb:'barked'}},
+    {difficulty:'easy',  display:'Hooray, the team won!',    w:{intj:'Hooray', subj:'team',     verb:'won'}},
+    {difficulty:'easy',  display:'Ouch, the bee stung!',     w:{intj:'Ouch',   subj:'bee',      verb:'stung'}},
+    {difficulty:'easy',  display:'Wow, the stars shine!',    w:{intj:'Wow',    subj:'stars',    verb:'shine'}},
+    {difficulty:'easy',  display:'Aha, the answer clicked!', w:{intj:'Aha',    subj:'answer',   verb:'clicked'}},
+    {difficulty:'easy',  display:'Yes, the flowers bloom!',  w:{intj:'Yes',    subj:'flowers',  verb:'bloom'}},
+    {difficulty:'easy',  display:'Oh, the cat purrs!',       w:{intj:'Oh',     subj:'cat',      verb:'purrs'}},
+    {difficulty:'easy',  display:'Bravo, the choir sang!',   w:{intj:'Bravo',  subj:'choir',    verb:'sang'}},
+    // MEDIUM — word used as interjection that is usually an adverb (Well, Now, Still, There)
+    {difficulty:'medium',display:'Well, the plan collapsed!',  w:{intj:'Well',  subj:'plan',     verb:'collapsed'}, tip:'"Well" = interjection here (not adverb). It floats above, unconnected.'},
+    {difficulty:'medium',display:'Now, silence fell!',         w:{intj:'Now',   subj:'silence',  verb:'fell'},      tip:'"Now" can be adverb/noun/conj — here it\'s an interjection. It gets its own little baseline.'},
+    {difficulty:'medium',display:'Still, the hope remained!',  w:{intj:'Still', subj:'hope',     verb:'remained'},  tip:'"Still" is an interjection here. "hope" is the subject of the main line.'},
+    {difficulty:'medium',display:'There, the truth emerged!',  w:{intj:'There', subj:'truth',    verb:'emerged'},   tip:'"There" as interjection (pointing) — different from "There goes…" where it\'s an adverb.'},
+    {difficulty:'medium',display:'Right, the verdict stood!',  w:{intj:'Right', subj:'verdict',  verb:'stood'},     tip:'"Right" as interjection (= "correct!") — not an adjective here.'},
+    // HARD — word usually an adjective used as interjection; abstract subject/verb
+    {difficulty:'hard',  display:'Good, the evidence convinced!', w:{intj:'Good', subj:'evidence',verb:'convinced'}, tip:'"Good" is usually an adjective — here it\'s an interjection. "evidence" is the subject.'},
+    {difficulty:'hard',  display:'Fine, justice prevailed!',       w:{intj:'Fine', subj:'justice', verb:'prevailed'}, tip:'"Fine" = interjection (= "alright"). "justice" is the abstract subject.'},
+    {difficulty:'hard',  display:'True, history repeats!',         w:{intj:'True', subj:'history', verb:'repeats'},   tip:'"True" = interjection here. "history" is the subject despite coming after the comma.'},
+  ],
+  // ══ LEVEL 6 · Direct Objects ══════════════════════════════════════════
+  // Medium trick: the subject word can ALSO be used as a verb in everyday speech
+  // Hard trick:   gerund as subject; "verbs" that look like nouns are the objects
+  6: [
+    // EASY — clear person/animal subject and concrete object
+    {difficulty:'easy',  display:'Cats chase mice.',       w:{subj:'Cats',     verb:'chase',    dobj:'mice'}},
+    {difficulty:'easy',  display:'Birds build nests.',     w:{subj:'Birds',    verb:'build',    dobj:'nests'}},
+    {difficulty:'easy',  display:'Dogs love bones.',       w:{subj:'Dogs',     verb:'love',     dobj:'bones'}},
+    {difficulty:'easy',  display:'Children read books.',   w:{subj:'Children', verb:'read',     dobj:'books'}},
+    {difficulty:'easy',  display:'We ate lunch.',          w:{subj:'We',       verb:'ate',      dobj:'lunch'}},
+    {difficulty:'easy',  display:'She painted pictures.',  w:{subj:'She',      verb:'painted',  dobj:'pictures'}},
+    {difficulty:'easy',  display:'Bees make honey.',       w:{subj:'Bees',     verb:'make',     dobj:'honey'}},
+    {difficulty:'easy',  display:'He wrote letters.',      w:{subj:'He',       verb:'wrote',    dobj:'letters'}},
+    {difficulty:'easy',  display:'Rain fills rivers.',     w:{subj:'Rain',     verb:'fills',    dobj:'rivers'}},
+    {difficulty:'easy',  display:'Teams win games.',       w:{subj:'Teams',    verb:'win',      dobj:'games'}},
+    // MEDIUM — abstract subjects that moonlight as verbs: Change, Hope, Sleep, Practice, Experience
+    {difficulty:'medium',display:'Change challenges everyone.',   w:{subj:'Change',   verb:'challenges',dobj:'everyone'},  tip:'"Change" is the subject (noun). It is doing the challenging.'},
+    {difficulty:'medium',display:'Hope sustains the weary.',      w:{subj:'Hope',     verb:'sustains',  dobj:'weary'},     tip:'"Hope" is the subject here, not a verb. Ask: what sustains the weary?'},
+    {difficulty:'medium',display:'Sleep repairs the body.',       w:{subj:'Sleep',    verb:'repairs',   dobj:'body'},      tip:'"Sleep" acts as a noun-subject here. What does it repair? The body.'},
+    {difficulty:'medium',display:'Practice perfects technique.',  w:{subj:'Practice', verb:'perfects',  dobj:'technique'}, tip:'"Practice" is the subject. "perfects" is the action verb (3rd person singular).'},
+    {difficulty:'medium',display:'Experience shapes character.',  w:{subj:'Experience',verb:'shapes',   dobj:'character'}, tip:'"Experience" is a noun acting as subject. "character" is what it shapes.'},
+    // HARD — gerund as subject; object noun might look like a verb
+    {difficulty:'hard',  display:'Running builds endurance.',     w:{subj:'Running',  verb:'builds',    dobj:'endurance'}, tip:'"Running" is a gerund (verb-noun) acting as the subject. "endurance" is the direct object.'},
+    {difficulty:'hard',  display:'Thinking reveals bias.',        w:{subj:'Thinking', verb:'reveals',   dobj:'bias'},      tip:'"Thinking" is a gerund subject. Ask: thinking reveals what? → "bias" = direct object.'},
+    {difficulty:'hard',  display:'Waiting tests patience.',       w:{subj:'Waiting',  verb:'tests',     dobj:'patience'},  tip:'"Waiting" = gerund subject. "tests" = verb. "patience" = direct object.'},
+  ],
+  // ══ LEVEL 7 · Indirect Objects ════════════════════════════════════════
+  // Medium trick: non-person/abstract subject; students must still find IO + DO correctly
+  // Hard trick:   subject is abstract/non-person; IO vs DO order is less obvious
+  7: [
+    // EASY — clear human subject doing something for/to another human
+    {difficulty:'easy',  display:'She gave him gifts.',     w:{subj:'She',  verb:'gave',    iobj:'him',  dobj:'gifts'}},
+    {difficulty:'easy',  display:'He told her news.',       w:{subj:'He',   verb:'told',    iobj:'her',  dobj:'news'}},
+    {difficulty:'easy',  display:'Mom sent us cookies.',    w:{subj:'Mom',  verb:'sent',    iobj:'us',   dobj:'cookies'}},
+    {difficulty:'easy',  display:'Dad bought me shoes.',    w:{subj:'Dad',  verb:'bought',  iobj:'me',   dobj:'shoes'}},
+    {difficulty:'easy',  display:'She wrote him notes.',    w:{subj:'She',  verb:'wrote',   iobj:'him',  dobj:'notes'}},
+    {difficulty:'easy',  display:'He gave her flowers.',    w:{subj:'He',   verb:'gave',    iobj:'her',  dobj:'flowers'}},
+    {difficulty:'easy',  display:'She made us soup.',       w:{subj:'She',  verb:'made',    iobj:'us',   dobj:'soup'}},
+    {difficulty:'easy',  display:'He showed me pictures.',  w:{subj:'He',   verb:'showed',  iobj:'me',   dobj:'pictures'}},
+    {difficulty:'easy',  display:'She brought them lunch.', w:{subj:'She',  verb:'brought', iobj:'them', dobj:'lunch'}},
+    {difficulty:'easy',  display:'He taught us math.',      w:{subj:'He',   verb:'taught',  iobj:'us',   dobj:'math'}},
+    // MEDIUM — abstract subject (Failure, Nature, Experience, Competition, Kindness)
+    {difficulty:'medium',display:'Failure teaches people lessons.',   w:{subj:'Failure',    verb:'teaches', iobj:'people',   dobj:'lessons'},   tip:'"Failure" is the subject. Ask: teaches whom? (people = IO) → teaches what? (lessons = DO)'},
+    {difficulty:'medium',display:'Nature offers creatures shelter.',  w:{subj:'Nature',     verb:'offers',  iobj:'creatures', dobj:'shelter'},   tip:'"Nature" is subject. Offers whom? (creatures = IO) → offers what? (shelter = DO)'},
+    {difficulty:'medium',display:'Experience brings workers wisdom.', w:{subj:'Experience', verb:'brings',  iobj:'workers',  dobj:'wisdom'},    tip:'"Experience" is subject. Brings whom? (workers = IO) → brings what? (wisdom = DO)'},
+    {difficulty:'medium',display:'Competition gives players strength.',w:{subj:'Competition',verb:'gives',  iobj:'players',  dobj:'strength'},  tip:'"Competition" = subject. Gives whom? (players = IO) → gives what? (strength = DO)'},
+    {difficulty:'medium',display:'Kindness brings strangers comfort.', w:{subj:'Kindness',  verb:'brings',  iobj:'strangers',dobj:'comfort'},   tip:'"Kindness" = abstract subject. IO = strangers, DO = comfort.'},
+    // HARD — non-person subject where IO vs DO identification is genuinely confusing
+    {difficulty:'hard',  display:'Circumstance denied him opportunity.',w:{subj:'Circumstance',verb:'denied', iobj:'him',  dobj:'opportunity'}, tip:'"Circumstance" is the subject. Denied whom? (him = IO) → denied what? (opportunity = DO)'},
+    {difficulty:'hard',  display:'Fate dealt them hardship.',          w:{subj:'Fate',     verb:'dealt',   iobj:'them', dobj:'hardship'},      tip:'"Fate" = subject. Dealt whom? (them = IO) → dealt what? (hardship = DO)'},
+    {difficulty:'hard',  display:'The verdict gave her relief.',       w:{subj:'verdict',  verb:'gave',    iobj:'her',  dobj:'relief'},        tip:'"verdict" is the non-person subject. IO = her, DO = relief.'},
+  ],
+  // ══ LEVEL 8 · Linking Verbs ═══════════════════════════════════════════
+  // Medium trick: verbs that are USUALLY action verbs but act as linking verbs here
+  // Hard trick:   unusual/surprising linking verbs; predicate could be adj or adv
+  8: [
+    // EASY — classic linking verbs (is, seem, feel, smell, appear, become, look)
+    {difficulty:'easy',  display:'Roses are red.',         w:{subj:'Roses',   lverb:'are',    pred:'red'}},
+    {difficulty:'easy',  display:'Kittens seem playful.',  w:{subj:'Kittens', lverb:'seem',   pred:'playful'}},
+    {difficulty:'easy',  display:'Soup tastes sour.',      w:{subj:'Soup',    lverb:'tastes', pred:'sour'}},
+    {difficulty:'easy',  display:'Music sounds loud.',     w:{subj:'Music',   lverb:'sounds', pred:'loud'}},
+    {difficulty:'easy',  display:'Air feels cold.',        w:{subj:'Air',     lverb:'feels',  pred:'cold'}},
+    {difficulty:'easy',  display:'Flowers smell sweet.',   w:{subj:'Flowers', lverb:'smell',  pred:'sweet'}},
+    {difficulty:'easy',  display:'Puppies are cute.',      w:{subj:'Puppies', lverb:'are',    pred:'cute'}},
+    {difficulty:'easy',  display:'Oceans appear calm.',    w:{subj:'Oceans',  lverb:'appear', pred:'calm'}},
+    {difficulty:'easy',  display:'Friends become family.', w:{subj:'Friends', lverb:'become', pred:'family'}},
+    {difficulty:'easy',  display:'Stars look bright.',     w:{subj:'Stars',   lverb:'look',   pred:'bright'}},
+    // MEDIUM — "turned", "grew", "went", "fell", "ran" used as LINKING verbs
+    {difficulty:'medium',display:'The milk turned sour.',    w:{subj:'milk',   lverb:'turned',pred:'sour'},  tip:'"turned" is the linking verb here (= became). It connects "milk" to "sour".'},
+    {difficulty:'medium',display:'She grew impatient.',      w:{subj:'She',    lverb:'grew',  pred:'impatient'}, tip:'"grew" = became. It\'s linking "She" to "impatient", not describing growth.'},
+    {difficulty:'medium',display:'The bread went stale.',    w:{subj:'bread',  lverb:'went',  pred:'stale'}, tip:'"went" = became. This is a linking verb connecting "bread" to "stale".'},
+    {difficulty:'medium',display:'He fell silent.',          w:{subj:'He',     lverb:'fell',  pred:'silent'},tip:'"fell" = became. "silent" is a predicate adjective, not a destination.'},
+    {difficulty:'medium',display:'The sky turned dark.',     w:{subj:'sky',    lverb:'turned',pred:'dark'},  tip:'"turned" links "sky" to "dark". Ask: sky = dark? Yes → linking verb!'},
+    // HARD — very unusual linking verbs: "rang", "proved", "holds"; predicate adj vs adv
+    {difficulty:'hard',  display:'His promise rang hollow.',   w:{subj:'promise', lverb:'rang',   pred:'hollow'}, tip:'"rang" as linking verb (= seemed/sounded). "hollow" is pred. adj., not a noun.'},
+    {difficulty:'hard',  display:'The theory proved wrong.',   w:{subj:'theory',  lverb:'proved', pred:'wrong'},  tip:'"proved" = turned out to be. It\'s linking here, not action. "wrong" = pred. adj.'},
+    {difficulty:'hard',  display:'The argument holds true.',   w:{subj:'argument',lverb:'holds',  pred:'true'},   tip:'"holds" = remains. Linking verb. "true" = pred. adj. (not adverb — don\'t confuse!).'},
+  ],
+  // ══ LEVEL 9 · Adjective Clauses ═══════════════════════════════════════
+  // Medium trick: both the main verb and clause verb are past tense — hard to tell which is main
+  // Hard trick:   "hurt" is present or past; "proved/convinced/shifted" cause extra confusion
+  9: [
+    // EASY — main verb and clause verb are clearly different words/tenses
+    {difficulty:'easy',  display:'The boy who ran won.',       w:{msubj:'boy',  mverb:'won',   rpron:'who',  cverb:'ran'}},
+    {difficulty:'easy',  display:'The cat that meowed ate.',   w:{msubj:'cat',  mverb:'ate',   rpron:'that', cverb:'meowed'}},
+    {difficulty:'easy',  display:'The bird that sang flew.',   w:{msubj:'bird', mverb:'flew',  rpron:'that', cverb:'sang'}},
+    {difficulty:'easy',  display:'The girl who smiled waved.', w:{msubj:'girl', mverb:'waved', rpron:'who',  cverb:'smiled'}},
+    {difficulty:'easy',  display:'The dog that barked ran.',   w:{msubj:'dog',  mverb:'ran',   rpron:'that', cverb:'barked'}},
+    {difficulty:'easy',  display:'The fish that jumped swam.', w:{msubj:'fish', mverb:'swam',  rpron:'that', cverb:'jumped'}},
+    {difficulty:'easy',  display:'The baby who cried slept.',  w:{msubj:'baby', mverb:'slept', rpron:'who',  cverb:'cried'}},
+    {difficulty:'easy',  display:'The star that shone fell.',  w:{msubj:'star', mverb:'fell',  rpron:'that', cverb:'shone'}},
+    {difficulty:'easy',  display:'The man who spoke left.',    w:{msubj:'man',  mverb:'left',  rpron:'who',  cverb:'spoke'}},
+    {difficulty:'easy',  display:'The team that played won.',  w:{msubj:'team', mverb:'won',   rpron:'that', cverb:'played'}},
+    // MEDIUM — both verbs are similar; students must reason about which clause is main
+    {difficulty:'medium',display:'The claim that spread collapsed.',    w:{msubj:'claim', mverb:'collapsed',rpron:'that',cverb:'spread'},  tip:'The claim collapsed (main). "that spread" = adjective clause modifying claim.'},
+    {difficulty:'medium',display:'The voice that cracked stopped.',     w:{msubj:'voice', mverb:'stopped',  rpron:'that',cverb:'cracked'}, tip:'The voice stopped (main). "that cracked" = adjective clause.'},
+    {difficulty:'medium',display:'The trend that grew reversed.',       w:{msubj:'trend', mverb:'reversed', rpron:'that',cverb:'grew'},    tip:'The trend reversed (main). "that grew" modifies "trend".'},
+    {difficulty:'medium',display:'The rumor that spread frightened everyone.',w:{msubj:'rumor',mverb:'frightened',rpron:'that',cverb:'spread'},tip:'"frightened" = main verb. "that spread" = adjective clause.'},
+    {difficulty:'medium',display:'The case that collapsed stunned observers.',w:{msubj:'case', mverb:'stunned',  rpron:'that',cverb:'collapsed'},tip:'"stunned" = main verb. The case stunned observers; "that collapsed" modifies case.'},
+    // HARD — one verb can be present OR past; both verbs are semantically similar
+    {difficulty:'hard',  display:'The argument that convinced prevailed.',w:{msubj:'argument',mverb:'prevailed',rpron:'that',cverb:'convinced'},tip:'"prevailed" = main verb (what happened to the argument). "convinced" = clause verb.'},
+    {difficulty:'hard',  display:'The truth that hurt emerged.',         w:{msubj:'truth',   mverb:'emerged',  rpron:'that',cverb:'hurt'},       tip:'"hurt" can be present or past — it\'s the clause verb. "emerged" = main verb.'},
+    {difficulty:'hard',  display:'The idea that sparked lasted.',        w:{msubj:'idea',    mverb:'lasted',   rpron:'that',cverb:'sparked'},    tip:'The idea lasted (main). "that sparked" = adjective clause modifying idea.'},
+  ],
+  // ══ LEVEL 10 · Noun Clauses ═══════════════════════════════════════════
+  // Medium trick: clause subject is a word that ALSO works as a verb ("change", "doubt")
+  // Hard trick:   "It" as dummy/expletive subject; "power" could be noun or verb
+  10: [
+    // EASY — clear pronouns as subjects on both levels
+    {difficulty:'easy',  display:'I know that she won.',        w:{msubj:'I',    mverb:'know',    csubj:'she',   cverb:'won'}},
+    {difficulty:'easy',  display:'She thinks that he lied.',    w:{msubj:'She',  mverb:'thinks',  csubj:'he',    cverb:'lied'}},
+    {difficulty:'easy',  display:'We hope that rain falls.',    w:{msubj:'We',   mverb:'hope',    csubj:'rain',  cverb:'falls'}},
+    {difficulty:'easy',  display:'He says that she sings.',     w:{msubj:'He',   mverb:'says',    csubj:'she',   cverb:'sings'}},
+    {difficulty:'easy',  display:'She fears that ice melts.',   w:{msubj:'She',  mverb:'fears',   csubj:'ice',   cverb:'melts'}},
+    {difficulty:'easy',  display:'They know that dogs run.',    w:{msubj:'They', mverb:'know',    csubj:'dogs',  cverb:'run'}},
+    {difficulty:'easy',  display:'He feels that love wins.',    w:{msubj:'He',   mverb:'feels',   csubj:'love',  cverb:'wins'}},
+    {difficulty:'easy',  display:'We see that stars shine.',    w:{msubj:'We',   mverb:'see',     csubj:'stars', cverb:'shine'}},
+    {difficulty:'easy',  display:'She proved that birds fly.',  w:{msubj:'She',  mverb:'proved',  csubj:'birds', cverb:'fly'}},
+    {difficulty:'easy',  display:'He learned that math works.', w:{msubj:'He',   mverb:'learned', csubj:'math',  cverb:'works'}},
+    // MEDIUM — clause subject can also be a verb ("change", "doubt", "fear")
+    {difficulty:'medium',display:'She sensed that change approached.',w:{msubj:'She',  mverb:'sensed',   csubj:'change', cverb:'approached'},tip:'"change" = noun (clause subject), not a verb here. It performed "approached".'},
+    {difficulty:'medium',display:'He realized that greed corrupts.',  w:{msubj:'He',   mverb:'realized', csubj:'greed',  cverb:'corrupts'},   tip:'"greed" = noun (clause subject). "corrupts" = clause verb.'},
+    {difficulty:'medium',display:'They noticed that tension rose.',   w:{msubj:'They', mverb:'noticed',  csubj:'tension',cverb:'rose'},       tip:'"tension" = clause subject (what rose). "rose" = clause verb.'},
+    {difficulty:'medium',display:'We found that doubt lingered.',     w:{msubj:'We',   mverb:'found',    csubj:'doubt',  cverb:'lingered'},   tip:'"doubt" = noun subject of the clause. "lingered" = clause verb.'},
+    {difficulty:'medium',display:'She argued that logic prevails.',   w:{msubj:'She',  mverb:'argued',   csubj:'logic',  cverb:'prevails'},   tip:'"logic" = clause subject. "prevails" = clause verb.'},
+    // HARD — "It" as dummy subject; abstract nouns "power"/"fate" could be verbs
+    {difficulty:'hard',  display:'It appears that order collapsed.',    w:{msubj:'It',  mverb:'appears',   csubj:'order', cverb:'collapsed'}, tip:'"It" is the grammatical subject (dummy/expletive). Main verb = "appears".'},
+    {difficulty:'hard',  display:'She revealed that power corrupts.',   w:{msubj:'She', mverb:'revealed',  csubj:'power', cverb:'corrupts'},  tip:'"power" = noun (clause subject), not a verb. It is doing the "corrupting".'},
+    {difficulty:'hard',  display:'He insisted that fate determines.',   w:{msubj:'He',  mverb:'insisted',  csubj:'fate',  cverb:'determines'},tip:'"fate" = clause subject. "determines" = clause verb.'},
+  ],
+  // ══ LEVEL 11 · Adverb Clauses ═════════════════════════════════════════
+  // Medium trick: CLAUSE COMES FIRST (inverted from normal order students learn)
+  // Hard trick:   unusual sub-conj ("wherever", "as", "though"); both clauses look like main
+  11: [
+    // EASY — main clause first, subordinate clause second; familiar conjunctions
+    {difficulty:'easy',  display:'She smiled because she won.',    w:{msubj:'She',  mverb:'smiled',  sconj:'because',dsubj:'she',  dverb:'won'}},
+    {difficulty:'easy',  display:'He ran when she yelled.',        w:{msubj:'He',   mverb:'ran',     sconj:'when',   dsubj:'she',  dverb:'yelled'}},
+    {difficulty:'easy',  display:'They danced after they ate.',    w:{msubj:'They', mverb:'danced',  sconj:'after',  dsubj:'they', dverb:'ate'}},
+    {difficulty:'easy',  display:'She stopped because he called.', w:{msubj:'She',  mverb:'stopped', sconj:'because',dsubj:'he',   dverb:'called'}},
+    {difficulty:'easy',  display:'I laughed when she fell.',       w:{msubj:'I',    mverb:'laughed', sconj:'when',   dsubj:'she',  dverb:'fell'}},
+    {difficulty:'easy',  display:'He cried while she sang.',       w:{msubj:'He',   mverb:'cried',   sconj:'while',  dsubj:'she',  dverb:'sang'}},
+    {difficulty:'easy',  display:'They cheered after he scored.',  w:{msubj:'They', mverb:'cheered', sconj:'after',  dsubj:'he',   dverb:'scored'}},
+    {difficulty:'easy',  display:'She waited until he arrived.',   w:{msubj:'She',  mverb:'waited',  sconj:'until',  dsubj:'he',   dverb:'arrived'}},
+    {difficulty:'easy',  display:'He worked since she asked.',     w:{msubj:'He',   mverb:'worked',  sconj:'since',  dsubj:'she',  dverb:'asked'}},
+    {difficulty:'easy',  display:'We smile when she visits.',      w:{msubj:'We',   mverb:'smile',   sconj:'when',   dsubj:'she',  dverb:'visits'}},
+    // MEDIUM — CLAUSE FIRST (inverted): subordinate clause precedes main clause
+    {difficulty:'medium',display:'When pressure mounts, diamonds form.',  w:{msubj:'diamonds',mverb:'form',   sconj:'when',   dsubj:'pressure',dverb:'mounts'},  tip:'Clause comes FIRST. Main clause = "diamonds form." Sub. clause = "when pressure mounts."'},
+    {difficulty:'medium',display:'Unless roots grow, trees topple.',      w:{msubj:'trees',   mverb:'topple', sconj:'unless', dsubj:'roots',   dverb:'grow'},    tip:'Inverted order. Main = "trees topple." Sub = "unless roots grow."'},
+    {difficulty:'medium',display:'Before change occurs, resistance builds.',w:{msubj:'resistance',mverb:'builds',sconj:'before',dsubj:'change',dverb:'occurs'},  tip:'Main = "resistance builds." Sub = "before change occurs."'},
+    {difficulty:'medium',display:'After storms pass, growth begins.',      w:{msubj:'growth',  mverb:'begins', sconj:'after',  dsubj:'storms',  dverb:'pass'},    tip:'Main = "growth begins." Sub = "after storms pass." Note both subjects are abstract nouns.'},
+    {difficulty:'medium',display:'Since doubt crept in, progress stalled.',w:{msubj:'progress',mverb:'stalled',sconj:'since',  dsubj:'doubt',   dverb:'crept'},   tip:'Main = "progress stalled." Sub = "since doubt crept in."'},
+    // HARD — unusual subordinating conjunctions; abstract subjects on both levels
+    {difficulty:'hard',  display:'Wherever conflict spreads, peace suffers.',w:{msubj:'peace',    mverb:'suffers', sconj:'wherever',dsubj:'conflict',dverb:'spreads'}, tip:'"wherever" = subordinating conjunction. Main = "peace suffers."'},
+    {difficulty:'hard',  display:'As truth emerges, illusions collapse.',    w:{msubj:'illusions',mverb:'collapse',sconj:'as',      dsubj:'truth',   dverb:'emerges'}, tip:'"as" is a subordinating conjunction here. Main = "illusions collapse."'},
+    {difficulty:'hard',  display:'Though empires crumble, ideas endure.',    w:{msubj:'ideas',    mverb:'endure',  sconj:'though',  dsubj:'empires', dverb:'crumble'}, tip:'"though" = subordinating conjunction. Main = "ideas endure."'},
+  ],
+  // ══ LEVEL 12 · Verbals (Gerunds) ══════════════════════════════════════
+  // Medium trick: gerund looks exactly like a present participle or progressive verb
+  // Hard trick:   unusual linking verbs + gerund; predicate adj vs adverb confusion
+  12: [
+    // EASY — unmistakable gerunds with clear linking verbs
+    {difficulty:'easy',  display:'Swimming is fun.',        w:{ger:'Swimming',  lverb:'is',    pred:'fun'}},
+    {difficulty:'easy',  display:'Running is healthy.',     w:{ger:'Running',   lverb:'is',    pred:'healthy'}},
+    {difficulty:'easy',  display:'Singing feels joyful.',   w:{ger:'Singing',   lverb:'feels', pred:'joyful'}},
+    {difficulty:'easy',  display:'Reading seems relaxing.', w:{ger:'Reading',   lverb:'seems', pred:'relaxing'}},
+    {difficulty:'easy',  display:'Cooking smells good.',    w:{ger:'Cooking',   lverb:'smells',pred:'good'}},
+    {difficulty:'easy',  display:'Dancing feels exciting.', w:{ger:'Dancing',   lverb:'feels', pred:'exciting'}},
+    {difficulty:'easy',  display:'Drawing seems peaceful.', w:{ger:'Drawing',   lverb:'seems', pred:'peaceful'}},
+    {difficulty:'easy',  display:'Hiking feels amazing.',   w:{ger:'Hiking',    lverb:'feels', pred:'amazing'}},
+    {difficulty:'easy',  display:'Writing is creative.',    w:{ger:'Writing',   lverb:'is',    pred:'creative'}},
+    {difficulty:'easy',  display:'Sleeping feels restful.', w:{ger:'Sleeping',  lverb:'feels', pred:'restful'}},
+    // MEDIUM — gerund looks like a present participle or action verb form
+    {difficulty:'medium',display:'Compromising feels unavoidable.',w:{ger:'Compromising',lverb:'feels',  pred:'unavoidable'},tip:'"Compromising" is a gerund (subject), not "she is compromising." Place it on the pedestal.'},
+    {difficulty:'medium',display:'Accepting seems wise.',          w:{ger:'Accepting',   lverb:'seems',  pred:'wise'},       tip:'"Accepting" = gerund subject. Not a participle — it\'s the noun subject here.'},
+    {difficulty:'medium',display:'Questioning remains crucial.',   w:{ger:'Questioning', lverb:'remains',pred:'crucial'},    tip:'"Questioning" = gerund. "remains" is the linking verb (= stays/is still).'},
+    {difficulty:'medium',display:'Adapting proves necessary.',     w:{ger:'Adapting',    lverb:'proves', pred:'necessary'},  tip:'"Adapting" = gerund subject. "proves" = linking verb (= turns out to be).'},
+    {difficulty:'medium',display:'Reflecting appears healing.',    w:{ger:'Reflecting',  lverb:'appears',pred:'healing'},    tip:'"Reflecting" = gerund subject. "healing" = pred. adj. (not a gerund here).'},
+    // HARD — unusual linking verbs ("proves", "stays", "holds") + long gerunds
+    {difficulty:'hard',  display:'Conceding proves honorable.',    w:{ger:'Conceding',   lverb:'proves', pred:'honorable'},  tip:'"proves" = linking verb (= is found to be). Don\'t mistake it for an action verb.'},
+    {difficulty:'hard',  display:'Reconciling stays productive.',  w:{ger:'Reconciling', lverb:'stays',  pred:'productive'}, tip:'"stays" = linking verb (= remains). "Reconciling" is the gerund subject on the pedestal.'},
+    {difficulty:'hard',  display:'Hypothesizing holds valuable.',  w:{ger:'Hypothesizing',lverb:'holds', pred:'valuable'},   tip:'"holds" = linking verb (= remains/proves). "Hypothesizing" = long gerund subject.'},
+  ],
+};
+
+// ═══════════════════════════════════════════════════════════════════════
+// LEVEL CONFIGS  — svgFn(w) → SVG string, slotsFn(w) → [{role,word,svgId,hlId,tx,ty,fill,zone,desc}]
+// ═══════════════════════════════════════════════════════════════════════
+const CFG = {
+  1: {
+    title:'Build the Main Line', sub:'Subject + Verb',
+    instr:`Every sentence diagram starts with one horizontal baseline and one vertical divider.<br>
+      The <span class="sw">subject</span> (who/what) goes <b>left</b> of the divider.
+      The <span class="vw">verb</span> (action) goes <b>right</b>.`,
+    svgFn(){ return `
+      <text x="208" y="60" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">subject</text>
+      <text x="492" y="60" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">verb / predicate</text>
+      <rect id="hl0" x="68" y="97" width="276" height="62" rx="7" fill="rgba(41,128,185,.08)" stroke="rgba(41,128,185,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl1" x="356" y="97" width="276" height="62" rx="7" fill="rgba(192,57,43,.08)" stroke="rgba(192,57,43,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <line x1="68" y1="148" x2="632" y2="148" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="350" y1="118" x2="350" y2="157" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <text id="tw0" x="208" y="138" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#2980b9" opacity="0"></text>
+      <text id="tw1" x="492" y="138" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#c0392b" opacity="0"></text>
+      <circle cx="72" cy="216" r="5" fill="#2980b9"/>
+      <text x="82" y="220" font-family="sans-serif" font-size="11" fill="#7f8c8d">subject</text>
+      <circle cx="152" cy="216" r="5" fill="#c0392b"/>
+      <text x="162" y="220" font-family="sans-serif" font-size="11" fill="#7f8c8d">verb</text>
+      <line x1="260" y1="211" x2="300" y2="211" stroke="#2c3e50" stroke-width="2"/>
+      <line x1="280" y1="201" x2="280" y2="221" stroke="#2c3e50" stroke-width="2"/>
+      <text x="308" y="216" font-family="sans-serif" font-size="11" fill="#7f8c8d">= the main line</text>`;
+    },
+    slotsFn(w){ return [
+      {role:'subject',word:w.subject,svgId:'tw0',hlId:'hl0',tx:208,ty:138,fill:'#2980b9',
+       zone:'left:9.7%;top:37.3%;width:39.4%;height:23.8%',desc:'subject'},
+      {role:'verb',word:w.verb,svgId:'tw1',hlId:'hl1',tx:492,ty:138,fill:'#c0392b',
+       zone:'left:50.9%;top:37.3%;width:39.4%;height:23.8%',desc:'verb / predicate'},
+    ];}
+  },
+
+  2: {
+    title:'Add Modifiers', sub:'Adjectives + Adverbs',
+    instr:`<span class="aw">Adjectives</span> describe nouns — they hang on a diagonal below the noun.<br>
+      <span class="aw">Adverbs</span> describe verbs — they hang on a diagonal below the verb.`,
+    svgFn(){ return `
+      <text x="208" y="46" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">subject</text>
+      <text x="492" y="46" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">verb</text>
+      <text x="162" y="188" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#000000" font-style="italic">adjective</text>
+      <text x="448" y="188" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#000000" font-style="italic">adverb</text>
+      <rect id="hl0" x="68" y="82" width="276" height="48" rx="7" fill="rgba(41,128,185,.08)" stroke="rgba(41,128,185,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl1" x="356" y="82" width="276" height="48" rx="7" fill="rgba(192,57,43,.08)" stroke="rgba(192,57,43,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl2" x="112" y="148" width="106" height="72" rx="7" fill="rgba(142,68,173,.08)" stroke="rgba(142,68,173,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl3" x="398" y="148" width="106" height="72" rx="7" fill="rgba(142,68,173,.08)" stroke="rgba(142,68,173,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <line x1="68" y1="120" x2="632" y2="120" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="350" y1="90" x2="350" y2="129" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="208" y1="120" x2="165" y2="172" stroke="#2c3e50" stroke-width="2"/>
+      <line x1="140" y1="172" x2="190" y2="172" stroke="#2c3e50" stroke-width="2"/>
+      <line x1="492" y1="120" x2="449" y2="172" stroke="#2c3e50" stroke-width="2"/>
+      <line x1="424" y1="172" x2="474" y2="172" stroke="#2c3e50" stroke-width="2"/>
+      <text id="tw0" x="208" y="110" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#2980b9" opacity="0"></text>
+      <text id="tw1" x="492" y="110" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#c0392b" opacity="0"></text>
+      <text id="tw2" x="165" y="166" text-anchor="middle" font-family="Georgia,serif" font-size="17" fill="#8e44ad" opacity="0"></text>
+      <text id="tw3" x="449" y="166" text-anchor="middle" font-family="Georgia,serif" font-size="17" fill="#8e44ad" opacity="0"></text>
+      <circle cx="72" cy="220" r="4" fill="#2980b9"/>
+      <text x="80" y="224" font-family="sans-serif" font-size="10" fill="#7f8c8d">subject</text>
+      <circle cx="140" cy="220" r="4" fill="#c0392b"/>
+      <text x="148" y="224" font-family="sans-serif" font-size="10" fill="#7f8c8d">verb</text>
+      <circle cx="208" cy="220" r="4" fill="#8e44ad"/>
+      <text x="216" y="224" font-family="sans-serif" font-size="10" fill="#7f8c8d">adj / adv → diagonal below</text>`;
+    },
+    slotsFn(w){ return [
+      {role:'subj',  word:w.subj, svgId:'tw0',hlId:'hl0',tx:208,ty:110,fill:'#2980b9',
+       zone:'left:9.7%;top:31.5%;width:39.4%;height:18.5%',desc:'subject'},
+      {role:'verb',  word:w.verb, svgId:'tw1',hlId:'hl1',tx:492,ty:110,fill:'#c0392b',
+       zone:'left:50.9%;top:31.5%;width:39.4%;height:18.5%',desc:'verb'},
+      {role:'adj',   word:w.adj,  svgId:'tw2',hlId:'hl2',tx:165,ty:166,fill:'#8e44ad',
+       zone:'left:16%;top:56.9%;width:15.1%;height:27.7%',desc:'adjective (below subject)'},
+      {role:'adv',   word:w.adv,  svgId:'tw3',hlId:'hl3',tx:449,ty:166,fill:'#8e44ad',
+       zone:'left:56.9%;top:56.9%;width:15.1%;height:27.7%',desc:'adverb (below verb)'},
+    ];}
+  },
+
+  3: {
+    title:'Prepositional Phrases', sub:'Preposition + Object',
+    instr:`A prepositional phrase hangs below the word it modifies.<br>
+      The <span class="pw">preposition</span> sits <b>on the diagonal</b>.
+      The <span class="ow">object</span> sits on the <b>horizontal stub</b> below it.`,
+    svgFn(){ return `
+      <text x="189" y="52" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">subject</text>
+      <text x="390" y="52" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">verb</text>
+      <text x="406" y="132" font-family="Georgia,serif" font-size="11" fill="#000000" font-style="italic">prep</text>
+      <text x="453" y="183" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#000000" font-style="italic">object</text>
+      <rect id="hl0" x="68" y="68" width="230" height="54" rx="7" fill="rgba(41,128,185,.08)" stroke="rgba(41,128,185,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl1" x="308" y="68" width="154" height="54" rx="7" fill="rgba(192,57,43,.08)" stroke="rgba(192,57,43,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl2" x="360" y="112" width="90" height="72" rx="7" fill="rgba(211,84,0,.1)" stroke="rgba(211,84,0,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl3" x="368" y="157" width="188" height="54" rx="7" fill="rgba(22,160,133,.08)" stroke="rgba(22,160,133,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <line x1="68" y1="110" x2="632" y2="110" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="300" y1="80" x2="300" y2="119" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="430" y1="110" x2="388" y2="162" stroke="#2c3e50" stroke-width="2.5"/>
+      <line x1="388" y1="162" x2="524" y2="162" stroke="#2c3e50" stroke-width="2.5"/>
+      <text id="tw0" x="184" y="100" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#2980b9" opacity="0"></text>
+      <text id="tw1" x="390" y="100" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#c0392b" opacity="0"></text>
+      <text id="tw2" x="408" y="144" text-anchor="middle" font-family="Georgia,serif" font-size="17" fill="#d35400" opacity="0"></text>
+      <text id="tw3" x="456" y="154" text-anchor="middle" font-family="Georgia,serif" font-size="17" fill="#16a085" opacity="0"></text>
+      <circle cx="72" cy="216" r="4" fill="#2980b9"/>
+      <text x="80" y="220" font-family="sans-serif" font-size="10" fill="#7f8c8d">subject</text>
+      <circle cx="138" cy="216" r="4" fill="#c0392b"/>
+      <text x="146" y="220" font-family="sans-serif" font-size="10" fill="#7f8c8d">verb</text>
+      <circle cx="200" cy="216" r="4" fill="#d35400"/>
+      <text x="208" y="220" font-family="sans-serif" font-size="10" fill="#7f8c8d">prep (on diagonal)</text>
+      <circle cx="340" cy="216" r="4" fill="#16a085"/>
+      <text x="348" y="220" font-family="sans-serif" font-size="10" fill="#7f8c8d">obj (on stub)</text>`;
+    },
+    slotsFn(w){ return [
+      {role:'subj',word:w.subj,svgId:'tw0',hlId:'hl0',tx:184,ty:100,fill:'#2980b9',
+       zone:'left:9.7%;top:26.2%;width:32.9%;height:20.8%',desc:'subject'},
+      {role:'verb',word:w.verb,svgId:'tw1',hlId:'hl1',tx:390,ty:100,fill:'#c0392b',
+       zone:'left:44%;top:26.2%;width:22%;height:20.8%',desc:'verb'},
+      {role:'prep',word:w.prep,svgId:'tw2',hlId:'hl2',tx:408,ty:144,fill:'#d35400',
+       zone:'left:51.4%;top:43.1%;width:12.9%;height:27.7%',desc:'preposition (on diagonal)'},
+      {role:'obj', word:w.obj, svgId:'tw3',hlId:'hl3',tx:456,ty:154,fill:'#16a085',
+       zone:'left:52.6%;top:60.4%;width:26.9%;height:20.8%',desc:'object of preposition'},
+    ];}
+  },
+
+  4: {
+    title:'Coordinating Conjunctions', sub:'Compound Subjects & Verbs',
+    instr:`Coordinating conjunctions (<span class="cw">FANBOYS</span>) join equal parts.<br>
+      They sit on a <b>dashed line</b> between two parallel elements — both connect to a single verb or subject.`,
+    svgFn(s){
+      if(!s||s.s1!==undefined) return `
+        <text x="178" y="42" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">subject 1</text>
+        <text x="178" y="182" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">subject 2</text>
+        <text x="511" y="90" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">verb</text>
+        <rect id="hl0" x="68" y="54" width="222" height="46" rx="7" fill="rgba(41,128,185,.08)" stroke="rgba(41,128,185,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+        <rect id="hl1" x="282" y="95" width="62" height="72" rx="7" fill="rgba(39,174,96,.08)" stroke="rgba(39,174,96,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+        <rect id="hl2" x="68" y="150" width="222" height="46" rx="7" fill="rgba(41,128,185,.08)" stroke="rgba(41,128,185,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+        <rect id="hl3" x="398" y="90" width="230" height="46" rx="7" fill="rgba(192,57,43,.08)" stroke="rgba(192,57,43,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+        <line x1="68" y1="96" x2="290" y2="96" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="68" y1="164" x2="290" y2="164" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="290" y1="96" x2="330" y2="130" stroke="#2c3e50" stroke-width="2"/>
+        <line x1="290" y1="164" x2="330" y2="130" stroke="#2c3e50" stroke-width="2"/>
+        <line x1="330" y1="130" x2="632" y2="130" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="390" y1="100" x2="390" y2="138" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="290" y1="96" x2="290" y2="164" stroke="#7f8c8d" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <text id="tw0" x="178" y="86" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#2980b9" opacity="0"></text>
+        <text id="tw1" x="302" y="133" font-family="Georgia,serif" font-size="16" fill="#27ae60" opacity="0"></text>
+        <text id="tw2" x="178" y="154" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#2980b9" opacity="0"></text>
+        <text id="tw3" x="511" y="120" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#c0392b" opacity="0"></text>
+        <line x1="68" y1="216" x2="108" y2="216" stroke="#2980b9" stroke-width="2"/>
+        <text x="114" y="220" font-family="sans-serif" font-size="10" fill="#7f8c8d">subjects (parallel)</text>
+        <line x1="260" y1="211" x2="300" y2="211" stroke="#7f8c8d" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="306" y="215" font-family="sans-serif" font-size="10" fill="#7f8c8d">conjunction</text>
+        <circle cx="440" cy="212" r="4" fill="#c0392b"/>
+        <text x="448" y="216" font-family="sans-serif" font-size="10" fill="#7f8c8d">verb</text>`;
+      // compound verb
+      return `
+        <text x="168" y="90" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">subject</text>
+        <text x="480" y="42" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">verb 1</text>
+        <text x="480" y="184" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">verb 2</text>
+        <rect id="hl0" x="68" y="96" width="196" height="46" rx="7" fill="rgba(41,128,185,.08)" stroke="rgba(41,128,185,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+        <rect id="hl1" x="368" y="54" width="258" height="46" rx="7" fill="rgba(192,57,43,.08)" stroke="rgba(192,57,43,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+        <rect id="hl2" x="308" y="96" width="62" height="72" rx="7" fill="rgba(39,174,96,.08)" stroke="rgba(39,174,96,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+        <rect id="hl3" x="368" y="150" width="258" height="46" rx="7" fill="rgba(192,57,43,.08)" stroke="rgba(192,57,43,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+        <line x1="68" y1="130" x2="270" y2="130" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="270" y1="100" x2="270" y2="138" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="270" y1="130" x2="310" y2="96" stroke="#2c3e50" stroke-width="2"/>
+        <line x1="270" y1="130" x2="310" y2="164" stroke="#2c3e50" stroke-width="2"/>
+        <line x1="310" y1="96" x2="632" y2="96" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="310" y1="164" x2="632" y2="164" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="310" y1="96" x2="310" y2="164" stroke="#7f8c8d" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <text id="tw0" x="168" y="120" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#2980b9" opacity="0"></text>
+        <text id="tw1" x="480" y="86" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#c0392b" opacity="0"></text>
+        <text id="tw2" x="322" y="133" font-family="Georgia,serif" font-size="16" fill="#27ae60" opacity="0"></text>
+        <text id="tw3" x="480" y="154" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#c0392b" opacity="0"></text>
+        <line x1="68" y1="216" x2="108" y2="216" stroke="#2980b9" stroke-width="2"/>
+        <text x="114" y="220" font-family="sans-serif" font-size="10" fill="#7f8c8d">subject</text>
+        <line x1="200" y1="211" x2="240" y2="211" stroke="#7f8c8d" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="246" y="215" font-family="sans-serif" font-size="10" fill="#7f8c8d">conjunction</text>
+        <circle cx="380" cy="212" r="4" fill="#c0392b"/>
+        <text x="388" y="216" font-family="sans-serif" font-size="10" fill="#7f8c8d">verbs (parallel)</text>`;
+    },
+    slotsFn(w){
+      if(w.s1!==undefined){ // compound subject
+        return [
+          {role:'s1',  word:w.s1,  svgId:'tw0',hlId:'hl0',tx:178,ty:86, fill:'#2980b9',
+           zone:'left:9.7%;top:20.8%;width:31.7%;height:17.7%',desc:'subject 1'},
+          {role:'conj',word:w.conj,svgId:'tw1',hlId:'hl1',tx:302,ty:133,fill:'#27ae60',
+           zone:'left:40.3%;top:36.5%;width:8.9%;height:27.7%',desc:'conjunction'},
+          {role:'s2',  word:w.s2,  svgId:'tw2',hlId:'hl2',tx:178,ty:154,fill:'#2980b9',
+           zone:'left:9.7%;top:57.7%;width:31.7%;height:17.7%',desc:'subject 2'},
+          {role:'verb',word:w.verb,svgId:'tw3',hlId:'hl3',tx:511,ty:120,fill:'#c0392b',
+           zone:'left:56.9%;top:34.6%;width:32.9%;height:17.7%',desc:'verb'},
+        ];
+      } else { // compound verb
+        return [
+          {role:'subj',word:w.subj,svgId:'tw0',hlId:'hl0',tx:168,ty:120,fill:'#2980b9',
+           zone:'left:9.7%;top:36.9%;width:28%;height:17.7%',desc:'subject'},
+          {role:'v1',  word:w.v1,  svgId:'tw1',hlId:'hl1',tx:480,ty:86, fill:'#c0392b',
+           zone:'left:52.6%;top:20.8%;width:36.9%;height:17.7%',desc:'verb 1'},
+          {role:'conj',word:w.conj,svgId:'tw2',hlId:'hl2',tx:322,ty:133,fill:'#27ae60',
+           zone:'left:44%;top:36.9%;width:8.9%;height:27.7%',desc:'conjunction'},
+          {role:'v2',  word:w.v2,  svgId:'tw3',hlId:'hl3',tx:480,ty:154,fill:'#c0392b',
+           zone:'left:52.6%;top:57.7%;width:36.9%;height:17.7%',desc:'verb 2'},
+        ];
+      }
+    }
+  },
+
+  5: {
+    title:'Interjections', sub:'Words That Pop Out',
+    instr:`An <span class="iw">interjection</span> is <b>not connected</b> to the rest of the sentence grammatically.<br>
+      It floats <b>above</b> the main line on its own small baseline — no connecting lines.`,
+    svgFn(){ return `
+      <text x="125" y="34" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">interjection</text>
+      <text x="208" y="90" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">subject</text>
+      <text x="492" y="90" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">verb</text>
+      <rect id="hl0" x="68" y="40" width="122" height="52" rx="7" fill="rgba(243,156,18,.1)" stroke="rgba(243,156,18,.5)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl1" x="68" y="118" width="276" height="54" rx="7" fill="rgba(41,128,185,.08)" stroke="rgba(41,128,185,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl2" x="356" y="118" width="276" height="54" rx="7" fill="rgba(192,57,43,.08)" stroke="rgba(192,57,43,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <line x1="68" y1="72" x2="190" y2="72" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+      <line x1="68" y1="158" x2="632" y2="158" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="350" y1="128" x2="350" y2="167" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <text id="tw0" x="125" y="62" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#f39c12" opacity="0"></text>
+      <text id="tw1" x="208" y="148" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#2980b9" opacity="0"></text>
+      <text id="tw2" x="492" y="148" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#c0392b" opacity="0"></text>
+      <text x="68" y="220" font-family="sans-serif" font-size="10" fill="#7f8c8d">Interjection floats above — no connecting lines to the main diagram.</text>`;
+    },
+    slotsFn(w){ return [
+      {role:'intj',word:w.intj,svgId:'tw0',hlId:'hl0',tx:125,ty:62, fill:'#f39c12',
+       zone:'left:9.7%;top:15.4%;width:17.4%;height:20%',desc:'interjection'},
+      {role:'subj',word:w.subj,svgId:'tw1',hlId:'hl1',tx:208,ty:148,fill:'#2980b9',
+       zone:'left:9.7%;top:45.4%;width:39.4%;height:20.8%',desc:'subject'},
+      {role:'verb',word:w.verb,svgId:'tw2',hlId:'hl2',tx:492,ty:148,fill:'#c0392b',
+       zone:'left:50.9%;top:45.4%;width:39.4%;height:20.8%',desc:'verb'},
+    ];}
+  },
+
+  6: {
+    title:'Direct Objects', sub:'Subject + Verb + Direct Object',
+    instr:`A <span class="ow">direct object</span> receives the action of the verb — ask "<i>verb what?</i>" to find it.<br>
+      It follows the verb on the main line, separated by a short vertical that sits <b>on</b> the baseline (it does <b>not</b> cross below it).`,
+    svgFn(){ return `
+      <text x="174" y="60" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">subject</text>
+      <text x="360" y="60" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">verb</text>
+      <text x="541" y="60" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">direct object</text>
+      <rect id="hl0" x="68" y="97" width="210" height="62" rx="7" fill="rgba(41,128,185,.08)" stroke="rgba(41,128,185,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl1" x="278" y="97" width="174" height="62" rx="7" fill="rgba(192,57,43,.08)" stroke="rgba(192,57,43,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl2" x="452" y="97" width="180" height="62" rx="7" fill="rgba(22,160,133,.08)" stroke="rgba(22,160,133,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <line x1="68" y1="148" x2="632" y2="148" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="278" y1="118" x2="278" y2="157" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="452" y1="118" x2="452" y2="148" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <text id="tw0" x="174" y="138" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#2980b9" opacity="0"></text>
+      <text id="tw1" x="360" y="138" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#c0392b" opacity="0"></text>
+      <text id="tw2" x="541" y="138" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#16a085" opacity="0"></text>
+      <circle cx="72" cy="216" r="5" fill="#2980b9"/>
+      <text x="82" y="220" font-family="sans-serif" font-size="11" fill="#7f8c8d">subject</text>
+      <circle cx="158" cy="216" r="5" fill="#c0392b"/>
+      <text x="168" y="220" font-family="sans-serif" font-size="11" fill="#7f8c8d">verb</text>
+      <circle cx="244" cy="216" r="5" fill="#16a085"/>
+      <text x="254" y="220" font-family="sans-serif" font-size="11" fill="#7f8c8d">direct object</text>
+      <line x1="430" y1="211" x2="430" y2="221" stroke="#2c3e50" stroke-width="2"/>
+      <line x1="422" y1="216" x2="438" y2="216" stroke="#2c3e50" stroke-width="2"/>
+      <text x="446" y="220" font-family="sans-serif" font-size="11" fill="#7f8c8d">= short divider (on baseline)</text>`;
+    },
+    slotsFn(w){ return [
+      {role:'subj',word:w.subj,svgId:'tw0',hlId:'hl0',tx:174,ty:138,fill:'#2980b9',
+       zone:'left:9.7%;top:37.3%;width:30%;height:23.8%',desc:'subject'},
+      {role:'verb',word:w.verb,svgId:'tw1',hlId:'hl1',tx:360,ty:138,fill:'#c0392b',
+       zone:'left:39.7%;top:37.3%;width:24.9%;height:23.8%',desc:'verb'},
+      {role:'dobj',word:w.dobj,svgId:'tw2',hlId:'hl2',tx:541,ty:138,fill:'#16a085',
+       zone:'left:64.6%;top:37.3%;width:25.7%;height:23.8%',desc:'direct object'},
+    ];}
+  },
+
+  7: {
+    title:'Indirect Objects', sub:'Subject + Verb + IO + DO',
+    instr:`An <span class="ow">indirect object</span> tells <b>to whom</b> or <b>for whom</b> the action is done.<br>
+      It hangs <b>below the verb</b> on a diagonal, then sits on a horizontal stub — like a prep phrase but with no preposition shown.<br>
+      Tip: ask "<i>verb what?</i>" → direct object &nbsp;·&nbsp; "<i>verb to whom?</i>" → indirect object.`,
+    svgFn(){ return `
+      <text x="154" y="48" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">subject</text>
+      <text x="320" y="48" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">verb</text>
+      <text x="485" y="48" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">direct object</text>
+      <text x="350" y="218" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#000000" font-style="italic">indirect object</text>
+      <rect id="hl0" x="68" y="75" width="172" height="60" rx="7" fill="rgba(41,128,185,.08)" stroke="rgba(41,128,185,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl1" x="240" y="75" width="160" height="60" rx="7" fill="rgba(192,57,43,.08)" stroke="rgba(192,57,43,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl2" x="400" y="75" width="200" height="60" rx="7" fill="rgba(22,160,133,.08)" stroke="rgba(22,160,133,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl3" x="278" y="158" width="144" height="58" rx="7" fill="rgba(211,84,0,.1)" stroke="rgba(211,84,0,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <line x1="68" y1="125" x2="632" y2="125" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="240" y1="95" x2="240" y2="134" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="400" y1="95" x2="400" y2="125" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="320" y1="125" x2="297" y2="185" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+      <line x1="278" y1="185" x2="422" y2="185" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+      <text id="tw0" x="154" y="115" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#2980b9" opacity="0"></text>
+      <text id="tw1" x="320" y="115" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#c0392b" opacity="0"></text>
+      <text id="tw2" x="500" y="115" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#16a085" opacity="0"></text>
+      <text id="tw3" x="350" y="177" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#d35400" opacity="0"></text>
+      <circle cx="72" cy="232" r="4" fill="#2980b9"/>
+      <text x="80" y="236" font-family="sans-serif" font-size="10" fill="#7f8c8d">subject</text>
+      <circle cx="138" cy="232" r="4" fill="#c0392b"/>
+      <text x="146" y="236" font-family="sans-serif" font-size="10" fill="#7f8c8d">verb</text>
+      <circle cx="200" cy="232" r="4" fill="#16a085"/>
+      <text x="208" y="236" font-family="sans-serif" font-size="10" fill="#7f8c8d">direct obj</text>
+      <circle cx="292" cy="232" r="4" fill="#d35400"/>
+      <text x="300" y="236" font-family="sans-serif" font-size="10" fill="#7f8c8d">indirect obj (below verb)</text>`;
+    },
+    slotsFn(w){ return [
+      {role:'subj',word:w.subj,svgId:'tw0',hlId:'hl0',tx:154,ty:115,fill:'#2980b9',
+       zone:'left:9.7%;top:28.8%;width:24.6%;height:23.1%',desc:'subject'},
+      {role:'verb',word:w.verb,svgId:'tw1',hlId:'hl1',tx:320,ty:115,fill:'#c0392b',
+       zone:'left:34.3%;top:28.8%;width:22.9%;height:23.1%',desc:'verb'},
+      {role:'dobj',word:w.dobj,svgId:'tw2',hlId:'hl2',tx:500,ty:115,fill:'#16a085',
+       zone:'left:57.1%;top:28.8%;width:28.6%;height:23.1%',desc:'direct object'},
+      {role:'iobj',word:w.iobj,svgId:'tw3',hlId:'hl3',tx:350,ty:177,fill:'#d35400',
+       zone:'left:39.7%;top:60.8%;width:20.6%;height:22.3%',desc:'indirect object (below verb)'},
+    ];}
+  },
+
+  8: {
+    title:'Linking Verbs', sub:'Predicate Nouns & Adjectives',
+    instr:`A <span class="aw">predicate noun</span> or <span class="aw">predicate adjective</span> follows a <b>linking verb</b> and renames or describes the subject.<br>
+      It sits on the main line after the linking verb, separated by a <b>backward-slanting line (\\)</b> that leans back toward the subject.<br>
+      Common linking verbs: <i>is, are, was, seem, feel, look, taste, smell, appear, become.</i>`,
+    svgFn(){ return `
+      <text x="166" y="60" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">subject</text>
+      <text x="347" y="60" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">linking verb</text>
+      <text x="542" y="60" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">predicate noun / adj</text>
+      <rect id="hl0" x="68" y="97" width="196" height="60" rx="7" fill="rgba(41,128,185,.08)" stroke="rgba(41,128,185,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl1" x="264" y="97" width="166" height="60" rx="7" fill="rgba(192,57,43,.08)" stroke="rgba(192,57,43,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl2" x="452" y="97" width="180" height="60" rx="7" fill="rgba(142,68,173,.08)" stroke="rgba(142,68,173,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <line x1="68" y1="148" x2="632" y2="148" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="264" y1="118" x2="264" y2="157" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="452" y1="108" x2="432" y2="148" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <text id="tw0" x="166" y="138" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#2980b9" opacity="0"></text>
+      <text id="tw1" x="347" y="138" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#c0392b" opacity="0"></text>
+      <text id="tw2" x="542" y="138" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#8e44ad" opacity="0"></text>
+      <circle cx="72" cy="216" r="5" fill="#2980b9"/>
+      <text x="82" y="220" font-family="sans-serif" font-size="11" fill="#7f8c8d">subject</text>
+      <circle cx="160" cy="216" r="5" fill="#c0392b"/>
+      <text x="170" y="220" font-family="sans-serif" font-size="11" fill="#7f8c8d">linking verb</text>
+      <circle cx="270" cy="216" r="5" fill="#8e44ad"/>
+      <text x="280" y="220" font-family="sans-serif" font-size="11" fill="#7f8c8d">predicate noun/adj</text>
+      <line x1="476" y1="207" x2="456" y2="226" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+      <text x="484" y="220" font-family="sans-serif" font-size="11" fill="#7f8c8d">= back-slanting divider</text>`;
+    },
+    slotsFn(w){ return [
+      {role:'subj', word:w.subj,  svgId:'tw0',hlId:'hl0',tx:166,ty:138,fill:'#2980b9',
+       zone:'left:9.7%;top:37.3%;width:28%;height:23.1%',desc:'subject'},
+      {role:'lverb',word:w.lverb, svgId:'tw1',hlId:'hl1',tx:347,ty:138,fill:'#c0392b',
+       zone:'left:37.7%;top:37.3%;width:23.7%;height:23.1%',desc:'linking verb'},
+      {role:'pred', word:w.pred,  svgId:'tw2',hlId:'hl2',tx:542,ty:138,fill:'#8e44ad',
+       zone:'left:64.6%;top:37.3%;width:25.7%;height:23.1%',desc:'predicate noun or adjective'},
+    ];}
+  },
+
+  9: {
+    title:'Adjective Clauses', sub:'Relative Pronouns: who, which, that',
+    instr:`An <span class="cw">adjective clause</span> modifies a noun and is introduced by a <b>relative pronoun</b> (<i>who, which, that</i>).<br>
+      The clause gets its <b>own baseline below</b> the main diagram. A <b>dashed vertical</b> drops from the modified noun straight down to the relative pronoun.<br>
+      Ask: <i>"Which noun does the clause describe?"</i> — that noun sits directly <b>above</b> the relative pronoun.`,
+    svgFn(){ return `
+      <text x="164" y="52" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">main subject</text>
+      <text x="375" y="52" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">main verb</text>
+      <text x="164" y="140" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">relative pronoun</text>
+      <text x="352" y="140" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">clause verb</text>
+      <text x="68" y="150" font-family="sans-serif" font-size="9" fill="#000000" font-style="italic">↓ adjective clause</text>
+      <rect id="hl0" x="68" y="70" width="192" height="50" rx="7" fill="rgba(41,128,185,.08)" stroke="rgba(41,128,185,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl1" x="260" y="70" width="210" height="50" rx="7" fill="rgba(192,57,43,.08)" stroke="rgba(192,57,43,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl2" x="64" y="156" width="200" height="50" rx="7" fill="rgba(22,160,133,.08)" stroke="rgba(22,160,133,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl3" x="264" y="156" width="176" height="50" rx="7" fill="rgba(142,68,173,.08)" stroke="rgba(142,68,173,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <line x1="68" y1="100" x2="490" y2="100" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="260" y1="70" x2="260" y2="109" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="64" y1="186" x2="460" y2="186" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="264" y1="156" x2="264" y2="195" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="164" y1="102" x2="164" y2="184" stroke="#7f8c8d" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <text id="tw0" x="164" y="90" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#2980b9" opacity="0"></text>
+      <text id="tw1" x="375" y="90" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#c0392b" opacity="0"></text>
+      <text id="tw2" x="164" y="176" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#16a085" opacity="0"></text>
+      <text id="tw3" x="352" y="176" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#8e44ad" opacity="0"></text>
+      <circle cx="72" cy="228" r="4" fill="#2980b9"/>
+      <text x="80" y="232" font-family="sans-serif" font-size="10" fill="#7f8c8d">main subject</text>
+      <circle cx="168" cy="228" r="4" fill="#c0392b"/>
+      <text x="176" y="232" font-family="sans-serif" font-size="10" fill="#7f8c8d">main verb</text>
+      <circle cx="258" cy="228" r="4" fill="#16a085"/>
+      <text x="266" y="232" font-family="sans-serif" font-size="10" fill="#7f8c8d">rel. pronoun</text>
+      <circle cx="346" cy="228" r="4" fill="#8e44ad"/>
+      <text x="354" y="232" font-family="sans-serif" font-size="10" fill="#7f8c8d">clause verb</text>
+      <line x1="468" y1="224" x2="468" y2="236" stroke="#7f8c8d" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <text x="476" y="232" font-family="sans-serif" font-size="10" fill="#7f8c8d">= dashed connector</text>`;
+    },
+    slotsFn(w){ return [
+      {role:'msubj',word:w.msubj,svgId:'tw0',hlId:'hl0',tx:164,ty:90, fill:'#2980b9',
+       zone:'left:9.7%;top:26.9%;width:27.4%;height:19.2%',desc:'main subject (the noun the clause modifies)'},
+      {role:'mverb',word:w.mverb,svgId:'tw1',hlId:'hl1',tx:375,ty:90, fill:'#c0392b',
+       zone:'left:37.1%;top:26.9%;width:30%;height:19.2%',desc:'main verb'},
+      {role:'rpron',word:w.rpron,svgId:'tw2',hlId:'hl2',tx:164,ty:176,fill:'#16a085',
+       zone:'left:9.1%;top:60%;width:28.6%;height:19.2%',desc:'relative pronoun (on clause baseline)'},
+      {role:'cverb',word:w.cverb,svgId:'tw3',hlId:'hl3',tx:352,ty:176,fill:'#8e44ad',
+       zone:'left:37.7%;top:60%;width:25.1%;height:19.2%',desc:'clause verb'},
+    ];}
+  },
+
+  10: {
+    title:'Noun Clauses', sub:'Clause in a Noun Role (Direct Object)',
+    instr:`A <span class="pw">noun clause</span> fills a noun's role — here it acts as the <b>direct object</b>.<br>
+      The clause sits on its own baseline <b>above</b> the main diagram, connected by a vertical <b>pedestal</b> rising from where the object would be.<br>
+      The word <i>"that"</i> is written on the pedestal. Build both baselines — main below, clause above!`,
+    svgFn(){ return `
+      <text x="440" y="42" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">clause subject</text>
+      <text x="575" y="42" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">clause verb</text>
+      <text x="144" y="125" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">subject</text>
+      <text x="300" y="125" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">verb</text>
+      <text x="68" y="162" font-family="sans-serif" font-size="9" fill="#000000" font-style="italic">main clause</text>
+      <text x="378" y="82" font-family="sans-serif" font-size="9" fill="#000000" font-style="italic">noun clause (DO)</text>
+      <rect id="hl0" x="68" y="142" width="152" height="50" rx="7" fill="rgba(41,128,185,.08)" stroke="rgba(41,128,185,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl1" x="220" y="142" width="160" height="50" rx="7" fill="rgba(192,57,43,.08)" stroke="rgba(192,57,43,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl2" x="370" y="60" width="140" height="52" rx="7" fill="rgba(22,160,133,.08)" stroke="rgba(22,160,133,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl3" x="510" y="60" width="120" height="52" rx="7" fill="rgba(142,68,173,.08)" stroke="rgba(142,68,173,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <line x1="68" y1="172" x2="640" y2="172" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="220" y1="142" x2="220" y2="181" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="380" y1="142" x2="380" y2="172" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="370" y1="90" x2="640" y2="90" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="510" y1="60" x2="510" y2="99" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="460" y1="92" x2="460" y2="170" stroke="#2c3e50" stroke-width="2.2" stroke-linecap="round"/>
+      <text x="466" y="136" font-family="Georgia,serif" font-size="13" fill="#7f8c8d" font-style="italic">that</text>
+      <text id="tw0" x="144" y="162" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#2980b9" opacity="0"></text>
+      <text id="tw1" x="300" y="162" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#c0392b" opacity="0"></text>
+      <text id="tw2" x="440" y="80" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#16a085" opacity="0"></text>
+      <text id="tw3" x="575" y="80" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#8e44ad" opacity="0"></text>
+      <circle cx="72" cy="228" r="4" fill="#2980b9"/>
+      <text x="80" y="232" font-family="sans-serif" font-size="10" fill="#7f8c8d">main subject</text>
+      <circle cx="152" cy="228" r="4" fill="#c0392b"/>
+      <text x="160" y="232" font-family="sans-serif" font-size="10" fill="#7f8c8d">main verb</text>
+      <circle cx="230" cy="228" r="4" fill="#16a085"/>
+      <text x="238" y="232" font-family="sans-serif" font-size="10" fill="#7f8c8d">clause subj</text>
+      <circle cx="312" cy="228" r="4" fill="#8e44ad"/>
+      <text x="320" y="232" font-family="sans-serif" font-size="10" fill="#7f8c8d">clause verb</text>
+      <line x1="438" y1="222" x2="438" y2="236" stroke="#2c3e50" stroke-width="2"/>
+      <text x="446" y="232" font-family="sans-serif" font-size="10" fill="#7f8c8d">= pedestal (noun clause)</text>`;
+    },
+    slotsFn(w){ return [
+      {role:'msubj',word:w.msubj,svgId:'tw0',hlId:'hl0',tx:144,ty:162,fill:'#2980b9',
+       zone:'left:9.7%;top:54.6%;width:21.7%;height:19.2%',desc:'main subject'},
+      {role:'mverb',word:w.mverb,svgId:'tw1',hlId:'hl1',tx:300,ty:162,fill:'#c0392b',
+       zone:'left:31.4%;top:54.6%;width:22.9%;height:19.2%',desc:'main verb'},
+      {role:'csubj',word:w.csubj,svgId:'tw2',hlId:'hl2',tx:440,ty:80, fill:'#16a085',
+       zone:'left:52.9%;top:23.1%;width:20%;height:20%',desc:'clause subject (on pedestal baseline)'},
+      {role:'cverb',word:w.cverb,svgId:'tw3',hlId:'hl3',tx:575,ty:80, fill:'#8e44ad',
+       zone:'left:72.9%;top:23.1%;width:17.1%;height:20%',desc:'clause verb'},
+    ];}
+  },
+
+  11: {
+    title:'Adverb Clauses', sub:'Subordinating Conjunctions + Dashed Diagonal',
+    instr:`An <span class="cw">adverb clause</span> modifies the main verb and is introduced by a <b>subordinating conjunction</b> (<i>because, when, after, while, until, since…</i>).<br>
+      The clause gets its <b>own baseline below</b>. A <b>dashed diagonal</b> connects the main verb to the clause. The subordinating conjunction is written <b>on the dashed line</b> itself.<br>
+      Key difference from Level 9: the connector is <i>diagonal</i>, not vertical, and carries the conjunction word.`,
+    svgFn(){ return `
+      <text x="129" y="42" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">main subject</text>
+      <text x="345" y="42" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">main verb</text>
+      <text x="144" y="148" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">clause subject</text>
+      <text x="310" y="148" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">clause verb</text>
+      <text x="68" y="204" font-family="sans-serif" font-size="9" fill="#000000" font-style="italic">↑ adverb clause</text>
+      <rect id="hl0" x="68" y="50" width="122" height="50" rx="7" fill="rgba(41,128,185,.08)" stroke="rgba(41,128,185,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl1" x="190" y="50" width="310" height="50" rx="7" fill="rgba(192,57,43,.08)" stroke="rgba(192,57,43,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl2" x="155" y="100" width="130" height="55" rx="7" fill="rgba(39,174,96,.08)" stroke="rgba(39,174,96,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl3" x="68" y="158" width="152" height="52" rx="7" fill="rgba(22,160,133,.08)" stroke="rgba(22,160,133,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl4" x="220" y="158" width="180" height="52" rx="7" fill="rgba(142,68,173,.08)" stroke="rgba(142,68,173,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <line x1="68" y1="80" x2="520" y2="80" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="190" y1="50" x2="190" y2="89" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="68" y1="192" x2="420" y2="192" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="220" y1="162" x2="220" y2="201" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="345" y1="82" x2="90" y2="190" stroke="#7f8c8d" stroke-width="1.8" stroke-dasharray="5,4"/>
+      <text id="tw0" x="129" y="70" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#2980b9" opacity="0"></text>
+      <text id="tw1" x="345" y="70" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#c0392b" opacity="0"></text>
+      <text id="tw2" x="214" y="130" text-anchor="middle" font-family="Georgia,serif" font-size="16" fill="#27ae60" opacity="0"></text>
+      <text id="tw3" x="144" y="182" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#16a085" opacity="0"></text>
+      <text id="tw4" x="310" y="182" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#8e44ad" opacity="0"></text>
+      <circle cx="72" cy="232" r="4" fill="#2980b9"/>
+      <text x="80" y="236" font-family="sans-serif" font-size="10" fill="#7f8c8d">main subj</text>
+      <circle cx="140" cy="232" r="4" fill="#c0392b"/>
+      <text x="148" y="236" font-family="sans-serif" font-size="10" fill="#7f8c8d">main verb</text>
+      <circle cx="208" cy="232" r="4" fill="#27ae60"/>
+      <text x="216" y="236" font-family="sans-serif" font-size="10" fill="#7f8c8d">sub.conj (on diag.)</text>
+      <circle cx="330" cy="232" r="4" fill="#16a085"/>
+      <text x="338" y="236" font-family="sans-serif" font-size="10" fill="#7f8c8d">cls.subj</text>
+      <circle cx="388" cy="232" r="4" fill="#8e44ad"/>
+      <text x="396" y="236" font-family="sans-serif" font-size="10" fill="#7f8c8d">cls.verb</text>
+      <line x1="448" y1="228" x2="460" y2="240" stroke="#7f8c8d" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <text x="466" y="236" font-family="sans-serif" font-size="10" fill="#7f8c8d">= dashed diag.</text>`;
+    },
+    slotsFn(w){ return [
+      {role:'msubj',word:w.msubj,svgId:'tw0',hlId:'hl0',tx:129,ty:70, fill:'#2980b9',
+       zone:'left:9.7%;top:19.2%;width:17.4%;height:19.2%',desc:'main subject'},
+      {role:'mverb',word:w.mverb,svgId:'tw1',hlId:'hl1',tx:345,ty:70, fill:'#c0392b',
+       zone:'left:27.1%;top:19.2%;width:44.3%;height:19.2%',desc:'main verb'},
+      {role:'sconj',word:w.sconj,svgId:'tw2',hlId:'hl2',tx:214,ty:130,fill:'#27ae60',
+       zone:'left:22.1%;top:38.5%;width:18.6%;height:21.2%',desc:'subordinating conjunction (on the dashed diagonal)'},
+      {role:'dsubj',word:w.dsubj,svgId:'tw3',hlId:'hl3',tx:144,ty:182,fill:'#16a085',
+       zone:'left:9.7%;top:60.8%;width:21.7%;height:20%',desc:'clause subject'},
+      {role:'dverb',word:w.dverb,svgId:'tw4',hlId:'hl4',tx:310,ty:182,fill:'#8e44ad',
+       zone:'left:31.4%;top:60.8%;width:25.7%;height:20%',desc:'clause verb'},
+    ];}
+  },
+
+  12: {
+    title:'Verbals — Gerunds', sub:'Gerund as Subject (Pedestal)',
+    instr:`A <span class="pw">gerund</span> is a verb ending in <b>-ing</b> that acts as a <b>noun</b>.<br>
+      When a gerund is the <b>subject</b>, it sits on a <b>pedestal</b> — a vertical line rising from the subject slot on the main baseline. The gerund word sits on a small <b>mini-baseline</b> at the top.<br>
+      The main clause below uses a <b>linking verb</b> and <b>predicate adjective</b> — separated by the backward-slanting line (\\) from Level 8.`,
+    svgFn(){ return `
+      <text x="144" y="52" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">gerund (subject)</text>
+      <text x="347" y="118" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">linking verb</text>
+      <text x="525" y="118" text-anchor="middle" font-family="Georgia,serif" font-size="12" fill="#000000" font-style="italic">pred. adj / noun</text>
+      <rect id="hl0" x="68" y="66" width="152" height="52" rx="7" fill="rgba(211,84,0,.1)" stroke="rgba(211,84,0,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl1" x="264" y="136" width="166" height="54" rx="7" fill="rgba(192,57,43,.08)" stroke="rgba(192,57,43,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <rect id="hl2" x="430" y="136" width="190" height="54" rx="7" fill="rgba(142,68,173,.08)" stroke="rgba(142,68,173,.4)" stroke-width="1.5" stroke-dasharray="6,3" opacity="0"/>
+      <line x1="68" y1="98" x2="220" y2="98" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+      <line x1="144" y1="100" x2="144" y2="168" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+      <line x1="68" y1="170" x2="632" y2="170" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="264" y1="140" x2="264" y2="179" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="430" y1="136" x2="410" y2="170" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <text id="tw0" x="144" y="88" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#d35400" opacity="0"></text>
+      <text id="tw1" x="347" y="160" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#c0392b" opacity="0"></text>
+      <text id="tw2" x="525" y="160" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#8e44ad" opacity="0"></text>
+      <circle cx="72" cy="216" r="5" fill="#d35400"/>
+      <text x="82" y="220" font-family="sans-serif" font-size="11" fill="#7f8c8d">gerund (on pedestal)</text>
+      <circle cx="234" cy="216" r="5" fill="#c0392b"/>
+      <text x="244" y="220" font-family="sans-serif" font-size="11" fill="#7f8c8d">linking verb</text>
+      <circle cx="344" cy="216" r="5" fill="#8e44ad"/>
+      <text x="354" y="220" font-family="sans-serif" font-size="11" fill="#7f8c8d">pred. adj/noun</text>
+      <line x1="512" y1="207" x2="492" y2="225" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+      <text x="520" y="220" font-family="sans-serif" font-size="11" fill="#7f8c8d">= back-slash</text>`;
+    },
+    slotsFn(w){ return [
+      {role:'ger',  word:w.ger,   svgId:'tw0',hlId:'hl0',tx:144,ty:88, fill:'#d35400',
+       zone:'left:9.7%;top:25.4%;width:21.7%;height:20%',desc:'gerund (on the mini-baseline / pedestal)'},
+      {role:'lverb',word:w.lverb, svgId:'tw1',hlId:'hl1',tx:347,ty:160,fill:'#c0392b',
+       zone:'left:37.7%;top:52.3%;width:23.7%;height:20.8%',desc:'linking verb'},
+      {role:'pred', word:w.pred,  svgId:'tw2',hlId:'hl2',tx:525,ty:160,fill:'#8e44ad',
+       zone:'left:61.4%;top:52.3%;width:27.1%;height:20.8%',desc:'predicate adjective or noun'},
+    ];}
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════
+const S = {
+  lv:1, idx:0, score:0, streak:0, done:0,
+  slots:[], placed:{},
+  hintThis:false, noHints:true, hintTotal:0,
+  selected:null, busy:false,
+  badges:new Set(), levelDone:new Set(),
+  history:{},   // per-level sentence index history for rotation
+  filterDiff: new Set(['easy','medium','hard']),
+  filtIdx: 0,   // index within the currently-filtered sentence list
+};
+
+// Returns filtered sentence list for current level
+function getFiltered(){
+  return DATA[S.lv].filter(s=>S.filterDiff.has(s.difficulty||'easy'));
+}
+
+// Toggle a difficulty tier on/off; always keep at least one active
+function toggleDiff(d){
+  const wasActive = S.filterDiff.has(d);
+  if(wasActive && S.filterDiff.size===1) return; // never allow empty filter
+  wasActive ? S.filterDiff.delete(d) : S.filterDiff.add(d);
+  ['easy','medium','hard'].forEach(x=>{
+    const btn = document.getElementById('dfbtn-'+x);
+    if(btn){
+      btn.classList.toggle('dfactive', S.filterDiff.has(x));
+      btn.setAttribute('aria-pressed', S.filterDiff.has(x));
+    }
+  });
+  S.filtIdx = 0;
+  loadSentence();
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════════════════════
+window.onload = () => { for(let i=1;i<=12;i++) S.history[i]=0; switchLevel(1); };
+
+function switchLevel(n){
+  S.lv=n; S.filtIdx=0;
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const lv=i+1;
+    t.classList.remove('active');
+    if(lv===n) t.classList.add('active');
+    t.setAttribute('aria-selected', lv===n ? 'true':'false');
+  });
+  document.getElementById('donePill').querySelector('span').id='don';
+  loadSentence();
+}
+
+function loadSentence(){
+  const filtered = getFiltered();
+  if(!filtered.length){
+    document.getElementById('sbox').innerHTML=
+      `<em>No sentences match the selected difficulty filters.</em><small>Toggle at least one filter above.</small>`;
+    document.getElementById('wbank').innerHTML='';
+    document.getElementById('dsvg').innerHTML='';
+    document.getElementById('dinner').querySelectorAll('.zone').forEach(z=>z.remove());
+    buildDots();
+    return;
+  }
+  S.filtIdx = S.filtIdx % filtered.length;
+  const sent = filtered[S.filtIdx];
+  const cfg  = CFG[S.lv];
+
+  S.placed={}; S.hintThis=false; S.selected=null; S.busy=false;
+
+  // instruction
+  document.getElementById('instr').innerHTML = cfg.instr;
+
+  // sentence display with difficulty badge
+  const diff = sent.difficulty || 'easy';
+  const diffEmoji = {easy:'🟢', medium:'🟡', hard:'🔴'};
+  const diffLabel = {easy:'Easy', medium:'Medium', hard:'Hard'};
+  document.getElementById('sbox').innerHTML =
+    `<em>"${sent.display}"</em><span class="diff-badge diff-${diff}">${diffEmoji[diff]} ${diffLabel[diff]}</span><small>Drag or click each word onto the correct part of the diagram</small>`;
+
+  // SVG
+  const svgEl = document.getElementById('dsvg');
+  svgEl.innerHTML = cfg.svgFn(sent.w);
+
+  // slots
+  S.slots = cfg.slotsFn(sent.w);
+  S.slots.forEach(sl => S.placed[sl.role]=false);
+
+  // zones
+  const dinner = document.getElementById('dinner');
+  dinner.querySelectorAll('.zone').forEach(z=>z.remove());
+  S.slots.forEach((sl,i)=>{
+    const z = document.createElement('div');
+    z.className='zone'; z.id='zone'+i;
+    z.style.cssText = sl.zone;
+    z.setAttribute('role','button');
+    z.setAttribute('aria-label',`Drop zone: ${sl.desc}`);
+    z.addEventListener('click',  ()=>zoneClick(i));
+    z.addEventListener('dragover', e=>{e.preventDefault(); if(!S.placed[sl.role]) hlZone(sl.hlId,true,z);});
+    z.addEventListener('dragleave',()=>hlZone(sl.hlId,false,z));
+    z.addEventListener('drop',   e=>{ e.preventDefault(); hlZone(sl.hlId,false,z); dropOnZone(e,i); });
+    dinner.appendChild(z);
+  });
+
+  // word bank
+  const bank = document.getElementById('wbank');
+  bank.innerHTML='';
+  const shuffled = [...S.slots].sort(()=>Math.random()-.5);
+  shuffled.forEach(sl=>{
+    const c=document.createElement('div');
+    c.className='chip'; c.textContent=sl.word;
+    c.id='chip-'+sl.role; c.dataset.role=sl.role; c.draggable=true;
+    c.setAttribute('tabindex','0');
+    c.setAttribute('aria-label',`Word: ${sl.word}`);
+    c.addEventListener('click',()=>chipClick(sl.role));
+    c.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' ') chipClick(sl.role); });
+    c.addEventListener('dragstart',e=>{
+      S.selected=sl.role; c.classList.add('drag');
+      e.dataTransfer.effectAllowed='move';
+      e.dataTransfer.setData('text/plain',sl.role);
+    });
+    c.addEventListener('dragend',()=>{ c.classList.remove('drag'); clearHls(); });
+    bank.appendChild(c);
+  });
+
+  // UI reset
+  fb('','');
+  document.getElementById('bNext').disabled=true;
+  const _filt = getFiltered();
+  document.getElementById('cnum').textContent = S.filtIdx+1;
+  document.getElementById('ctot').textContent = _filt.length;
+  buildDots();
+  updateBar();
+}
+
+function buildDots(){
+  const el=document.getElementById('dots'); el.innerHTML='';
+  const filt=getFiltered();
+  filt.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dot'+(i<S.filtIdx?' done':i===S.filtIdx?' cur':'');
+    d.setAttribute('role','listitem');
+    d.setAttribute('aria-label', i===S.filtIdx?'current':i<S.filtIdx?'complete':'upcoming');
+    el.appendChild(d);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// INTERACTION
+// ═══════════════════════════════════════════════════════════════════════
+function chipClick(role){
+  if(S.placed[role]) return;
+  if(S.selected===role){
+    S.selected=null;
+    document.getElementById('chip-'+role)?.classList.remove('sel');
+  } else {
+    S.slots.forEach(sl=>document.getElementById('chip-'+sl.role)?.classList.remove('sel'));
+    S.selected=role;
+    document.getElementById('chip-'+role)?.classList.add('sel');
+    fb('Now click the correct part of the diagram.','hint');
+  }
+}
+
+function zoneClick(i){
+  if(!S.selected) return;
+  const sl=S.slots[i];
+  if(S.selected===sl.role) place(S.selected);
+  else { shakeZone(i); fb(`Hmm — that word goes somewhere else. Try the <b>${S.slots.find(s=>s.role===S.selected)?.desc}</b> spot.`,'err'); }
+}
+
+function dropOnZone(e,i){
+  const role=e.dataTransfer.getData('text/plain')||S.selected;
+  if(!role) return;
+  const sl=S.slots[i];
+  S.selected=role;
+  if(role===sl.role) place(role);
+  else { shakeZone(i); fb('Not quite — that word belongs elsewhere.','err'); }
+}
+
+function hlZone(hlId,on,zEl){
+  const el=document.getElementById(hlId);
+  if(el) el.setAttribute('opacity',on?1:0);
+  if(zEl) zEl.classList.toggle('over',on);
+}
+
+function clearHls(){
+  S.slots.forEach(sl=>{
+    const el=document.getElementById(sl.hlId);
+    if(el) el.setAttribute('opacity',0);
+    const z=document.getElementById('zone'+S.slots.indexOf(sl));
+    if(z) z.classList.remove('over');
+  });
+}
+
+function shakeZone(i){
+  const z=document.getElementById('zone'+i);
+  if(!z) return;
+  z.classList.remove('shake'); void z.offsetWidth; z.classList.add('shake');
+  setTimeout(()=>z.classList.remove('shake'),400);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PLACE WORD
+// ═══════════════════════════════════════════════════════════════════════
+function place(role){
+  if(S.placed[role]||S.busy) return;
+  const sl=S.slots.find(s=>s.role===role);
+  if(!sl) return;
+  S.placed[role]=true;
+  S.selected=null;
+  S.slots.forEach(s=>document.getElementById('chip-'+s.role)?.classList.remove('sel'));
+  document.getElementById('chip-'+role)?.classList.add('gone');
+
+  const el=document.getElementById(sl.svgId);
+  if(el){ el.textContent=sl.word; fadeIn(sl.svgId,350); }
+
+  addScore(10); scorePop('+10');
+
+  const msgs = {
+    subject:['Subject on the left — perfect!','Exactly! The subject tells us who or what.','Yes — subjects belong left of the divider.'],
+    verb:['Verb on the right — great!','Right! The verb shows the action.','The predicate goes right of the divider!'],
+    subj:['Subject placed correctly!','Exactly — the subject goes on the left.','Perfect subject placement!'],
+    adj:['Adjective below the noun — great!','Adjectives hang on a diagonal below what they describe.','Yes — adjectives describe nouns!'],
+    adv:['Adverb below the verb — nice!','Adverbs modify verbs and hang below them.','Yes — adverbs describe how the action happens!'],
+    prep:['Preposition on the diagonal — correct!','The preposition sits on the slanted line.','Right — prepositions lead the phrase!'],
+    obj:['Object on the stub — perfect!','The object of the preposition sits on the horizontal.','Exactly — the object completes the phrase!'],
+    s1:['First subject placed!','Great — subjects share a parallel structure.','Yes, first subject goes on the upper line!'],
+    s2:['Second subject placed!','Perfect parallel structure!','Yes, second subject on the lower line!'],
+    conj:['Conjunction on the dashed line — yes!','FANBOYS connect equal parts on the dashed bridge!','The conjunction joins the two parallel elements!'],
+    v1:['First verb placed!','The first action goes on the upper line.','Yes — verb 1 in the compound predicate!'],
+    v2:['Second verb placed!','The second action goes on the lower line.','Yes — verb 2 completes the compound predicate!'],
+    intj:['Interjection above — floating freely!','Interjections stand apart from the sentence!','Yes — no connecting lines for interjections!'],
+    dobj:['Direct object placed — perfect!','The direct object receives the action of the verb!','Yes — that\'s what gets acted upon!'],
+    iobj:['Indirect object below the verb — excellent!','Right — the indirect object says to whom!','Yes — it hangs below the verb on its own horizontal!'],
+    lverb:['Linking verb placed — great!','The linking verb connects subject to predicate!','Yes — linking verbs rename or describe the subject!'],
+    pred:['Predicate placed after the back-slash — perfect!','The predicate renames or describes the subject!','Yes — right after the backward-slanting line!'],
+    msubj:['Main clause subject placed — perfect!','Yes — that\'s the noun the adjective clause modifies!','Right — main subject goes on the upper baseline!'],
+    mverb:['Main verb placed — great!','The main clause predicate is in!','Yes — the main verb goes right of the divider!'],
+    rpron:['Relative pronoun on the clause baseline — yes!','who, which, or that — the clause connector is placed!','The relative pronoun links the clause to the noun above!'],
+    cverb:['Clause verb placed — excellent!','The dependent clause action is in!','Yes — the clause verb completes the lower baseline!'],
+    csubj:['Clause subject on the pedestal baseline — perfect!','The noun clause subject is placed!','Yes — it goes on the floating clause baseline above!'],
+    sconj:['Subordinating conjunction on the diagonal — yes!','The connector is written on the dashed line — perfect!','Yes — sub.conj. goes right on the dashed diagonal!'],
+    dsubj:['Clause subject on the lower baseline — perfect!','The adverb clause subject is in!','Yes — clause subject goes on the dependent baseline!'],
+    dverb:['Clause verb on the lower baseline — excellent!','The adverb clause action is placed!','Yes — the clause verb completes the dependent baseline!'],
+    ger:['Gerund on the mini-baseline — perfect!','The gerund is on its pedestal — acting as subject!','Yes — gerunds as subjects ride the pedestal above the main line!'],
+  };
+  const bank = msgs[role]||['Correct!','Right!','Well done!'];
+  fb(bank[Math.floor(Math.random()*bank.length)],'ok');
+
+  if(Object.values(S.placed).every(v=>v)) completeSentence();
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// COMPLETE
+// ═══════════════════════════════════════════════════════════════════════
+function completeSentence(){
+  S.busy=true; S.done++; S.streak++;
+  // advance filtIdx; wraps around filtered set (not full DATA array)
+  S.filtIdx=(S.filtIdx+1)%Math.max(1,getFiltered().length);
+  addScore(S.hintThis?25:50);
+  scorePop(S.hintThis?'+25':'+ 50 ✨');
+  updateBar();
+  setTimeout(()=>{
+    fb("You're reading the map of that sentence like a pro! ⭐",'ok');
+    launchConfetti();
+    document.getElementById('bNext').disabled=false;
+    checkBadges();
+  },350);
+}
+
+function checkBadges(){
+  const lv=S.lv;
+  if(S.done>=10&&!S.badges.has('10')) {
+    S.badges.add('10');
+    setTimeout(()=>showAch('🌟','10 Diagrams!','You have built 10 sentence diagrams. You\'re a grammar architect!'),900);
+  } else if(S.streak>=5&&!S.badges.has('s5')){
+    S.badges.add('s5');
+    setTimeout(()=>showAch('🔥','5-Streak!','Five correct in a row — you\'re on fire!'),900);
+  } else if(S.lv===1&&S.done>=1&&!S.badges.has('bb')){
+    S.badges.add('bb');
+    setTimeout(()=>showAch('🏗️','Baseline Builder!','You built your first complete main line!'),900);
+  } else if(S.lv>=9&&!S.badges.has('cc')){
+    S.badges.add('cc');
+    setTimeout(()=>showAch('⚖️','Clause Commander!','Dependent clauses mastered — you\'re a true grammar architect!'),900);
+  } else if(S.lv>=12&&!S.badges.has('ga')){
+    S.badges.add('ga');
+    setTimeout(()=>showAch('🏆','Grammar Architect!','All 12 levels complete — you\'ve mastered the full Reed-Kellogg system!'),900);
+  }
+  if(S.noHints&&S.done%5===0&&!S.badges.has('nh'+S.done)){
+    S.badges.add('nh'+S.done);
+    setTimeout(()=>showAch('🎯','No Hints!',`${S.done} diagrams without a single hint — incredible!`),1800);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// CONTROLS
+// ═══════════════════════════════════════════════════════════════════════
+function doNext(){
+  S.filtIdx=(S.filtIdx+1)%Math.max(1,getFiltered().length);
+  loadSentence();
+}
+
+function doHint(){
+  S.hintThis=true; S.noHints=false; S.hintTotal++;
+  document.getElementById('htally').textContent='Hints: '+S.hintTotal;
+  const unplaced=S.slots.filter(sl=>!S.placed[sl.role]);
+  if(!unplaced.length){ fb('All words are placed!','ok'); return; }
+  // Show grammatical tip first (for medium/hard sentences), then highlight zone
+  const filt=getFiltered();
+  const sent=filt[S.filtIdx%Math.max(1,filt.length)];
+  if(sent && sent.tip){
+    fb(`💡 Grammar tip: ${sent.tip}`,'hint');
+  } else {
+    const sl=unplaced[0];
+    const hlEl=document.getElementById(sl.hlId);
+    if(hlEl){ hlEl.setAttribute('opacity',1); setTimeout(()=>hlEl.setAttribute('opacity',0),2200); }
+    fb(`Hint: "${sl.word}" is the <b>${sl.desc}</b> — drop it in the highlighted zone.`,'hint');
+    return;
+  }
+  // Also highlight the first unplaced zone
+  const sl=unplaced[0];
+  const hlEl=document.getElementById(sl.hlId);
+  if(hlEl){ hlEl.setAttribute('opacity',1); setTimeout(()=>hlEl.setAttribute('opacity',0),2200); }
+}
+
+function doShowMe(){
+  if(S.busy) return;
+  S.busy=true; S.hintThis=true; S.noHints=false;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.add('gone'));
+  fb('Watch the diagram build…','hint');
+  const unplaced=S.slots.filter(sl=>!S.placed[sl.role]);
+  unplaced.forEach((sl,i)=>{
+    setTimeout(()=>{
+      S.placed[sl.role]=true;
+      const el=document.getElementById(sl.svgId);
+      if(el){ el.textContent=sl.word; fadeIn(sl.svgId,400); }
+      fb(`"${sl.word}" → ${sl.desc}`,'hint');
+      if(i===unplaced.length-1) setTimeout(()=>{ S.busy=false; completeSentence(); },500);
+    }, 400+(i*900));
+  });
+  if(!unplaced.length){ S.busy=false; completeSentence(); }
+}
+
+function doReset(){
+  S.slots.forEach(sl=>{ S.placed[sl.role]=false; });
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('gone','sel','drag'));
+  S.selected=null; S.busy=false;
+  S.slots.forEach(sl=>{ const e=document.getElementById(sl.svgId); if(e){e.textContent='';e.setAttribute('opacity',0);} });
+  fb('','');
+  document.getElementById('bNext').disabled=true;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SCORE / UI
+// ═══════════════════════════════════════════════════════════════════════
+function addScore(n){ S.score+=n; updateBar(); }
+function updateBar(){
+  document.getElementById('pts').textContent=S.score;
+  document.getElementById('str').textContent=S.streak;
+  document.getElementById('don').textContent=S.done;
+}
+function scorePop(t){
+  const p=document.createElement('div');
+  p.className='pop'; p.textContent=t;
+  p.style.left=(window.innerWidth/2-40)+'px';
+  p.style.top=(window.innerHeight*.38)+'px';
+  document.body.appendChild(p);
+  setTimeout(()=>p.remove(),1000);
+}
+function fb(msg,cls){
+  const el=document.getElementById('fb');
+  el.innerHTML=msg; el.className='fb'+(cls?' '+cls:'');
+}
+function showAch(icon,name,desc){
+  document.getElementById('aIcon').textContent=icon;
+  document.getElementById('aName').textContent=name;
+  document.getElementById('aDesc').textContent=desc;
+  document.getElementById('achOverlay').hidden=false;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// CONFETTI
+// ═══════════════════════════════════════════════════════════════════════
+function launchConfetti(){
+  const c=document.getElementById('cnv');
+  const ctx=c.getContext('2d');
+  c.width=window.innerWidth; c.height=window.innerHeight;
+  const cols=['#667eea','#764ba2','#3498db','#e74c3c','#f39c12','#27ae60','#fd79a8'];
+  const pp=Array.from({length:60},()=>({
+    x:Math.random()*c.width,y:-10,
+    vx:(Math.random()-.5)*2.5,vy:Math.random()*3+2,
+    r:Math.random()*5+3,rot:0,rv:(Math.random()-.5)*.18,
+    col:cols[Math.floor(Math.random()*cols.length)]
+  }));
+  let f=0;
+  (function d(){
+    ctx.clearRect(0,0,c.width,c.height);
+    pp.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+      ctx.fillStyle=p.col;ctx.fillRect(-p.r,-p.r*.4,p.r*2,p.r*.8);ctx.restore();
+    });
+    if(++f<100) requestAnimationFrame(d);
+    else ctx.clearRect(0,0,c.width,c.height);
+  })();
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SVG HELPERS
+// ═══════════════════════════════════════════════════════════════════════
+function fadeIn(id,dur){
+  const el=document.getElementById(id);
+  if(!el) return;
+  const t0=performance.now();
+  (function s(now){
+    const t=Math.min((now-t0)/dur,1);
+    el.setAttribute('opacity',t);
+    if(t<1) requestAnimationFrame(s);
+  })(performance.now());
+}
+</script>
+</body>
+</html>
