@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Division Explorer — Elementary Math</title>
+<style>
+:root{
+  --orange:#f97316;--orange-d:#ea580c;--orange-lt:#fff7ed;--amber:#f59e0b;
+  --purple:#8b5cf6;--purple-lt:#f5f3ff;--teal:#14b8a6;--teal-lt:#f0fdfa;
+  --green:#22c55e;--green-lt:#f0fdf4;--red:#ef4444;--red-lt:#fef2f2;
+  --pink:#ec4899;--sky:#0ea5e9;--sky-lt:#f0f9ff;
+  --navy:#1e1b4b;--bg:#fffbeb;--surface:#fff;--text:#1e293b;
+  --muted:#64748b;--border:#e2e8f0;--r:14px;
+  --shadow:0 2px 12px rgba(0,0,0,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
+button{cursor:pointer;font-family:inherit;border:none;outline:none}
+button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+a{color:var(--orange);text-decoration:none}
+.skip{position:absolute;top:-60px;left:8px;background:var(--navy);color:#fff;
+  padding:8px 16px;border-radius:0 0 8px 8px;z-index:999;transition:.2s}
+.skip:focus{top:0}
+
+/* ── HEADER ── */
+.hdr{background:linear-gradient(135deg,#ea580c 0%,#f97316 45%,#f59e0b 100%);
+  color:#fff;padding:14px 20px;display:flex;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:90;
+  box-shadow:0 2px 12px rgba(234,88,12,.35)}
+.hdr-left{display:flex;align-items:center;gap:12px}
+.back-btn{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);
+  color:#fff;padding:6px 14px;border-radius:8px;font-size:.82rem;font-weight:700;
+  transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.back-btn:hover{background:rgba(255,255,255,.32)}
+.hdr-title{font-size:1.1rem;font-weight:800;letter-spacing:-.02em}
+.hdr-sub{font-size:.73rem;opacity:.8;font-weight:600}
+.hdr-stats{display:flex;gap:8px}
+.stat-chip{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.3);
+  padding:5px 12px;border-radius:100px;font-size:.85rem;font-weight:700;
+  display:flex;align-items:center;gap:4px;min-width:60px;justify-content:center;
+  transition:transform .2s}
+.stat-chip.bump{transform:scale(1.2)}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);
+  background:var(--navy);color:#fff;padding:12px 22px;border-radius:100px;
+  font-size:.9rem;font-weight:700;z-index:200;opacity:0;pointer-events:none;
+  transition:all .35s ease;white-space:nowrap;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── CONFETTI ── */
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:199;display:none}
+
+/* ── VIEWS ── */
+.view{display:none;animation:fadeUp .3s ease-out}
+.view.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.container{max-width:860px;margin:0 auto;padding:20px 16px 60px}
+
+/* ── DASHBOARD ── */
+.hero-dash{background:linear-gradient(135deg,#fff7ed 0%,#ffedd5 100%);
+  border:2px solid #fed7aa;border-radius:20px;padding:28px 24px;margin-bottom:24px;
+  text-align:center;position:relative;overflow:hidden}
+.hero-dash::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 10% 110%,rgba(251,146,60,.2) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 50% at 90% -10%,rgba(139,92,246,.15) 0%,transparent 55%);
+  pointer-events:none}
+.hero-emoji{font-size:3.5rem;line-height:1;margin-bottom:10px;display:block;
+  animation:bounce 2s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.hero-dash h1{font-size:clamp(1.5rem,5vw,2.2rem);font-weight:900;
+  letter-spacing:-.03em;margin-bottom:8px;color:var(--navy)}
+.hero-dash p{color:var(--muted);font-size:.92rem;max-width:400px;margin:0 auto 20px}
+.hero-btns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.hero-btn{padding:12px 28px;border-radius:12px;font-size:.95rem;font-weight:800;
+  transition:transform .18s,box-shadow .18s;border:2px solid transparent}
+.hero-btn:active{transform:scale(.97)}
+.btn-learn{background:var(--purple);color:#fff;border-color:#7c3aed}
+.btn-learn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(139,92,246,.4)}
+.btn-practice{background:var(--orange);color:#fff;border-color:var(--orange-d)}
+.btn-practice:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(249,115,22,.4)}
+.btn-challenge{background:var(--teal);color:#fff;border-color:#0d9488}
+.btn-challenge:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(20,184,166,.4)}
+
+/* ── LEVEL MAP ── */
+.map-title{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:12px}
+.level-map{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:24px}
+.level-node{background:var(--surface);border:2px solid var(--border);border-radius:16px;
+  padding:16px 12px;text-align:center;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;
+  position:relative;overflow:hidden}
+.level-node:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.level-node.unlocked{border-color:#fed7aa}
+.level-node.unlocked:hover{border-color:var(--orange)}
+.level-node.completed{border-color:var(--green);background:var(--green-lt)}
+.level-node.locked{opacity:.5;cursor:not-allowed;filter:grayscale(.6)}
+.level-node.locked:hover{transform:none;box-shadow:none}
+.level-emoji{font-size:1.8rem;margin-bottom:6px;display:block}
+.level-name{font-size:.78rem;font-weight:700;color:var(--navy);line-height:1.2}
+.level-sub{font-size:.68rem;color:var(--muted);margin-top:2px}
+.level-check{position:absolute;top:6px;right:6px;width:18px;height:18px;
+  background:var(--green);color:#fff;border-radius:50%;font-size:.65rem;
+  display:flex;align-items:center;justify-content:center;font-weight:700}
+.level-lock{position:absolute;top:6px;right:6px;font-size:.85rem}
+
+/* ── SECTION HEADER ── */
+.sec-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.sec-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:1.2rem;flex-shrink:0;
+  background:linear-gradient(135deg,#fed7aa,#f97316)}
+.sec-title{font-size:1.05rem;font-weight:800;letter-spacing:-.02em}
+.sec-sub{font-size:.78rem;color:var(--muted)}
+.back-view-btn{margin-left:auto;background:var(--orange-lt);color:var(--orange-d);
+  border:1.5px solid #fed7aa;border-radius:8px;padding:6px 14px;font-size:.82rem;font-weight:700;
+  transition:.2s}
+.back-view-btn:hover{background:#ffedd5}
+
+/* ── LEARN VIEW ── */
+.lesson-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:20px;overflow-x:auto;scrollbar-width:none}
+.lesson-tabs::-webkit-scrollbar{display:none}
+.ltab{flex-shrink:0;padding:10px 18px;background:none;font-size:.85rem;font-weight:600;
+  color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:.2s}
+.ltab.active{color:var(--purple);border-bottom-color:var(--purple)}
+.ltab:hover{color:var(--text)}
+.ltab.done::after{content:' ✓';color:var(--green)}
+
+.lesson-content{display:none}
+.lesson-content.active{display:block;animation:fadeUp .25s}
+.lesson-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);
+  padding:22px;margin-bottom:16px;box-shadow:var(--shadow)}
+.lesson-card h3{font-size:1rem;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.lesson-card p{font-size:.93rem;color:var(--muted);line-height:1.6;margin-bottom:10px}
+.story-box{background:var(--orange-lt);border-left:4px solid var(--orange);
+  padding:14px 16px;border-radius:0 10px 10px 0;margin:12px 0;font-size:.93rem}
+.story-box strong{color:var(--orange-d)}
+
+/* Visual models */
+.visual-area{background:#f8fafc;border:1.5px dashed var(--border);border-radius:12px;
+  padding:20px;margin:14px 0;text-align:center;min-height:80px;position:relative}
+.emoji-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0}
+.emoji-item{font-size:1.6rem;transition:transform .2s;cursor:default;user-select:none}
+.emoji-item.highlight{animation:pop .4s ease-out}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
+.group-box{border:2.5px dashed var(--orange);border-radius:12px;padding:10px 14px;
+  display:inline-flex;flex-wrap:wrap;gap:6px;margin:6px;min-width:60px;min-height:50px;
+  background:rgba(249,115,22,.06);position:relative;align-items:center;justify-content:center}
+.group-label{position:absolute;top:-10px;left:8px;background:var(--orange);color:#fff;
+  font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:100px}
+.groups-container{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:10px 0}
+
+/* Array model */
+.array-grid{display:inline-grid;gap:6px;margin:10px auto}
+.array-cell{width:32px;height:32px;background:var(--orange);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+  transition:transform .15s}
+.array-cell:hover{transform:scale(1.15)}
+.array-row-label{font-size:.75rem;color:var(--muted);font-weight:600}
+
+/* Bar model */
+.bar-model{margin:14px auto;max-width:400px}
+.bar-total{background:linear-gradient(90deg,var(--purple),#a78bfa);border-radius:8px;
+  height:40px;display:flex;align-items:center;justify-content:center;color:#fff;
+  font-weight:800;font-size:1rem;margin-bottom:6px;position:relative}
+.bar-parts{display:flex;gap:3px;height:36px}
+.bar-part{flex:1;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:.85rem;color:#fff;transition:transform .2s}
+.bar-part:hover{transform:scaleY(1.05)}
+
+/* Drag zone */
+.drag-area{background:#f8fafc;border:2px dashed var(--border);border-radius:14px;
+  padding:16px;min-height:80px;display:flex;flex-wrap:wrap;gap:8px;
+  align-items:center;justify-content:center;transition:border-color .2s,background .2s}
+.drag-area.drag-over{border-color:var(--orange);background:var(--orange-lt)}
+.draggable{font-size:1.8rem;cursor:grab;transition:transform .15s,opacity .15s;
+  user-select:none;touch-action:none;display:inline-block}
+.draggable:active{cursor:grabbing;transform:scale(1.2);opacity:.8}
+.drop-target{border:2.5px dashed var(--orange);border-radius:12px;padding:10px;
+  min-width:70px;min-height:60px;display:inline-flex;flex-wrap:wrap;gap:4px;
+  align-items:center;justify-content:center;background:rgba(249,115,22,.04);
+  transition:background .2s,border-color .2s;margin:4px}
+.drop-target.active{background:rgba(249,115,22,.12);border-color:var(--orange-d)}
+.drop-target.correct{background:var(--green-lt);border-color:var(--green)}
+.drop-target.wrong{background:var(--red-lt);border-color:var(--red)}
+
+/* Fact family triangle */
+.fact-triangle{display:inline-block;position:relative;margin:10px auto}
+.triangle-svg{filter:drop-shadow(0 4px 8px rgba(0,0,0,.1))}
+.fact-family-nums{margin-top:12px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.fact-eq{background:var(--purple-lt);border:1.5px solid #ddd6fe;border-radius:8px;
+  padding:8px 12px;font-size:.9rem;font-weight:700;text-align:center;color:var(--purple)}
+
+/* Repeated subtraction */
+.sub-steps{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin:10px 0}
+.sub-step{background:var(--orange-lt);border:1.5px solid #fed7aa;border-radius:8px;
+  padding:6px 12px;font-size:.85rem;font-weight:700;color:var(--orange-d)}
+.sub-arrow{font-size:1.2rem;color:var(--muted)}
+
+/* Remainder visual */
+.remainder-groups{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:flex-end}
+.rem-group{background:var(--green-lt);border:2px solid var(--green);border-radius:10px;
+  padding:10px;text-align:center;min-width:60px}
+.rem-leftover{background:var(--orange-lt);border:2px dashed var(--orange);border-radius:10px;
+  padding:10px;text-align:center;min-width:60px}
+.rem-label{font-size:.68rem;font-weight:700;color:var(--muted);margin-top:4px;text-transform:uppercase}
+
+/* Next btn */
+.next-btn{display:block;width:100%;margin-top:16px;padding:13px;
+  background:linear-gradient(135deg,var(--orange),var(--amber));color:#fff;
+  border-radius:12px;font-size:1rem;font-weight:800;transition:.2s;
+  box-shadow:0 4px 14px rgba(249,115,22,.35)}
+.next-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(249,115,22,.45)}
+.next-btn:active{transform:scale(.98)}
+
+/* Step indicator */
+.step-dots{display:flex;gap:6px;justify-content:center;margin:12px 0}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:.2s}
+.dot.active{background:var(--orange);transform:scale(1.3)}
+.dot.done{background:var(--green)}
+
+/* ── PRACTICE VIEW ── */
+.prob-card{background:var(--surface);border:2px solid var(--border);border-radius:20px;
+  padding:28px 24px;margin-bottom:20px;box-shadow:var(--shadow);text-align:center;
+  position:relative;overflow:hidden}
+.prob-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--orange),var(--amber))}
+.prob-badge{display:inline-flex;align-items:center;gap:5px;background:var(--orange-lt);
+  color:var(--orange-d);border-radius:100px;padding:4px 12px;font-size:.73rem;
+  font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+.prob-visual{margin:14px auto;max-width:500px}
+.prob-equation{font-size:clamp(2rem,8vw,3.5rem);font-weight:900;letter-spacing:-.03em;
+  color:var(--navy);margin:16px 0;font-variant-numeric:tabular-nums}
+.prob-equation .divisor{color:var(--orange)}
+.prob-equation .dividend{color:var(--purple)}
+.prob-equation .blank{display:inline-block;border-bottom:4px solid var(--orange);
+  min-width:60px;color:transparent;background:var(--orange-lt);border-radius:6px 6px 0 0;
+  padding:0 8px}
+
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:400px;margin:0 auto 16px}
+.choice{padding:14px 18px;border:2.5px solid var(--border);border-radius:12px;
+  background:#fff;font-size:1.2rem;font-weight:800;transition:.2s;color:var(--navy)}
+.choice:hover:not(:disabled){border-color:var(--orange);background:var(--orange-lt);transform:scale(1.03)}
+.choice.correct{border-color:var(--green);background:var(--green-lt);color:var(--green)}
+.choice.wrong{border-color:var(--red);background:var(--red-lt);color:var(--red);animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.choice:disabled{cursor:not-allowed}
+
+.hint-area{background:var(--purple-lt);border:1.5px solid #ddd6fe;border-radius:12px;
+  padding:12px 16px;margin:10px 0;font-size:.9rem;color:#5b21b6;display:none;text-align:left}
+.hint-area.show{display:block;animation:fadeUp .25s}
+.hint-btn{background:var(--purple-lt);color:var(--purple);border:1.5px solid #ddd6fe;
+  border-radius:8px;padding:7px 16px;font-size:.83rem;font-weight:700;transition:.2s;margin:0 5px}
+.hint-btn:hover{background:#ede9fe}
+
+.feedback-msg{font-size:1.1rem;font-weight:800;min-height:28px;margin:8px 0;
+  transition:all .3s;color:var(--green)}
+.feedback-msg.wrong{color:var(--red)}
+
+.prog-track{background:var(--border);border-radius:100px;height:10px;
+  overflow:hidden;margin-bottom:20px}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--amber));
+  border-radius:100px;transition:width .5s cubic-bezier(.34,1.56,.64,1)}
+
+/* Practice nav */
+.prac-header{display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.prac-meta{font-size:.82rem;color:var(--muted);font-weight:600}
+.divisor-select{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.div-chip{padding:7px 16px;border:2px solid var(--border);border-radius:100px;
+  background:#fff;font-size:.85rem;font-weight:700;transition:.2s}
+.div-chip:hover,.div-chip.active{background:var(--orange);color:#fff;border-color:var(--orange)}
+
+/* ── CHALLENGE VIEW ── */
+.challenge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:20px}
+.challenge-card{background:var(--surface);border:2px solid var(--border);border-radius:18px;
+  padding:22px 18px;text-align:center;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}
+.challenge-card:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(0,0,0,.12)}
+.challenge-card.pizza:hover{border-color:var(--orange)}
+.challenge-card.animals:hover{border-color:var(--teal)}
+.challenge-card.boss:hover{border-color:var(--red)}
+.challenge-card.time:hover{border-color:var(--purple)}
+.ch-emoji{font-size:2.5rem;margin-bottom:8px;display:block;animation:bounce 2.5s ease-in-out infinite}
+.ch-title{font-size:.95rem;font-weight:800;margin-bottom:4px}
+.ch-desc{font-size:.78rem;color:var(--muted);line-height:1.4}
+
+/* Boss battle */
+.boss-area{background:linear-gradient(135deg,#1e1b4b 0%,#312e81 100%);
+  border-radius:20px;padding:24px;text-align:center;color:#fff;margin-bottom:20px}
+.boss-emoji{font-size:4rem;animation:wiggle 1s ease-in-out infinite}
+@keyframes wiggle{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+.boss-hp-bar{background:rgba(255,255,255,.2);border-radius:100px;height:14px;
+  margin:12px 0;overflow:hidden}
+.boss-hp-fill{height:100%;background:linear-gradient(90deg,#ef4444,#f97316);
+  border-radius:100px;transition:width .5s}
+.boss-equation{font-size:2.5rem;font-weight:900;margin:14px 0;letter-spacing:-.02em}
+.boss-choices{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:500px;margin:0 auto}
+.boss-choice{padding:12px 8px;border:2px solid rgba(255,255,255,.3);border-radius:10px;
+  background:rgba(255,255,255,.1);color:#fff;font-size:1.1rem;font-weight:800;transition:.2s}
+.boss-choice:hover:not(:disabled){background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.6);transform:scale(1.05)}
+.boss-choice.correct{background:var(--green);border-color:var(--green)}
+.boss-choice.wrong{background:var(--red);border-color:var(--red);animation:shake .4s}
+.timer-bar{background:rgba(255,255,255,.2);border-radius:100px;height:8px;
+  margin:10px 0;overflow:hidden}
+.timer-fill{height:100%;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);
+  border-radius:100px;transition:width .1s linear}
+
+/* ── BADGE BOARD ── */
+.badges-grid{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+.badge{display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:var(--surface);border:2px solid var(--border);border-radius:12px;
+  padding:10px 14px;min-width:80px;transition:.2s;opacity:.4}
+.badge.earned{opacity:1;border-color:var(--amber);background:var(--orange-lt)}
+.badge-emoji{font-size:1.6rem}
+.badge-name{font-size:.65rem;font-weight:700;text-align:center;color:var(--muted);line-height:1.2}
+.badge.earned .badge-name{color:var(--orange-d)}
+
+/* ── RESULTS ── */
+.results-card{background:linear-gradient(135deg,#fff7ed,#ffedd5);
+  border:2px solid #fed7aa;border-radius:20px;padding:28px;text-align:center;margin-bottom:20px}
+.results-emoji{font-size:4rem;display:block;margin-bottom:12px}
+.results-title{font-size:1.5rem;font-weight:900;color:var(--navy);margin-bottom:8px}
+.results-score{font-size:3rem;font-weight:900;color:var(--orange);margin:10px 0}
+.results-stat{font-size:.9rem;color:var(--muted)}
+.results-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.result-btn{padding:12px 24px;border-radius:12px;font-size:.95rem;font-weight:800;
+  transition:.2s;border:none}
+.btn-retry{background:var(--orange);color:#fff}
+.btn-retry:hover{background:var(--orange-d);transform:translateY(-2px)}
+.btn-home{background:var(--purple-lt);color:var(--purple);border:2px solid #ddd6fe}
+.btn-home:hover{background:#ede9fe;transform:translateY(-2px)}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,.45);text-align:center;
+  padding:20px 24px;font-size:.78rem;line-height:1.7}
+footer strong{color:rgba(255,255,255,.8)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:520px){
+  .boss-choices{grid-template-columns:repeat(2,1fr)}
+  .choices{grid-template-columns:1fr 1fr}
+  .hdr-title{font-size:.95rem}
+  .prob-equation{font-size:2.2rem}
+  .hero-dash h1{font-size:1.6rem}
+  .back-btn span{display:none}
+}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip">Skip to content</a>
+
+<!-- ── HEADER ── -->
+<header class="hdr">
+  <div class="hdr-left">
+    <a href="index.html" class="back-btn" aria-label="Back to Learning Hub">← <span>Hub</span></a>
+    <div>
+      <div class="hdr-title">➗ Division Explorer</div>
+      <div class="hdr-sub">Elementary Math · Grades 3–5</div>
+    </div>
+  </div>
+  <div class="hdr-stats" role="status" aria-live="polite">
+    <div class="stat-chip" id="chip-coins" title="Coins earned">🪙 <span id="coins">0</span></div>
+    <div class="stat-chip" id="chip-streak" title="Answer streak">🔥 <span id="streak">0</span></div>
+    <div class="stat-chip" id="chip-stars" title="Stars earned">⭐ <span id="stars">0</span></div>
+  </div>
+</header>
+
+<!-- ── TOAST ── -->
+<div id="toast" class="toast" role="alert" aria-live="assertive"></div>
+
+<!-- ── CONFETTI ── -->
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<!-- ── MAIN APP ── -->
+<main id="main">
+
+  <!-- ════════════════════════════
+       DASHBOARD VIEW
+  ════════════════════════════ -->
+  <div id="view-dashboard" class="view active">
+    <div class="container">
+
+      <div class="hero-dash">
+        <span class="hero-emoji">➗</span>
+        <h1>Division Explorer</h1>
+        <p>Learn to divide with pictures, games &amp; stories. Math is an adventure, not a chore! 🚀</p>
+        <div class="hero-btns">
+          <button class="hero-btn btn-learn" onclick="showView('learn')">📖 Learn</button>
+          <button class="hero-btn btn-practice" onclick="showView('practice')">✏️ Practice</button>
+          <button class="hero-btn btn-challenge" onclick="showView('challenge')">⚔️ Challenge</button>
+        </div>
+      </div>
+
+      <!-- Level Map -->
+      <div class="map-title">🗺️ Your Journey</div>
+      <div class="level-map" id="level-map"></div>
+
+      <!-- Badges -->
+      <div class="sec-hdr" style="margin-top:8px">
+        <div class="sec-icon">🏅</div>
+        <div><div class="sec-title">Achievements</div><div class="sec-sub">Earn badges as you learn</div></div>
+      </div>
+      <div class="badges-grid" id="badges-display"></div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       LEARN VIEW
+  ════════════════════════════ -->
+  <div id="view-learn" class="view">
+    <div class="container">
+
+      <div class="sec-hdr">
+        <div class="sec-icon">📖</div>
+        <div><div class="sec-title">Learn Division</div><div class="sec-sub">Step-by-step visual lessons</div></div>
+        <button class="back-view-btn" onclick="showView('dashboard')">← Back</button>
+      </div>
+
+      <!-- Lesson tabs -->
+      <div class="lesson-tabs" role="tablist" id="lesson-tabs"></div>
+
+      <!-- Lesson content panels -->
+      <div id="lesson-panels"></div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       PRACTICE VIEW
+  ════════════════════════════ -->
+  <div id="view-practice" class="view">
+    <div class="container">
+
+      <div class="sec-hdr">
+        <div class="sec-icon">✏️</div>
+        <div><div class="sec-title">Practice Problems</div><div class="sec-sub">Build your skills step by step</div></div>
+        <button class="back-view-btn" onclick="showView('dashboard')">← Back</button>
+      </div>
+
+      <div class="prac-header">
+        <div class="prac-meta">Choose a divisor to practice:</div>
+        <div id="prac-score-display" style="font-weight:700;color:var(--orange)"></div>
+      </div>
+      <div class="divisor-select" id="divisor-chips"></div>
+
+      <div class="prog-track"><div class="prog-fill" id="prac-prog" style="width:0%"></div></div>
+
+      <div id="prob-area"></div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       CHALLENGE VIEW
+  ════════════════════════════ -->
+  <div id="view-challenge" class="view">
+    <div class="container">
+
+      <div class="sec-hdr">
+        <div class="sec-icon">⚔️</div>
+        <div><div class="sec-title">Challenges</div><div class="sec-sub">Test your speed &amp; skills</div></div>
+        <button class="back-view-btn" onclick="showView('dashboard')">← Back</button>
+      </div>
+
+      <div id="challenge-area"></div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <strong>Division Explorer</strong> &nbsp;·&nbsp; Elementary Math &nbsp;·&nbsp; Grades 3–5<br>
+  Singapore Math · Montessori · CPA Method · Fact Families &nbsp;✦&nbsp; 2026
+</footer>
+
+<!-- ════════════════════════════════════════════
+     JAVASCRIPT ENGINE
+════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ─────────────────────────────────
+   STATE
+───────────────────────────────── */
+var state = {
+  coins: 0,
+  streak: 0,
+  maxStreak: 0,
+  stars: 0,
+  totalCorrect: 0,
+  totalAttempts: 0,
+  completedLessons: [],
+  earnedBadges: [],
+  completedLevels: [],
+  currentLesson: 0,
+  currentDivisor: 2,
+  pracCount: 0,
+  pracCorrect: 0,
+  pracTotal: 8
+};
+
+function loadState() {
+  try {
+    var s = localStorage.getItem('divexp_state');
+    if (s) Object.assign(state, JSON.parse(s));
+  } catch(e){}
+}
+function saveState() {
+  try { localStorage.setItem('divexp_state', JSON.stringify(state)); } catch(e){}
+}
+loadState();
+
+/* ─────────────────────────────────
+   LEVELS DATA
+───────────────────────────────── */
+var LEVELS = [
+  {id:'l1', emoji:'🍎', name:'Divide by 1 & 2', sub:'÷1, ÷2', divisors:[1,2]},
+  {id:'l2', emoji:'⭐', name:'Divide by 5 & 10', sub:'÷5, ÷10', divisors:[5,10]},
+  {id:'l3', emoji:'🌈', name:'Divide by 3 & 4', sub:'÷3, ÷4', divisors:[3,4]},
+  {id:'l4', emoji:'🔥', name:'Divide by 6–9', sub:'÷6, ÷7, ÷8, ÷9', divisors:[6,7,8,9]},
+  {id:'l5', emoji:'🍕', name:'Remainders', sub:'Leftovers!', divisors:[2,3,4,5]},
+  {id:'l6', emoji:'🏆', name:'Division Master', sub:'Mix of all!', divisors:[2,3,4,5,6,7,8,9]}
+];
+
+/* ─────────────────────────────────
+   BADGES DATA
+───────────────────────────────── */
+var BADGES = [
+  {id:'first',   emoji:'🌟', name:'First Steps',    desc:'Answer first problem'},
+  {id:'streak3', emoji:'🔥', name:'Hot Streak',     desc:'3 correct in a row'},
+  {id:'streak5', emoji:'💥', name:'On Fire!',       desc:'5 correct in a row'},
+  {id:'learn1',  emoji:'📖', name:'Eager Learner',  desc:'Complete first lesson'},
+  {id:'learn5',  emoji:'🎓', name:'Scholar',        desc:'Complete 5 lessons'},
+  {id:'coins50', emoji:'🪙', name:'Rich Kid',       desc:'Earn 50 coins'},
+  {id:'coins200',emoji:'💰', name:'Gold Mine',      desc:'Earn 200 coins'},
+  {id:'perfect', emoji:'🎯', name:'Bullseye',       desc:'Perfect practice round'},
+  {id:'boss1',   emoji:'⚔️', name:'Dragon Slayer', desc:'Beat the boss'},
+  {id:'speed',   emoji:'🚀', name:'Speed Demon',   desc:'Finish timed challenge'}
+];
+
+/* ─────────────────────────────────
+   LESSONS DATA
+───────────────────────────────── */
+var LESSONS = [
+  {
+    id: 'equal-sharing',
+    title: '🍎 Equal Sharing',
+    tab: 'Sharing',
+    build: buildLessonSharing
+  },
+  {
+    id: 'equal-groups',
+    title: '⭕ Equal Groups',
+    tab: 'Groups',
+    build: buildLessonGroups
+  },
+  {
+    id: 'arrays',
+    title: '🔲 Arrays',
+    tab: 'Arrays',
+    build: buildLessonArrays
+  },
+  {
+    id: 'repeated-sub',
+    title: '➖ Repeated Subtraction',
+    tab: 'Subtracting',
+    build: buildLessonRepSub
+  },
+  {
+    id: 'fact-families',
+    title: '👨‍👩‍👧‍👦 Fact Families',
+    tab: 'Families',
+    build: buildLessonFactFamily
+  },
+  {
+    id: 'remainders',
+    title: '🍕 Remainders',
+    tab: 'Remainders',
+    build: buildLessonRemainders
+  },
+  {
+    id: 'bar-models',
+    title: '📊 Bar Models',
+    tab: 'Bar Models',
+    build: buildLessonBarModel
+  }
+];
+
+/* ─────────────────────────────────
+   NAVIGATION
+───────────────────────────────── */
+function showView(name) {
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+  var v = document.getElementById('view-' + name);
+  if (v) v.classList.add('active');
+  window.scrollTo(0,0);
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'learn') renderLearnView();
+  if (name === 'practice') renderPracticeView();
+  if (name === 'challenge') renderChallengeMenu();
+}
+
+/* ─────────────────────────────────
+   DASHBOARD
+───────────────────────────────── */
+function renderDashboard() {
+  // Level map
+  var map = document.getElementById('level-map');
+  map.innerHTML = '';
+  LEVELS.forEach(function(lv, i) {
+    var unlocked = i === 0 || state.completedLevels.indexOf(LEVELS[i-1].id) >= 0;
+    var completed = state.completedLevels.indexOf(lv.id) >= 0;
+    var cls = completed ? 'completed' : (unlocked ? 'unlocked' : 'locked');
+    var node = document.createElement('div');
+    node.className = 'level-node ' + cls;
+    node.setAttribute('role', unlocked ? 'button' : 'listitem');
+    node.setAttribute('aria-label', lv.name + (unlocked ? ', click to practice' : ', locked'));
+    node.innerHTML =
+      '<span class="level-emoji">' + lv.emoji + '</span>' +
+      '<div class="level-name">' + lv.name + '</div>' +
+      '<div class="level-sub">' + lv.sub + '</div>' +
+      (completed ? '<div class="level-check">✓</div>' : '') +
+      (!unlocked ? '<div class="level-lock">🔒</div>' : '');
+    if (unlocked) {
+      node.tabIndex = 0;
+      node.addEventListener('click', function() {
+        state.currentDivisor = lv.divisors[0];
+        showView('practice');
+      });
+      node.addEventListener('keydown', function(e){
+        if(e.key==='Enter'||e.key===' '){node.click();}
+      });
+    }
+    map.appendChild(node);
+  });
+
+  // Badges
+  var bd = document.getElementById('badges-display');
+  bd.innerHTML = '';
+  BADGES.forEach(function(b) {
+    var earned = state.earnedBadges.indexOf(b.id) >= 0;
+    var el = document.createElement('div');
+    el.className = 'badge' + (earned ? ' earned' : '');
+    el.setAttribute('title', b.desc);
+    el.setAttribute('aria-label', b.name + (earned ? ', earned' : ', not yet earned'));
+    el.innerHTML = '<span class="badge-emoji">' + b.emoji + '</span><span class="badge-name">' + b.name + '</span>';
+    bd.appendChild(el);
+  });
+
+  updateStats();
+}
+
+/* ─────────────────────────────────
+   STATS DISPLAY
+───────────────────────────────── */
+function updateStats() {
+  document.getElementById('coins').textContent = state.coins;
+  document.getElementById('streak').textContent = state.streak;
+  document.getElementById('stars').textContent = state.stars;
+}
+function bumpStat(id) {
+  var el = document.getElementById('chip-' + id);
+  if (el) {
+    el.classList.add('bump');
+    setTimeout(function(){ el.classList.remove('bump'); }, 400);
+  }
+}
+
+/* ─────────────────────────────────
+   TOAST
+───────────────────────────────── */
+function toast(msg, duration) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.classList.remove('show'); }, duration || 2400);
+}
+
+/* ─────────────────────────────────
+   CONFETTI
+───────────────────────────────── */
+var confettiParticles = [];
+function launchConfetti() {
+  var c = document.getElementById('confetti');
+  c.style.display = 'block';
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
+  var ctx = c.getContext('2d');
+  var colors = ['#f97316','#f59e0b','#22c55e','#8b5cf6','#ec4899','#0ea5e9'];
+  confettiParticles = [];
+  for (var i=0; i<80; i++) {
+    confettiParticles.push({
+      x: Math.random()*c.width,
+      y: -10 - Math.random()*200,
+      w: 6 + Math.random()*8,
+      h: 4 + Math.random()*6,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      vx: -2 + Math.random()*4,
+      vy: 3 + Math.random()*4,
+      rot: Math.random()*360,
+      rotV: -3 + Math.random()*6
+    });
+  }
+  var frames = 0;
+  function tick() {
+    ctx.clearRect(0,0,c.width,c.height);
+    var alive = false;
+    confettiParticles.forEach(function(p) {
+      p.y += p.vy;
+      p.x += p.vx;
+      p.rot += p.rotV;
+      p.vy *= 1.01;
+      if (p.y < c.height + 20) alive = true;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    frames++;
+    if (alive && frames < 120) requestAnimationFrame(tick);
+    else { c.style.display='none'; ctx.clearRect(0,0,c.width,c.height); }
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ─────────────────────────────────
+   BADGE CHECK
+───────────────────────────────── */
+function checkBadges() {
+  var checks = [
+    {id:'first',   cond: state.totalCorrect >= 1},
+    {id:'streak3', cond: state.maxStreak >= 3},
+    {id:'streak5', cond: state.maxStreak >= 5},
+    {id:'learn1',  cond: state.completedLessons.length >= 1},
+    {id:'learn5',  cond: state.completedLessons.length >= 5},
+    {id:'coins50', cond: state.coins >= 50},
+    {id:'coins200',cond: state.coins >= 200},
+    {id:'perfect', cond: state.pracCorrect === state.pracTotal && state.pracTotal > 0}
+  ];
+  checks.forEach(function(c) {
+    if (c.cond && state.earnedBadges.indexOf(c.id) < 0) {
+      state.earnedBadges.push(c.id);
+      var b = BADGES.find(function(x){return x.id===c.id;});
+      if (b) {
+        setTimeout(function(){
+          toast('🏅 Badge unlocked: ' + b.name + '!', 3000);
+          launchConfetti();
+        }, 800);
+      }
+    }
+  });
+  saveState();
+}
+
+/* ─────────────────────────────────
+   ANSWER HANDLING
+───────────────────────────────── */
+function handleCorrect(points) {
+  points = points || 10;
+  state.streak++;
+  state.totalCorrect++;
+  state.totalAttempts++;
+  if (state.streak > state.maxStreak) state.maxStreak = state.streak;
+  var bonus = state.streak >= 3 ? Math.floor(points * 0.5) : 0;
+  state.coins += points + bonus;
+  bumpStat('coins');
+  bumpStat('streak');
+  updateStats();
+  checkBadges();
+  if (state.streak % 5 === 0) { launchConfetti(); toast('🔥 ' + state.streak + ' streak! Incredible!', 2500); }
+  else if (state.streak >= 3) toast('🔥 ' + state.streak + ' in a row! Keep going!', 1800);
+  else {
+    var msgs = ['Great job! 🌟','Awesome! ⭐','You got it! 🎉','Correct! 🎯','Nailed it! 💪'];
+    toast(msgs[Math.floor(Math.random()*msgs.length)], 1500);
+  }
+}
+function handleWrong() {
+  state.streak = 0;
+  state.totalAttempts++;
+  bumpStat('streak');
+  updateStats();
+  var msgs = ["Almost! Try again 🤔","Hmm, not quite — keep trying!","Good effort! Think about equal groups.","You can do it! Use the hint 💡"];
+  toast(msgs[Math.floor(Math.random()*msgs.length)], 2000);
+}
+
+/* ─────────────────────────────────
+   LEARN VIEW
+───────────────────────────────── */
+function renderLearnView() {
+  var tabsEl = document.getElementById('lesson-tabs');
+  var panelsEl = document.getElementById('lesson-panels');
+  tabsEl.innerHTML = '';
+  panelsEl.innerHTML = '';
+
+  LESSONS.forEach(function(lesson, i) {
+    var done = state.completedLessons.indexOf(lesson.id) >= 0;
+    // Tab
+    var tab = document.createElement('button');
+    tab.className = 'ltab' + (i===0?' active':'') + (done?' done':'');
+    tab.textContent = lesson.tab;
+    tab.setAttribute('role','tab');
+    tab.setAttribute('aria-selected', i===0?'true':'false');
+    tab.dataset.idx = i;
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.ltab').forEach(function(t){t.classList.remove('active');t.setAttribute('aria-selected','false');});
+      document.querySelectorAll('.lesson-content').forEach(function(p){p.classList.remove('active');});
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected','true');
+      document.getElementById('lpanel-'+i).classList.add('active');
+    });
+    tabsEl.appendChild(tab);
+
+    // Panel
+    var panel = document.createElement('div');
+    panel.className = 'lesson-content' + (i===0?' active':'');
+    panel.id = 'lpanel-' + i;
+    panel.setAttribute('role','tabpanel');
+    lesson.build(panel, lesson, i);
+    panelsEl.appendChild(panel);
+  });
+}
+
+/* helper: complete lesson */
+function completeLesson(lessonId) {
+  if (state.completedLessons.indexOf(lessonId) < 0) {
+    state.completedLessons.push(lessonId);
+    state.stars++;
+    state.coins += 15;
+    bumpStat('stars');
+    bumpStat('coins');
+    updateStats();
+    checkBadges();
+    toast('⭐ Lesson complete! +15 coins', 2200);
+    saveState();
+  }
+}
+
+/* ─────────────────────────────────
+   LESSON BUILDERS
+───────────────────────────────── */
+
+// LESSON 1: Equal Sharing
+function buildLessonSharing(panel, lesson) {
+  panel.innerHTML = `
+<div class="lesson-card">
+  <h3>🍎 What is Division?</h3>
+  <p>Division means splitting something into <strong>equal groups</strong>.
+     It's like sharing fairly with your friends!</p>
+  <div class="story-box">
+    <strong>Story time:</strong> You have <strong>12 apples</strong> 🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎🍎<br>
+    You want to share them equally among <strong>3 friends</strong>.<br>
+    How many does each friend get?
+  </div>
+  <div class="visual-area">
+    <div id="sharing-visual"></div>
+    <button onclick="animateSharing()" class="next-btn" style="margin-top:12px;width:auto;padding:8px 20px;font-size:.88rem">
+      👀 Show me how!
+    </button>
+  </div>
+  <div id="sharing-result" style="text-align:center;font-size:1.3rem;font-weight:800;color:var(--orange);min-height:32px;margin-top:8px"></div>
+</div>
+<div class="lesson-card">
+  <h3>✏️ The Division Equation</h3>
+  <p>We write this as: <code style="font-size:1.2rem;background:var(--orange-lt);padding:4px 10px;border-radius:6px;font-weight:800">12 ÷ 3 = 4</code></p>
+  <ul style="margin:10px 0 0 18px">
+    <li style="margin-bottom:6px"><strong>12</strong> = total number (called the <em>dividend</em>)</li>
+    <li style="margin-bottom:6px"><strong>3</strong> = how many groups (called the <em>divisor</em>)</li>
+    <li><strong>4</strong> = how many in each group (called the <em>quotient</em>)</li>
+  </ul>
+</div>
+<button class="next-btn" onclick="completeLesson('equal-sharing');toast('📖 Try the next lesson!',1800)">
+  ✅ Got it! Mark Complete
+</button>`;
+
+  // build initial visual
+  setTimeout(function(){
+    var v = document.getElementById('sharing-visual');
+    if (!v) return;
+    var items = '';
+    for (var i=0;i<12;i++) items += '<span class="emoji-item" id="apple'+i+'">🍎</span>';
+    v.innerHTML = '<div class="emoji-row" id="apple-pool">' + items + '</div>' +
+      '<div class="groups-container" id="apple-groups">' +
+      '<div class="group-box"><span class="group-label">Friend 1</span></div>' +
+      '<div class="group-box"><span class="group-label">Friend 2</span></div>' +
+      '<div class="group-box"><span class="group-label">Friend 3</span></div>' +
+      '</div>';
+  }, 50);
+}
+
+window.animateSharing = function() {
+  var groups = document.querySelectorAll('.group-box');
+  var apples = document.querySelectorAll('#apple-pool .emoji-item');
+  if (!groups.length || !apples.length) return;
+  apples.forEach(function(a){ a.style.opacity='0.3'; });
+  var delay = 0;
+  for (var g=0; g<3; g++) {
+    for (var j=0; j<4; j++) {
+      (function(gIdx, aIdx, d){
+        setTimeout(function(){
+          var apple = document.createElement('span');
+          apple.textContent = '🍎';
+          apple.style.fontSize='1.4rem';
+          groups[gIdx].appendChild(apple);
+          if (apples[aIdx]) apples[aIdx].style.opacity='0';
+          if (gIdx===2 && j===3) {
+            document.getElementById('sharing-result').textContent = '12 ÷ 3 = 4  🎉';
+          }
+        }, d);
+      })(g, g*4+j, delay);
+      delay += 120;
+    }
+  }
+};
+
+// LESSON 2: Equal Groups
+function buildLessonGroups(panel, lesson) {
+  var NUM = 15, DIV = 3;
+  panel.innerHTML = `
+<div class="lesson-card">
+  <h3>⭕ Making Equal Groups</h3>
+  <p>Another way to think about division: <strong>how many groups can you make?</strong></p>
+  <div class="story-box">
+    <strong>Story:</strong> You have <strong>15 🌟 stars</strong>.
+    Put them into groups of <strong>3</strong>. How many groups do you get?
+  </div>
+  <div class="visual-area">
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">Drag the stars into groups of 3!</p>
+    <div id="stars-pool" class="drag-area" style="margin-bottom:12px"></div>
+    <div id="star-groups" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center"></div>
+    <div id="groups-result" style="text-align:center;font-size:1.2rem;font-weight:800;color:var(--orange);margin-top:10px;min-height:28px"></div>
+  </div>
+</div>
+<div class="lesson-card">
+  <h3>💡 Two ways to divide!</h3>
+  <p>Division can mean two things — both give the same answer!</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+    <div style="background:var(--orange-lt);border-radius:10px;padding:12px;text-align:center">
+      <div style="font-size:1.5rem">🍎</div>
+      <strong>Sharing</strong><br>
+      <span style="font-size:.82rem;color:var(--muted)">12 ÷ 3 = 4<br>4 in each group</span>
+    </div>
+    <div style="background:var(--purple-lt);border-radius:10px;padding:12px;text-align:center">
+      <div style="font-size:1.5rem">⭕</div>
+      <strong>Grouping</strong><br>
+      <span style="font-size:.82rem;color:var(--muted)">12 ÷ 3 = 4<br>4 groups of 3</span>
+    </div>
+  </div>
+</div>
+<button class="next-btn" onclick="completeLesson('equal-groups')">✅ Got it! Mark Complete</button>`;
+
+  setTimeout(function(){ setupGroupsDrag(NUM, DIV); }, 50);
+}
+
+function setupGroupsDrag(total, groupSize) {
+  var pool = document.getElementById('stars-pool');
+  var groupsEl = document.getElementById('star-groups');
+  var result = document.getElementById('groups-result');
+  if (!pool || !groupsEl) return;
+
+  // Create draggable items
+  pool.innerHTML = '';
+  for (var i=0; i<total; i++) {
+    var s = document.createElement('span');
+    s.className = 'draggable';
+    s.textContent = '⭐';
+    s.draggable = true;
+    s.dataset.id = i;
+    pool.appendChild(s);
+  }
+
+  // Create drop targets (5 groups)
+  groupsEl.innerHTML = '';
+  var numGroups = total / groupSize;
+  for (var g=0; g<numGroups; g++) {
+    var dt = document.createElement('div');
+    dt.className = 'drop-target';
+    dt.dataset.max = groupSize;
+    dt.dataset.count = '0';
+    dt.innerHTML = '<span style="font-size:.7rem;color:var(--muted)">Group '+(g+1)+'</span>';
+    groupsEl.appendChild(dt);
+  }
+
+  // Drag events
+  var dragging = null;
+  pool.addEventListener('dragstart', function(e){
+    if (e.target.classList.contains('draggable')) { dragging=e.target; e.target.style.opacity='.5'; }
+  });
+  pool.addEventListener('dragend', function(e){ if(e.target.classList.contains('draggable')) e.target.style.opacity='1'; });
+
+  groupsEl.querySelectorAll('.drop-target').forEach(function(dt){
+    dt.addEventListener('dragover', function(e){ e.preventDefault(); dt.classList.add('active'); });
+    dt.addEventListener('dragleave', function(){ dt.classList.remove('active'); });
+    dt.addEventListener('drop', function(e){
+      e.preventDefault();
+      dt.classList.remove('active');
+      if (!dragging) return;
+      var cnt = parseInt(dt.dataset.count)||0;
+      if (cnt < groupSize) {
+        var s = document.createElement('span');
+        s.textContent='⭐';
+        s.style.fontSize='1.3rem';
+        dt.appendChild(s);
+        dt.dataset.count = cnt+1;
+        dragging.parentNode.removeChild(dragging);
+        dragging = null;
+        checkGroupsComplete(groupsEl, total, groupSize, result);
+      }
+    });
+  });
+}
+
+function checkGroupsComplete(groupsEl, total, groupSize, result) {
+  var dts = groupsEl.querySelectorAll('.drop-target');
+  var filled = 0;
+  dts.forEach(function(dt){ if(parseInt(dt.dataset.count)===groupSize) filled++; });
+  if (filled === total/groupSize) {
+    result.textContent = total + ' ÷ ' + groupSize + ' = ' + (total/groupSize) + '  🎉 Amazing!';
+    dts.forEach(function(dt){ dt.classList.add('correct'); });
+    launchConfetti();
+  }
+}
+
+// LESSON 3: Arrays
+function buildLessonArrays(panel, lesson) {
+  panel.innerHTML = `
+<div class="lesson-card">
+  <h3>🔲 Division with Arrays</h3>
+  <p>An <strong>array</strong> is objects arranged in rows and columns. Arrays show division clearly!</p>
+  <div class="story-box">
+    <strong>Example:</strong> 20 eggs arranged in 4 rows — how many in each row?<br>
+    20 ÷ 4 = <span id="array-answer" style="background:var(--orange-lt);padding:2px 8px;border-radius:4px;font-weight:800">?</span>
+  </div>
+  <div class="visual-area">
+    <div id="array-display"></div>
+    <div style="margin-top:12px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <label style="font-size:.85rem;font-weight:600">Rows:
+        <input type="range" id="arr-rows" min="1" max="5" value="4" style="width:80px;margin-left:6px" aria-label="Number of rows">
+        <span id="arr-rows-val">4</span>
+      </label>
+      <label style="font-size:.85rem;font-weight:600">Total:
+        <select id="arr-total" style="margin-left:6px;padding:4px 8px;border-radius:6px;border:1.5px solid var(--border)" aria-label="Total items">
+          <option value="12">12</option>
+          <option value="20" selected>20</option>
+          <option value="24">24</option>
+          <option value="30">30</option>
+          <option value="36">36</option>
+        </select>
+      </label>
+    </div>
+  </div>
+</div>
+<div class="lesson-card">
+  <h3>📐 Rows × Columns = Total</h3>
+  <p>Arrays connect <strong>multiplication and division</strong>!</p>
+  <div class="fact-family-nums" id="array-facts"></div>
+</div>
+<button class="next-btn" onclick="completeLesson('arrays')">✅ Got it! Mark Complete</button>`;
+
+  function renderArray() {
+    var rows = parseInt(document.getElementById('arr-rows').value)||4;
+    var total = parseInt(document.getElementById('arr-total').value)||20;
+    var cols = Math.floor(total/rows);
+    document.getElementById('arr-rows-val').textContent = rows;
+    var disp = document.getElementById('array-display');
+    var ans = document.getElementById('array-answer');
+    if (!disp) return;
+    var grid = '<div class="array-grid" style="grid-template-columns:repeat('+cols+',36px);margin:0 auto" aria-label="Array of '+total+' items in '+rows+' rows">';
+    for (var i=0;i<rows*cols;i++) grid += '<div class="array-cell" role="img" aria-hidden="true">🥚</div>';
+    grid += '</div>';
+    grid += '<p style="margin-top:8px;font-size:.88rem;color:var(--muted)">' + rows + ' rows × ' + cols + ' columns = ' + total + '</p>';
+    disp.innerHTML = grid;
+    if (ans) ans.textContent = cols;
+    var facts = document.getElementById('array-facts');
+    if (facts) {
+      facts.innerHTML =
+        '<div class="fact-eq">'+rows+' × '+cols+' = '+total+'</div>' +
+        '<div class="fact-eq">'+cols+' × '+rows+' = '+total+'</div>' +
+        '<div class="fact-eq">'+total+' ÷ '+rows+' = '+cols+'</div>' +
+        '<div class="fact-eq">'+total+' ÷ '+cols+' = '+rows+'</div>';
+    }
+  }
+
+  setTimeout(function(){
+    renderArray();
+    var r = document.getElementById('arr-rows');
+    var t = document.getElementById('arr-total');
+    if (r) r.addEventListener('input', renderArray);
+    if (t) t.addEventListener('change', renderArray);
+  }, 50);
+}
+
+// LESSON 4: Repeated Subtraction
+function buildLessonRepSub(panel, lesson) {
+  panel.innerHTML = `
+<div class="lesson-card">
+  <h3>➖ Division by Subtracting</h3>
+  <p>Division is like <strong>subtracting the same number over and over</strong> until you reach zero!</p>
+  <div class="story-box">
+    <strong>Example:</strong> 20 ÷ 4 = ?<br>
+    Keep taking away 4 until nothing's left. Count how many times!
+  </div>
+  <div class="visual-area">
+    <div id="sub-steps-area"></div>
+    <div style="margin-top:12px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <label style="font-size:.85rem;font-weight:600">Total:
+        <input type="number" id="sub-total" value="20" min="2" max="50" style="width:60px;padding:4px 6px;border-radius:6px;border:1.5px solid var(--border);margin-left:4px;font-size:.9rem" aria-label="Total">
+      </label>
+      <label style="font-size:.85rem;font-weight:600">Subtract:
+        <input type="number" id="sub-div" value="4" min="1" max="10" style="width:50px;padding:4px 6px;border-radius:6px;border:1.5px solid var(--border);margin-left:4px;font-size:.9rem" aria-label="Divisor">
+      </label>
+      <button onclick="renderRepSub()" style="background:var(--orange);color:#fff;padding:6px 14px;border-radius:8px;font-weight:700;font-size:.85rem">Show!</button>
+    </div>
+  </div>
+</div>
+<button class="next-btn" onclick="completeLesson('repeated-sub')">✅ Got it! Mark Complete</button>`;
+
+  setTimeout(renderRepSub, 50);
+}
+
+window.renderRepSub = function() {
+  var totalEl = document.getElementById('sub-total');
+  var divEl = document.getElementById('sub-div');
+  var area = document.getElementById('sub-steps-area');
+  if (!totalEl||!divEl||!area) return;
+  var total = parseInt(totalEl.value)||20;
+  var div = parseInt(divEl.value)||4;
+  if (div<=0||total<=0||total>50||div>total) return;
+  var html = '<div class="sub-steps">';
+  var cur = total, count = 0;
+  var steps = [cur];
+  while (cur >= div && count < 20) { cur -= div; count++; steps.push(cur); }
+  var rem = cur;
+  steps.forEach(function(s, i) {
+    html += '<span class="sub-step">'+s+'</span>';
+    if (i < steps.length-1) html += '<span class="sub-arrow">−'+div+'→</span>';
+  });
+  html += '</div>';
+  if (rem===0) {
+    html += '<p style="text-align:center;font-weight:800;font-size:1.1rem;color:var(--orange);margin-top:10px">' +
+      total+' ÷ '+div+' = '+count+'  🎉 Subtracted '+count+' times!</p>';
+  } else {
+    html += '<p style="text-align:center;font-weight:800;font-size:1rem;color:var(--orange);margin-top:10px">' +
+      total+' ÷ '+div+' = '+count+' remainder '+rem+'</p>';
+  }
+  area.innerHTML = html;
+};
+
+// LESSON 5: Fact Families
+function buildLessonFactFamily(panel, lesson) {
+  panel.innerHTML = `
+<div class="lesson-card">
+  <h3>👨‍👩‍👧‍👦 Fact Families</h3>
+  <p>Every multiplication fact has a <strong>division partner</strong>! Three numbers form a fact family.</p>
+  <div class="visual-area" id="ff-visual">
+    <svg class="triangle-svg" width="200" height="170" viewBox="0 0 200 170" aria-label="Fact family triangle">
+      <polygon points="100,10 10,160 190,160" fill="#fff7ed" stroke="#f97316" stroke-width="3"/>
+      <text x="100" y="50" text-anchor="middle" font-size="24" font-weight="900" fill="#f97316" id="ff-top">12</text>
+      <text x="30" y="155" text-anchor="middle" font-size="22" font-weight="900" fill="#8b5cf6" id="ff-bl">3</text>
+      <text x="170" y="155" text-anchor="middle" font-size="22" font-weight="900" fill="#8b5cf6" id="ff-br">4</text>
+      <text x="55" y="100" text-anchor="middle" font-size="16" fill="#64748b">×</text>
+      <text x="145" y="100" text-anchor="middle" font-size="16" fill="#64748b">÷</text>
+    </svg>
+  </div>
+  <div class="fact-family-nums" id="ff-equations"></div>
+  <div style="display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap">
+    <label style="font-size:.85rem;font-weight:600">Factor 1:
+      <select id="ff-a" style="margin-left:4px;padding:4px 8px;border-radius:6px;border:1.5px solid var(--border)">
+        ${[2,3,4,5,6,7,8,9].map(function(n){return '<option'+(n===3?' selected':'')+'>'+n+'</option>';}).join('')}
+      </select>
+    </label>
+    <label style="font-size:.85rem;font-weight:600">Factor 2:
+      <select id="ff-b" style="margin-left:4px;padding:4px 8px;border-radius:6px;border:1.5px solid var(--border)">
+        ${[2,3,4,5,6,7,8,9].map(function(n){return '<option'+(n===4?' selected':'')+'>'+n+'</option>';}).join('')}
+      </select>
+    </label>
+    <button onclick="renderFF()" style="background:var(--purple);color:#fff;padding:6px 14px;border-radius:8px;font-weight:700;font-size:.85rem">Show Family!</button>
+  </div>
+</div>
+<button class="next-btn" onclick="completeLesson('fact-families')">✅ Got it! Mark Complete</button>`;
+
+  setTimeout(renderFF, 50);
+}
+
+window.renderFF = function() {
+  var a = parseInt(document.getElementById('ff-a').value)||3;
+  var b = parseInt(document.getElementById('ff-b').value)||4;
+  var prod = a*b;
+  var t = document.getElementById('ff-top');
+  var bl = document.getElementById('ff-bl');
+  var br = document.getElementById('ff-br');
+  if (t) t.textContent = prod;
+  if (bl) bl.textContent = a;
+  if (br) br.textContent = b;
+  var eqs = document.getElementById('ff-equations');
+  if (eqs) {
+    eqs.innerHTML =
+      '<div class="fact-eq">'+a+' × '+b+' = '+prod+'</div>' +
+      '<div class="fact-eq">'+b+' × '+a+' = '+prod+'</div>' +
+      '<div class="fact-eq">'+prod+' ÷ '+a+' = '+b+'</div>' +
+      '<div class="fact-eq">'+prod+' ÷ '+b+' = '+a+'</div>';
+  }
+};
+
+// LESSON 6: Remainders
+function buildLessonRemainders(panel, lesson) {
+  panel.innerHTML = `
+<div class="lesson-card">
+  <h3>🍕 What are Remainders?</h3>
+  <p>Sometimes things don't divide <em>perfectly equally</em>. The <strong>leftover</strong> is called the <strong>remainder</strong>!</p>
+  <div class="story-box">
+    <strong>Story:</strong> 14 pizza slices for 4 friends. Each friend gets 3 slices — but there are <strong>2 slices left over</strong>!<br>
+    <strong>14 ÷ 4 = 3 remainder 2</strong> (written 3 R2)
+  </div>
+  <div class="visual-area">
+    <div id="rem-display"></div>
+    <div style="margin-top:12px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <label style="font-size:.85rem;font-weight:600">Total:
+        <input type="number" id="rem-total" value="14" min="1" max="30" style="width:55px;padding:4px 6px;border-radius:6px;border:1.5px solid var(--border);margin-left:4px;font-size:.9rem" aria-label="Total">
+      </label>
+      <label style="font-size:.85rem;font-weight:600">Divide by:
+        <input type="number" id="rem-div" value="4" min="2" max="10" style="width:50px;padding:4px 6px;border-radius:6px;border:1.5px solid var(--border);margin-left:4px;font-size:.9rem" aria-label="Divisor">
+      </label>
+      <button onclick="renderRem()" style="background:var(--teal);color:#fff;padding:6px 14px;border-radius:8px;font-weight:700;font-size:.85rem">Show!</button>
+    </div>
+  </div>
+</div>
+<button class="next-btn" onclick="completeLesson('remainders')">✅ Got it! Mark Complete</button>`;
+
+  setTimeout(renderRem, 50);
+}
+
+window.renderRem = function() {
+  var total = parseInt(document.getElementById('rem-total').value)||14;
+  var div = parseInt(document.getElementById('rem-div').value)||4;
+  if (div<=1||total<=0||total>30) return;
+  var q = Math.floor(total/div), r = total%div;
+  var disp = document.getElementById('rem-display');
+  if (!disp) return;
+  var html = '<div class="remainder-groups">';
+  for (var g=0;g<q;g++) {
+    html += '<div class="rem-group"><div class="emoji-row" style="gap:4px">';
+    for (var j=0;j<div;j++) html += '<span style="font-size:1.2rem">🍕</span>';
+    html += '</div><div class="rem-label">Group '+(g+1)+'</div></div>';
+  }
+  if (r>0) {
+    html += '<div class="rem-leftover"><div class="emoji-row" style="gap:4px">';
+    for (var k=0;k<r;k++) html += '<span style="font-size:1.2rem">🍕</span>';
+    html += '</div><div class="rem-label">Leftover!</div></div>';
+  }
+  html += '</div>';
+  html += '<p style="text-align:center;font-weight:800;font-size:1.1rem;color:var(--orange);margin-top:10px">' +
+    total+' ÷ '+div+' = '+q+(r?' R'+r:'')+' '+(r?'🍕 '+r+' left over!':'✅ Divides evenly!')+'</p>';
+  disp.innerHTML = html;
+};
+
+// LESSON 7: Bar Models
+function buildLessonBarModel(panel, lesson) {
+  panel.innerHTML = `
+<div class="lesson-card">
+  <h3>📊 Bar Models (Singapore Style)</h3>
+  <p>Bar models help us <strong>see</strong> division. The big bar is split into equal parts!</p>
+  <div class="story-box">
+    <strong>Story:</strong> Mrs. Lee has 24 stickers. She gives an equal number to each of her 6 students.<br>
+    How many stickers does each student get?  24 ÷ 6 = ?
+  </div>
+  <div class="visual-area">
+    <div id="bar-display"></div>
+    <div style="margin-top:12px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <label style="font-size:.85rem;font-weight:600">Total:
+        <select id="bm-total" style="margin-left:4px;padding:4px 8px;border-radius:6px;border:1.5px solid var(--border)">
+          ${[12,18,24,30,36,42,48].map(function(n){return '<option'+(n===24?' selected':'')+'>'+n+'</option>';}).join('')}
+        </select>
+      </label>
+      <label style="font-size:.85rem;font-weight:600">Parts:
+        <input type="range" id="bm-parts" min="2" max="8" value="6" style="width:70px;margin:0 4px" aria-label="Number of parts">
+        <span id="bm-parts-val">6</span>
+      </label>
+      <button onclick="renderBarModel()" style="background:var(--purple);color:#fff;padding:6px 14px;border-radius:8px;font-weight:700;font-size:.85rem">Draw Bar!</button>
+    </div>
+  </div>
+</div>
+<button class="next-btn" onclick="completeLesson('bar-models')">✅ Got it! Mark Complete</button>`;
+
+  setTimeout(function(){
+    renderBarModel();
+    var bmp = document.getElementById('bm-parts');
+    if (bmp) bmp.addEventListener('input', function(){ document.getElementById('bm-parts-val').textContent=bmp.value; });
+  }, 50);
+}
+
+window.renderBarModel = function() {
+  var total = parseInt(document.getElementById('bm-total').value)||24;
+  var parts = parseInt(document.getElementById('bm-parts').value)||6;
+  var each = Math.floor(total/parts);
+  var rem = total % parts;
+  var partColors = ['#f97316','#8b5cf6','#14b8a6','#ec4899','#0ea5e9','#22c55e','#f59e0b','#ef4444'];
+  var disp = document.getElementById('bar-display');
+  if (!disp) return;
+  var html = '<div class="bar-model">' +
+    '<div class="bar-total">'+total+'</div>' +
+    '<div class="bar-parts">';
+  for (var i=0;i<parts;i++) {
+    html += '<div class="bar-part" style="background:'+partColors[i%partColors.length]+'">'+each+'</div>';
+  }
+  html += '</div>';
+  if (rem>0) html += '<p style="font-size:.78rem;color:var(--muted);margin-top:6px">+ '+rem+' remainder</p>';
+  html += '</div>';
+  html += '<p style="text-align:center;font-weight:800;font-size:1.1rem;color:var(--orange);margin-top:8px">'+
+    total+' ÷ '+parts+' = '+each+(rem?' R'+rem:'')+'</p>';
+  disp.innerHTML = html;
+};
+
+/* ─────────────────────────────────
+   PRACTICE VIEW
+───────────────────────────────── */
+var pracState = {
+  divisor: 2,
+  count: 0,
+  correct: 0,
+  total: 8,
+  current: null,
+  hintLevel: 0,
+  answered: false
+};
+
+function renderPracticeView() {
+  // Divisor chips
+  var chips = document.getElementById('divisor-chips');
+  chips.innerHTML = '';
+  [1,2,3,4,5,6,7,8,9,10].forEach(function(d) {
+    var ch = document.createElement('button');
+    ch.className = 'div-chip' + (d===pracState.divisor?' active':'');
+    ch.textContent = '÷' + d;
+    ch.setAttribute('aria-label', 'Practice dividing by ' + d);
+    ch.addEventListener('click', function(){
+      pracState.divisor = d;
+      pracState.count = 0;
+      pracState.correct = 0;
+      pracState.hintLevel = 0;
+      document.querySelectorAll('.div-chip').forEach(function(c){c.classList.remove('active');});
+      ch.classList.add('active');
+      nextPracProblem();
+    });
+    chips.appendChild(ch);
+  });
+
+  pracState.count = 0;
+  pracState.correct = 0;
+  updatePracProgress();
+  nextPracProblem();
+}
+
+function updatePracProgress() {
+  var pct = (pracState.count / pracState.total) * 100;
+  document.getElementById('prac-prog').style.width = pct + '%';
+  var sd = document.getElementById('prac-score-display');
+  if (sd) sd.textContent = pracState.correct + ' / ' + pracState.count + ' correct';
+}
+
+function nextPracProblem() {
+  if (pracState.count >= pracState.total) { showPracResults(); return; }
+  pracState.hintLevel = 0;
+  pracState.answered = false;
+
+  var d = pracState.divisor;
+  var q = 1 + Math.floor(Math.random() * 10);
+  var total = d * q;
+  pracState.current = {dividend: total, divisor: d, quotient: q};
+
+  var area = document.getElementById('prob-area');
+  if (!area) return;
+
+  // Generate wrong choices
+  var choices = [q];
+  while (choices.length < 4) {
+    var w = q + (Math.random()<.5?1:-1)*(1+Math.floor(Math.random()*3));
+    if (w>0 && choices.indexOf(w)<0) choices.push(w);
+  }
+  choices.sort(function(){return .5-Math.random();});
+
+  // Visual hint based on divisor
+  var visual = buildPracVisual(total, d, q);
+
+  area.innerHTML = `
+<div class="prob-card">
+  <div class="prob-badge">÷${d} Facts &nbsp;·&nbsp; Problem ${pracState.count+1} of ${pracState.total}</div>
+  <div class="prob-visual" id="prac-visual">${visual}</div>
+  <div class="prob-equation">
+    <span class="dividend">${total}</span> ÷ <span class="divisor">${d}</span> = <span class="blank" id="blank-ans">?</span>
+  </div>
+  <div class="choices" role="group" aria-label="Choose your answer">
+    ${choices.map(function(c){
+      return '<button class="choice" onclick="checkPracAnswer('+c+',this)" aria-label="'+c+'">'+c+'</button>';
+    }).join('')}
+  </div>
+  <div class="feedback-msg" id="prac-feedback" aria-live="polite"></div>
+  <div style="text-align:center;margin-top:8px">
+    <button class="hint-btn" onclick="showHint()" aria-label="Get a hint">💡 Hint</button>
+  </div>
+  <div class="hint-area" id="hint-area"></div>
+</div>`;
+}
+
+function buildPracVisual(total, d, q) {
+  if (total > 40) return '';  // skip for large numbers
+  var emojis = ['🍎','🌟','🍕','🐱','🦋','🍩','🎈','🏆'];
+  var em = emojis[d % emojis.length];
+  if (d <= 10 && total <= 30) {
+    // Show groups
+    var html = '<div class="groups-container" style="gap:8px">';
+    for (var g=0;g<d;g++) {
+      html += '<div class="group-box" style="padding:6px 8px">';
+      for (var j=0;j<q;j++) html += '<span style="font-size:1.1rem">'+em+'</span>';
+      html += '</div>';
+    }
+    html += '</div>';
+    return html;
+  }
+  return '';
+}
+
+window.checkPracAnswer = function(val, btn) {
+  if (pracState.answered) return;
+  pracState.answered = true;
+  var correct = val === pracState.current.quotient;
+  var blank = document.getElementById('blank-ans');
+  if (blank) { blank.textContent = val; blank.style.color = correct ? 'var(--green)' : 'var(--red)'; }
+  document.querySelectorAll('.choice').forEach(function(c){ c.disabled = true; });
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) {
+    document.querySelectorAll('.choice').forEach(function(c){
+      if (parseInt(c.textContent)===pracState.current.quotient) c.classList.add('correct');
+    });
+  }
+  var fb = document.getElementById('prac-feedback');
+  if (fb) {
+    fb.textContent = correct ? '🌟 Correct! ' + pracState.current.dividend + ' ÷ ' + pracState.current.divisor + ' = ' + pracState.current.quotient : '❌ The answer is ' + pracState.current.quotient;
+    fb.className = 'feedback-msg' + (correct ? '' : ' wrong');
+  }
+  if (correct) { handleCorrect(10); pracState.correct++; }
+  else handleWrong();
+  pracState.count++;
+  updatePracProgress();
+  setTimeout(nextPracProblem, correct ? 1200 : 2000);
+};
+
+window.showHint = function() {
+  var ha = document.getElementById('hint-area');
+  if (!ha) return;
+  var p = pracState.current;
+  var hints = [
+    '💡 Think: if you share ' + p.dividend + ' things into ' + p.divisor + ' equal groups, how many in each group?',
+    '💡 Try counting by ' + p.divisor + 's until you reach ' + p.dividend + '. How many times?',
+    '💡 What times ' + p.divisor + ' equals ' + p.dividend + '?',
+    '💡 The answer is ' + p.quotient + '. ' + p.divisor + ' × ' + p.quotient + ' = ' + p.dividend
+  ];
+  pracState.hintLevel = Math.min(pracState.hintLevel + 1, hints.length - 1);
+  ha.textContent = hints[pracState.hintLevel - 1] || hints[0];
+  ha.classList.add('show');
+};
+
+function showPracResults() {
+  var pct = Math.round((pracState.correct / pracState.total) * 100);
+  var emoji = pct===100?'🏆':pct>=75?'🌟':pct>=50?'😊':'💪';
+  var msg = pct===100?'Perfect score! You\'re a division master!':pct>=75?'Great work! Keep it up!':pct>=50?'Good effort! Practice makes perfect!':'Keep going! Every problem makes you stronger!';
+  state.pracCorrect = pracState.correct;
+  state.pracTotal = pracState.total;
+  if (pct===100) { launchConfetti(); earnBadge('perfect'); }
+  checkBadges();
+  var area = document.getElementById('prob-area');
+  area.innerHTML = `
+<div class="results-card">
+  <span class="results-emoji">${emoji}</span>
+  <div class="results-title">${msg}</div>
+  <div class="results-score">${pct}%</div>
+  <div class="results-stat">${pracState.correct} correct out of ${pracState.total}</div>
+  <div class="results-btns">
+    <button class="result-btn btn-retry" onclick="pracState.count=0;pracState.correct=0;nextPracProblem();updatePracProgress()">🔄 Try Again</button>
+    <button class="result-btn btn-home" onclick="showView('dashboard')">🏠 Home</button>
+  </div>
+</div>`;
+}
+
+function earnBadge(id) {
+  if (state.earnedBadges.indexOf(id)<0) {
+    state.earnedBadges.push(id);
+    var b = BADGES.find(function(x){return x.id===id;});
+    if (b) { setTimeout(function(){ toast('🏅 Badge: '+b.name+'!',3000); launchConfetti(); },500); }
+    saveState();
+  }
+}
+
+/* ─────────────────────────────────
+   CHALLENGE VIEW
+───────────────────────────────── */
+function renderChallengeMenu() {
+  var area = document.getElementById('challenge-area');
+  area.innerHTML = `
+<div class="challenge-grid">
+  <div class="challenge-card pizza" onclick="startChallenge('pizza')" role="button" tabindex="0" aria-label="Pizza Party challenge">
+    <span class="ch-emoji">🍕</span>
+    <div class="ch-title">Pizza Party</div>
+    <div class="ch-desc">Divide pizzas equally among hungry friends!</div>
+  </div>
+  <div class="challenge-card animals" onclick="startChallenge('feeding')" role="button" tabindex="0" aria-label="Feeding Time challenge">
+    <span class="ch-emoji">🐾</span>
+    <div class="ch-title">Feeding Time</div>
+    <div class="ch-desc">Feed animals equal portions — fast!</div>
+  </div>
+  <div class="challenge-card time" onclick="startChallenge('speed')" role="button" tabindex="0" aria-label="Speed Round challenge">
+    <span class="ch-emoji">⏱️</span>
+    <div class="ch-title">Speed Round</div>
+    <div class="ch-desc">Answer as many as you can in 60 seconds!</div>
+  </div>
+  <div class="challenge-card boss" onclick="startChallenge('boss')" role="button" tabindex="0" aria-label="Boss Battle challenge">
+    <span class="ch-emoji">🐉</span>
+    <div class="ch-title">Boss Battle</div>
+    <div class="ch-desc">Defeat the dragon with correct division answers!</div>
+  </div>
+</div>`;
+
+  area.querySelectorAll('.challenge-card').forEach(function(c){
+    c.addEventListener('keydown', function(e){
+      if(e.key==='Enter'||e.key===' '){c.click();}
+    });
+  });
+}
+
+/* ─── BOSS BATTLE ─── */
+var bossState = {hp:5, maxHp:5, count:0, correct:0, timeLeft:10, timerInterval:null, answered:false};
+
+function startChallenge(type) {
+  var area = document.getElementById('challenge-area');
+  if (type==='boss') startBoss(area);
+  else if (type==='speed') startSpeed(area);
+  else if (type==='pizza') startPizzaChallenge(area);
+  else if (type==='feeding') startFeedingChallenge(area);
+}
+
+function startBoss(area) {
+  bossState = {hp:5,maxHp:5,count:0,correct:0,timeLeft:10,timerInterval:null,answered:false};
+  renderBoss(area);
+}
+
+function renderBoss(area) {
+  if (bossState.hp <= 0) { bossVictory(area); return; }
+
+  var d = [2,3,4,5,6,7,8,9][Math.floor(Math.random()*8)];
+  var q = 2 + Math.floor(Math.random()*9);
+  var total = d*q;
+  bossState.current = {dividend:total,divisor:d,quotient:q};
+  bossState.answered = false;
+  bossState.timeLeft = 10;
+
+  var wrong = [];
+  while (wrong.length<3) {
+    var w=q+(Math.random()<.5?1:-1)*(1+Math.floor(Math.random()*4));
+    if(w>0&&wrong.indexOf(w)<0&&w!==q) wrong.push(w);
+  }
+  var choices=[q,...wrong].sort(function(){return.5-Math.random();});
+  var hpPct = (bossState.hp/bossState.maxHp)*100;
+
+  area.innerHTML = `
+<div class="boss-area">
+  <div style="font-size:1.2rem;font-weight:900;margin-bottom:8px">⚔️ Boss Battle!</div>
+  <span class="boss-emoji">🐉</span>
+  <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+    <span style="font-size:.85rem;opacity:.8">Dragon HP:</span>
+    <div class="boss-hp-bar" style="flex:1"><div class="boss-hp-fill" id="boss-hp" style="width:${hpPct}%"></div></div>
+    <span style="font-size:.85rem;opacity:.8">${bossState.hp}/${bossState.maxHp}</span>
+  </div>
+  <div class="timer-bar"><div class="timer-fill" id="boss-timer" style="width:100%"></div></div>
+  <div class="boss-equation">${total} ÷ ${d} = ?</div>
+  <div class="boss-choices" id="boss-choices">
+    ${choices.map(function(c){return '<button class="boss-choice" onclick="bossAnswer('+c+',this)">'+c+'</button>';}).join('')}
+  </div>
+</div>
+<div style="text-align:center;margin-top:12px">
+  <button onclick="renderChallengeMenu()" class="back-view-btn">← Quit Battle</button>
+</div>`;
+
+  clearInterval(bossState.timerInterval);
+  bossState.timerInterval = setInterval(function(){
+    bossState.timeLeft -= 0.1;
+    var timerEl = document.getElementById('boss-timer');
+    if (timerEl) timerEl.style.width = (bossState.timeLeft/10*100)+'%';
+    if (bossState.timeLeft <= 0) {
+      clearInterval(bossState.timerInterval);
+      if (!bossState.answered) {
+        bossState.answered=true;
+        handleWrong();
+        document.querySelectorAll('.boss-choice').forEach(function(c){
+          c.disabled=true;
+          if(parseInt(c.textContent)===bossState.current.quotient) c.classList.add('correct');
+        });
+        setTimeout(function(){ renderBoss(area); },1500);
+      }
+    }
+  }, 100);
+}
+
+window.bossAnswer = function(val, btn) {
+  if (bossState.answered) return;
+  bossState.answered = true;
+  clearInterval(bossState.timerInterval);
+  var correct = val === bossState.current.quotient;
+  document.querySelectorAll('.boss-choice').forEach(function(c){c.disabled=true;});
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) {
+    document.querySelectorAll('.boss-choice').forEach(function(c){
+      if(parseInt(c.textContent)===bossState.current.quotient) c.classList.add('correct');
+    });
+  }
+  if (correct) {
+    handleCorrect(20);
+    bossState.hp--;
+    bossState.correct++;
+    var hpEl = document.getElementById('boss-hp');
+    if (hpEl) hpEl.style.width = (bossState.hp/bossState.maxHp*100)+'%';
+  } else {
+    handleWrong();
+  }
+  bossState.count++;
+  setTimeout(function(){ renderBoss(document.getElementById('challenge-area')); }, 1400);
+};
+
+function bossVictory(area) {
+  clearInterval(bossState.timerInterval);
+  earnBadge('boss1');
+  launchConfetti();
+  area.innerHTML = `
+<div class="results-card">
+  <span class="results-emoji">🏆</span>
+  <div class="results-title">Dragon Defeated! You're a hero!</div>
+  <div class="results-score">+${bossState.correct*20} coins</div>
+  <div class="results-stat">${bossState.correct} hits on the dragon</div>
+  <div class="results-btns">
+    <button class="result-btn btn-retry" onclick="startBoss(document.getElementById('challenge-area'))">⚔️ Fight Again</button>
+    <button class="result-btn btn-home" onclick="renderChallengeMenu()">← Challenges</button>
+  </div>
+</div>`;
+}
+
+/* ─── SPEED ROUND ─── */
+var speedState = {timeLeft:60, timerInterval:null, correct:0, total:0, answered:false};
+
+function startSpeed(area) {
+  speedState = {timeLeft:60, timerInterval:null, correct:0, total:0, answered:false};
+  renderSpeedRound(area);
+}
+
+function renderSpeedRound(area) {
+  var d = [2,3,4,5,6,7,8,9][Math.floor(Math.random()*8)];
+  var q = 1+Math.floor(Math.random()*10);
+  var total = d*q;
+  speedState.current = {dividend:total,divisor:d,quotient:q};
+  speedState.answered = false;
+
+  var wrong=[];
+  while(wrong.length<3){var w=q+(Math.random()<.5?1:-1)*(1+Math.floor(Math.random()*3));if(w>0&&wrong.indexOf(w)<0&&w!==q)wrong.push(w);}
+  var choices=[q,...wrong].sort(function(){return.5-Math.random();});
+
+  area.innerHTML = `
+<div class="boss-area" style="background:linear-gradient(135deg,#0f172a,#1e293b)">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <span style="font-weight:700;font-size:.9rem">⏱️ Speed Round</span>
+    <span style="font-weight:900;font-size:1.3rem" id="speed-timer">${Math.ceil(speedState.timeLeft)}s</span>
+  </div>
+  <div class="timer-bar"><div class="timer-fill" id="speed-bar" style="width:${speedState.timeLeft/60*100}%"></div></div>
+  <div style="margin:10px 0;font-size:.9rem;opacity:.7">${speedState.correct} correct · ${speedState.total} answered</div>
+  <div class="boss-equation">${total} ÷ ${d} = ?</div>
+  <div class="boss-choices" id="speed-choices">
+    ${choices.map(function(c){return '<button class="boss-choice" onclick="speedAnswer('+c+',this)">'+c+'</button>';}).join('')}
+  </div>
+</div>
+<div style="text-align:center;margin-top:12px">
+  <button onclick="clearInterval(speedState.timerInterval);renderChallengeMenu()" class="back-view-btn">← Quit</button>
+</div>`;
+
+  if (!speedState.timerInterval) {
+    speedState.timerInterval = setInterval(function(){
+      speedState.timeLeft -= 0.1;
+      var bar = document.getElementById('speed-bar');
+      var tim = document.getElementById('speed-timer');
+      if (bar) bar.style.width = Math.max(0,speedState.timeLeft/60*100)+'%';
+      if (tim) tim.textContent = Math.ceil(Math.max(0,speedState.timeLeft))+'s';
+      if (speedState.timeLeft <= 0) {
+        clearInterval(speedState.timerInterval);
+        speedState.timerInterval = null;
+        earnBadge('speed');
+        showSpeedResults(area);
+      }
+    },100);
+  }
+}
+
+window.speedAnswer = function(val, btn) {
+  if (speedState.answered) return;
+  speedState.answered = true;
+  var correct = val === speedState.current.quotient;
+  document.querySelectorAll('.boss-choice').forEach(function(c){c.disabled=true;});
+  btn.classList.add(correct?'correct':'wrong');
+  if (correct) { handleCorrect(15); speedState.correct++; }
+  else handleWrong();
+  speedState.total++;
+  setTimeout(function(){ renderSpeedRound(document.getElementById('challenge-area')); },500);
+};
+
+function showSpeedResults(area) {
+  clearInterval(speedState.timerInterval);
+  speedState.timerInterval = null;
+  launchConfetti();
+  area.innerHTML = `
+<div class="results-card">
+  <span class="results-emoji">🚀</span>
+  <div class="results-title">Time's up! Speed round complete!</div>
+  <div class="results-score">${speedState.correct}</div>
+  <div class="results-stat">correct answers out of ${speedState.total}</div>
+  <div class="results-btns">
+    <button class="result-btn btn-retry" onclick="startSpeed(document.getElementById('challenge-area'))">⏱️ Play Again</button>
+    <button class="result-btn btn-home" onclick="renderChallengeMenu()">← Challenges</button>
+  </div>
+</div>`;
+}
+
+/* ─── PIZZA CHALLENGE ─── */
+var pizzaState = {round:0, total:5, correct:0};
+var PIZZA_PROBLEMS=[
+  {story:'You have 12 pizza slices for 4 friends.',dividend:12,divisor:4},
+  {story:'There are 18 slices to share among 6 kids.',dividend:18,divisor:6},
+  {story:'20 slices split between 5 tables.',dividend:20,divisor:5},
+  {story:'24 slices for 8 hungry people.',dividend:24,divisor:8},
+  {story:'30 slices for 6 party guests.',dividend:30,divisor:6}
+];
+
+function startPizzaChallenge(area) {
+  pizzaState = {round:0,total:PIZZA_PROBLEMS.length,correct:0};
+  renderPizzaRound(area);
+}
+
+function renderPizzaRound(area) {
+  if (pizzaState.round >= pizzaState.total) { showPizzaResults(area); return; }
+  var p = PIZZA_PROBLEMS[pizzaState.round];
+  var q = p.dividend/p.divisor;
+  var wrong=[];
+  while(wrong.length<3){var w=q+(Math.random()<.5?1:-1)*(1+Math.floor(Math.random()*3));if(w>0&&wrong.indexOf(w)<0&&w!==q)wrong.push(w);}
+  var choices=[q,...wrong].sort(function(){return.5-Math.random();});
+
+  // pizza visual
+  var pizzaHTML='<div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:8px 0">';
+  for(var i=0;i<Math.min(p.dividend,30);i++) pizzaHTML+='<span style="font-size:1.3rem">🍕</span>';
+  pizzaHTML+='</div>';
+
+  area.innerHTML = `
+<div class="prob-card" style="background:linear-gradient(135deg,#fff7ed,#ffedd5)">
+  <div class="prob-badge">🍕 Pizza Party · Round ${pizzaState.round+1} of ${pizzaState.total}</div>
+  <p style="font-size:1rem;font-weight:700;margin-bottom:8px">${p.story}</p>
+  ${pizzaHTML}
+  <div class="prob-equation" style="font-size:2rem">${p.dividend} ÷ ${p.divisor} = ?</div>
+  <div class="choices">
+    ${choices.map(function(c){
+      return '<button class="choice" onclick="checkPizzaAnswer('+c+',this,'+q+')" aria-label="'+c+' slices each">'+c+'🍕</button>';
+    }).join('')}
+  </div>
+  <div class="feedback-msg" id="pizza-feedback" aria-live="polite"></div>
+</div>`;
+}
+
+window.checkPizzaAnswer = function(val, btn, correct) {
+  document.querySelectorAll('.choice').forEach(function(c){c.disabled=true;});
+  var right = val===correct;
+  btn.classList.add(right?'correct':'wrong');
+  if(!right) document.querySelectorAll('.choice').forEach(function(c){if(parseInt(c.textContent)===correct)c.classList.add('correct');});
+  var fb=document.getElementById('pizza-feedback');
+  if(fb) fb.textContent=right?'🍕 Correct! Each person gets '+correct+' slices!':'❌ It\'s '+correct+' slices each.';
+  if(fb) fb.className='feedback-msg'+(right?'':' wrong');
+  if(right){handleCorrect(12);pizzaState.correct++;}else handleWrong();
+  pizzaState.round++;
+  setTimeout(function(){renderPizzaRound(document.getElementById('challenge-area'));},1600);
+};
+
+function showPizzaResults(area) {
+  var pct=Math.round(pizzaState.correct/pizzaState.total*100);
+  if(pct>=80) launchConfetti();
+  area.innerHTML=`
+<div class="results-card">
+  <span class="results-emoji">${pct===100?'🏆':pct>=60?'🍕':'💪'}</span>
+  <div class="results-title">${pct===100?'Perfect Pizza Party!':'Pizza Party Done!'}</div>
+  <div class="results-score">${pct}%</div>
+  <div class="results-stat">${pizzaState.correct} of ${pizzaState.total} correct</div>
+  <div class="results-btns">
+    <button class="result-btn btn-retry" onclick="startPizzaChallenge(document.getElementById('challenge-area'))">🍕 Try Again</button>
+    <button class="result-btn btn-home" onclick="renderChallengeMenu()">← Challenges</button>
+  </div>
+</div>`;
+}
+
+/* ─── FEEDING CHALLENGE ─── */
+var FEEDING_PROBLEMS=[
+  {story:'12 fish for 3 cats. How many each?',emoji:'🐟',dividend:12,divisor:3},
+  {story:'20 carrots for 4 bunnies. How many each?',emoji:'🥕',dividend:20,divisor:4},
+  {story:'15 bones for 5 dogs. How many each?',emoji:'🦴',dividend:15,divisor:5},
+  {story:'24 seeds for 6 birds. How many each?',emoji:'🌱',dividend:24,divisor:6},
+  {story:'18 fish for 9 seals. How many each?',emoji:'🐟',dividend:18,divisor:9}
+];
+
+function startFeedingChallenge(area) {
+  var fp={round:0,total:FEEDING_PROBLEMS.length,correct:0};
+  renderFeedingRound(area,fp);
+}
+
+function renderFeedingRound(area,fp) {
+  if(fp.round>=fp.total){showFeedingResults(area,fp);return;}
+  var p=FEEDING_PROBLEMS[fp.round];
+  var q=p.dividend/p.divisor;
+  var wrong=[];
+  while(wrong.length<3){var w=q+(Math.random()<.5?1:-1)*(1+Math.floor(Math.random()*3));if(w>0&&wrong.indexOf(w)<0&&w!==q)wrong.push(w);}
+  var choices=[q,...wrong].sort(function(){return.5-Math.random();});
+
+  var foodHTML='<div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:8px 0">';
+  for(var i=0;i<Math.min(p.dividend,25);i++) foodHTML+='<span style="font-size:1.2rem">'+p.emoji+'</span>';
+  foodHTML+='</div>';
+
+  area.innerHTML=`
+<div class="prob-card" style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1)">
+  <div class="prob-badge">🐾 Feeding Time · Round ${fp.round+1} of ${fp.total}</div>
+  <p style="font-size:1rem;font-weight:700;margin-bottom:8px">${p.story}</p>
+  ${foodHTML}
+  <div class="prob-equation" style="font-size:2rem">${p.dividend} ÷ ${p.divisor} = ?</div>
+  <div class="choices">
+    ${choices.map(function(c){
+      return '<button class="choice" onclick="checkFeedingAns('+c+',this,'+q+','+JSON.stringify(fp).replace(/"/g,"'")+',document.getElementById(\'challenge-area\'))" >'+c+'</button>';
+    }).join('')}
+  </div>
+  <div class="feedback-msg" id="feed-feedback" aria-live="polite"></div>
+</div>`;
+
+  // Reattach via closure
+  area.querySelectorAll('.choice').forEach(function(btn,idx){
+    btn.onclick=function(){
+      if(btn.disabled)return;
+      area.querySelectorAll('.choice').forEach(function(c){c.disabled=true;});
+      var val=choices[idx];
+      var right=val===q;
+      btn.classList.add(right?'correct':'wrong');
+      if(!right) area.querySelectorAll('.choice').forEach(function(c,i){if(choices[i]===q)c.classList.add('correct');});
+      var fb=document.getElementById('feed-feedback');
+      if(fb){fb.textContent=right?'🐾 Correct! Each animal gets '+q+'!':'❌ Answer is '+q;fb.className='feedback-msg'+(right?'':' wrong');}
+      if(right){handleCorrect(12);fp.correct++;}else handleWrong();
+      fp.round++;
+      setTimeout(function(){renderFeedingRound(area,fp);},1600);
+    };
+  });
+}
+
+function showFeedingResults(area,fp){
+  var pct=Math.round(fp.correct/fp.total*100);
+  if(pct>=80) launchConfetti();
+  area.innerHTML=`
+<div class="results-card">
+  <span class="results-emoji">${pct===100?'🏆':'🐾'}</span>
+  <div class="results-title">Feeding Time Complete!</div>
+  <div class="results-score">${pct}%</div>
+  <div class="results-stat">${fp.correct} of ${fp.total} correct</div>
+  <div class="results-btns">
+    <button class="result-btn btn-retry" onclick="startFeedingChallenge(document.getElementById('challenge-area'))">🐾 Try Again</button>
+    <button class="result-btn btn-home" onclick="renderChallengeMenu()">← Challenges</button>
+  </div>
+</div>`;
+}
+
+/* ─────────────────────────────────
+   INIT
+───────────────────────────────── */
+renderDashboard();
+updateStats();
+
+// Welcome message
+setTimeout(function(){
+  toast('👋 Welcome! Choose Learn, Practice, or Challenge!', 3000);
+}, 600);
+
+</script>
+</body>
+</html>

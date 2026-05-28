@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bril Division ÷ — Interactive Division Learning</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0e1a; --surface: #141929; --surface2: #1e2640;
+      --border: #2d3748; --accent: #6366f1; --accent-lt: rgba(99,102,241,.15);
+      --success: #22c55e; --success-lt: rgba(34,197,94,.15);
+      --danger: #ef4444; --danger-lt: rgba(239,68,68,.15);
+      --warning: #f59e0b; --warning-lt: rgba(245,158,11,.15);
+      --teal: #14b8a6; --pink: #ec4899;
+      --text: #f1f5f9; --muted: #94a3b8; --dim: #64748b;
+      --r: 16px; --r-sm: 10px;
+    }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+    /* Stars */
+    .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; animation: twinkle var(--d,3s) var(--dl,0s) ease-in-out infinite alternate; }
+    @keyframes twinkle { from { opacity:.1; transform:scale(.8); } to { opacity:.7; transform:scale(1.3); } }
+
+    /* Layout */
+    .app { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Header */
+    .hdr { padding: 12px 20px; display: flex; align-items: center; gap: 14px; background: rgba(20,25,41,.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .hdr-logo { font-size: 1.25rem; font-weight: 900; letter-spacing: -.05em; background: linear-gradient(135deg,#818cf8,#a78bfa,#ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; white-space: nowrap; }
+    .hdr-bar { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .hdr-fill { height: 100%; background: linear-gradient(90deg,#6366f1,#a78bfa); border-radius: 3px; transition: width .5s ease; }
+    .stat-chip { display: flex; align-items: center; gap: 4px; padding: 5px 11px; background: var(--surface2); border-radius: 100px; font-size: .8rem; font-weight: 700; border: 1px solid var(--border); white-space: nowrap; }
+
+    /* Screens */
+    .screen { display: none; flex-direction: column; gap: 20px; flex: 1; padding: 22px 18px 40px; max-width: 660px; width: 100%; margin: 0 auto; }
+    .screen.active { display: flex; }
+
+    /* Welcome */
+    .w-hero { text-align: center; padding: 28px 0 10px; }
+    .w-emoji { font-size: 5rem; display: block; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    .w-title { font-size: clamp(2.4rem,8vw,3.6rem); font-weight: 900; letter-spacing: -.05em; line-height: 1; margin-bottom: 10px; }
+    .w-title .gr { background: linear-gradient(135deg,#818cf8,#a78bfa,#ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .w-sub { font-size: .95rem; color: var(--muted); max-width: 360px; margin: 0 auto 24px; }
+
+    /* Level cards */
+    .lvl-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .lvl-card { background: var(--surface); border: 2px solid var(--border); border-radius: var(--r); padding: 18px 10px; text-align: center; cursor: pointer; transition: transform .18s, border-color .18s, background .18s; }
+    .lvl-card:hover, .lvl-card.sel { transform: translateY(-4px); border-color: var(--accent); background: var(--accent-lt); }
+    .lvl-card .le { font-size: 1.9rem; display: block; margin-bottom: 6px; }
+    .lvl-card .ln { font-size: .82rem; font-weight: 800; margin-bottom: 3px; }
+    .lvl-card .ld { font-size: .7rem; color: var(--muted); }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 13px 28px; border: none; border-radius: var(--r-sm); font-size: .95rem; font-weight: 800; cursor: pointer; transition: transform .15s, box-shadow .15s, opacity .15s; letter-spacing: -.01em; }
+    .btn:active { transform: scale(.97); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-p { background: linear-gradient(135deg,#6366f1,#8b5cf6); color: #fff; box-shadow: 0 4px 20px rgba(99,102,241,.4); }
+    .btn-p:hover:not(:disabled) { box-shadow: 0 6px 28px rgba(99,102,241,.55); transform: translateY(-2px); }
+    .btn-o { background: transparent; border: 2px solid var(--border); color: var(--muted); }
+    .btn-o:hover { border-color: var(--accent); color: var(--text); }
+    .btn-full { width: 100%; }
+
+    /* Progress steps */
+    .p-steps { display: flex; gap: 4px; margin-bottom: 4px; }
+    .ps { flex: 1; height: 4px; border-radius: 2px; background: var(--border); transition: background .3s; }
+    .ps.done { background: var(--success); }
+    .ps.now { background: var(--accent); }
+
+    /* Lesson card */
+    .lc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px 20px; position: relative; overflow: hidden; }
+    .lc::before { content:''; position:absolute; top:0;left:0;right:0; height:3px; background:linear-gradient(90deg,#6366f1,#a78bfa,#ec4899); }
+    .lc-lbl { font-size: .68rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .lc-title { font-size: 1.35rem; font-weight: 900; letter-spacing: -.03em; margin-bottom: 10px; line-height: 1.25; }
+    .lc-body { font-size: .88rem; color: var(--muted); line-height: 1.65; }
+
+    /* Visual area */
+    .vis { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r); min-height: 160px; display: flex; align-items: center; justify-content: center; padding: 18px; flex-wrap: wrap; gap: 8px; }
+
+    /* Equation display */
+    .eq { text-align: center; font-size: 2rem; font-weight: 900; letter-spacing: -.04em; padding: 14px 18px; background: var(--surface); border-radius: var(--r-sm); border: 1px solid var(--border); }
+    .eq .ea { color: var(--accent); }
+    .eq .er { color: var(--success); }
+
+    /* Slider */
+    .sl-wrap { display: flex; flex-direction: column; gap: 8px; }
+    .sl-lbl { font-size: .82rem; font-weight: 700; color: var(--muted); display: flex; justify-content: space-between; }
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; background: var(--border); border-radius: 3px; outline: none; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:22px; height:22px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#a78bfa); cursor:pointer; box-shadow:0 2px 8px rgba(99,102,241,.4); }
+
+    /* Cookie items */
+    .c-item { font-size: 1.5rem; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); transition: background .3s, transform .15s; cursor: pointer; background: var(--surface); }
+    .c-item:hover { transform: scale(1.15); }
+    .c-item.placed { opacity: .4; cursor: default; }
+
+    /* Plates */
+    .plates-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+    .plate { width: 76px; height: 76px; border-radius: 50%; border: 3px dashed var(--border); display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 2px; padding: 6px; transition: border-color .2s, background .2s; position: relative; }
+    .plate.full { border-color: var(--success); border-style: solid; }
+    .plate-cnt { position: absolute; top: -8px; right: -8px; background: var(--accent); color: #fff; font-size: .66rem; font-weight: 800; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+    /* Group board */
+    .gb { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+    .gi { width: 38px; height: 38px; border-radius: 8px; background: var(--surface); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; transition: transform .15s, border-color .15s, background .15s; }
+    .gi:hover { transform: scale(1.1); }
+    .gi.g0 { border-color:#6366f1; background:rgba(99,102,241,.2); }
+    .gi.g1 { border-color:#ec4899; background:rgba(236,72,153,.2); }
+    .gi.g2 { border-color:#14b8a6; background:rgba(20,184,166,.2); }
+    .gi.g3 { border-color:#f59e0b; background:rgba(245,158,11,.2); }
+    .gi.g4 { border-color:#22c55e; background:rgba(34,197,94,.2); }
+    .gi.g5 { border-color:#f472b6; background:rgba(244,114,182,.2); }
+
+    /* Array */
+    .arr-grid { display: grid; gap: 5px; justify-content: center; justify-items: center; }
+    .arr-cell { width: 34px; height: 34px; border-radius: 8px; background: var(--surface); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: .15s; }
+    .arr-cell.r0{border-color:#6366f1;background:rgba(99,102,241,.15);}
+    .arr-cell.r1{border-color:#ec4899;background:rgba(236,72,153,.15);}
+    .arr-cell.r2{border-color:#14b8a6;background:rgba(20,184,166,.15);}
+    .arr-cell.r3{border-color:#f59e0b;background:rgba(245,158,11,.15);}
+    .arr-cell.r4{border-color:#22c55e;background:rgba(34,197,94,.15);}
+    .arr-cell.r5{border-color:#f472b6;background:rgba(244,114,182,.15);}
+
+    /* Quiz */
+    .q-q { font-size: 2.2rem; font-weight: 900; letter-spacing: -.04em; text-align: center; margin-bottom: 20px; }
+    .q-q .blank { display: inline-block; min-width: 56px; border-bottom: 3px solid var(--accent); color: var(--accent); padding: 0 6px; }
+    .choices { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; }
+    .ch { background: var(--surface); border: 2px solid var(--border); border-radius: var(--r-sm); padding: 16px; font-size: 1.25rem; font-weight: 800; color: var(--text); cursor: pointer; transition: transform .15s, border-color .15s, background .15s; text-align: center; }
+    .ch:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-lt); transform: translateY(-2px); }
+    .ch.ok { border-color: var(--success); background: var(--success-lt); color: var(--success); }
+    .ch.bad { border-color: var(--danger); background: var(--danger-lt); color: var(--danger); animation: shake .4s; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+    .ch:disabled { cursor: default; }
+
+    /* Feedback */
+    .fb { border-radius: var(--r-sm); padding: 12px 16px; font-size: .85rem; line-height: 1.55; display: none; }
+    .fb.show { display: block; }
+    .fb.ok { background: var(--success-lt); border: 1px solid rgba(34,197,94,.3); color: #4ade80; }
+    .fb.bad { background: var(--danger-lt);  border: 1px solid rgba(239,68,68,.3);  color: #f87171; }
+    .fb.hint { background: var(--warning-lt); border: 1px solid rgba(245,158,11,.3); color: #fcd34d; }
+    .fb-ttl { font-weight: 800; font-size: .9rem; margin-bottom: 3px; }
+
+    /* Hint btn */
+    .hint-btn { background: none; border: 1px solid var(--warning); border-radius: var(--r-sm); padding: 8px 14px; font-size: .8rem; font-weight: 700; color: var(--warning); cursor: pointer; transition: background .15s; }
+    .hint-btn:hover { background: var(--warning-lt); }
+
+    /* Step dots */
+    .dots { display: flex; justify-content: center; gap: 7px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background .2s, transform .2s; }
+    .dot.done { background: var(--success); }
+    .dot.now { background: var(--accent); transform: scale(1.4); }
+
+    /* Achievement popup */
+    .ach-pop { position: fixed; top: 72px; right: 18px; background: var(--surface); border: 1px solid var(--warning); border-radius: var(--r); padding: 12px 16px; display: flex; align-items: center; gap: 11px; z-index: 2000; transform: translateX(240%); transition: transform .4s cubic-bezier(.34,1.56,.64,1); max-width: 260px; box-shadow: 0 8px 32px rgba(0,0,0,.3); }
+    .ach-pop.show { transform: translateX(0); }
+    .ap-ico { font-size: 1.8rem; flex-shrink: 0; }
+    .ap-ttl { font-weight: 800; font-size: .82rem; color: var(--warning); margin-bottom: 2px; }
+    .ap-nm { font-size: .75rem; color: var(--muted); }
+
+    /* Results */
+    .res-hero { text-align: center; padding: 16px 0; }
+    .res-score { font-size: 5rem; font-weight: 900; letter-spacing: -.06em; background: linear-gradient(135deg,#6366f1,#a78bfa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .res-lbl { font-size: .85rem; color: var(--muted); margin-bottom: 20px; }
+    .stats-g { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .st-box { background: var(--surface2); border-radius: var(--r-sm); border: 1px solid var(--border); padding: 14px 10px; text-align: center; }
+    .st-v { font-size: 1.7rem; font-weight: 900; letter-spacing: -.04em; }
+    .st-l { font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-top: 3px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .badge { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 8px 14px; display: flex; align-items: center; gap: 7px; font-size: .78rem; font-weight: 700; }
+    .badge.on { border-color: var(--warning); background: var(--warning-lt); color: var(--warning); }
+    .badge.off { opacity: .3; }
+
+    /* Confetti */
+    .conf-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 3000; }
+    .conf { position: absolute; top: -20px; animation: fall var(--d,2.5s) var(--dl,0s) ease-in forwards; }
+    @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+
+    /* Util */
+    .row { display: flex; align-items: center; }
+    .between { justify-content: space-between; }
+    .center { justify-content: center; }
+    .col { flex-direction: column; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 14px; }
+    .small { font-size: .78rem; color: var(--muted); font-weight: 700; }
+    .sec-lbl { font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--dim); margin-bottom: 8px; }
+
+    /* Number line */
+    .nl-wrap { width: 100%; position: relative; height: 90px; overflow: hidden; }
+    .nl-track { position: absolute; bottom: 28px; left: 30px; right: 30px; height: 3px; background: var(--border); border-radius: 2px; }
+    .nl-hop { position: absolute; bottom: 31px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); border-right: 2px solid var(--accent); border-radius: 14px 14px 0 0; height: 24px; transition: all .45s ease; }
+    .nl-dot { position: absolute; bottom: 22px; width: 13px; height: 13px; border-radius: 50%; background: var(--accent); transform: translateX(-50%); transition: left .45s ease; z-index: 5; }
+    .nl-tick { position: absolute; bottom: 8px; font-size: .65rem; font-weight: 700; color: var(--muted); transform: translateX(-50%); }
+
+    @media(max-width:480px) {
+      .screen { padding: 14px 12px 32px; }
+      .lc { padding: 18px 14px; }
+      .lvl-grid { gap: 6px; }
+      .lvl-card { padding: 14px 8px; }
+      .choices { gap: 6px; }
+      .ch { padding: 13px; font-size: 1.1rem; }
+      .q-q { font-size: 1.8rem; }
+      .res-score { font-size: 4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="ach-pop" id="achPop" role="alert" aria-live="polite">
+  <div class="ap-ico" id="achIco">🏆</div>
+  <div>
+    <div class="ap-ttl">Achievement Unlocked!</div>
+    <div class="ap-nm" id="achNm">—</div>
+  </div>
+</div>
+
+<div class="conf-wrap" id="confWrap"></div>
+
+<div class="app">
+  <!-- Header -->
+  <header class="hdr">
+    <div class="hdr-logo">Bril÷</div>
+    <div class="hdr-bar"><div class="hdr-fill" id="pBar" style="width:0%"></div></div>
+    <div class="row gap-2">
+      <div class="stat-chip" id="scoreC">⭐ 0</div>
+      <div class="stat-chip" id="streakC">🔥 0</div>
+    </div>
+  </header>
+
+  <!-- ══ SCREEN 0: WELCOME ══ -->
+  <div class="screen active" id="s0">
+    <div class="w-hero">
+      <span class="w-emoji">➗</span>
+      <h1 class="w-title">Bril <span class="gr">Division</span></h1>
+      <p class="w-sub">Discover division through puzzles, pictures &amp; play. Math is an adventure! 🚀</p>
+    </div>
+
+    <div class="lvl-grid">
+      <div class="lvl-card sel" data-lv="intro" onclick="pickLevel(this,'intro')">
+        <span class="le">🌱</span>
+        <div class="ln">Intro</div>
+        <div class="ld">Sharing &amp; grouping</div>
+      </div>
+      <div class="lvl-card" data-lv="explorer" onclick="pickLevel(this,'explorer')">
+        <span class="le">🗺️</span>
+        <div class="ln">Explorer</div>
+        <div class="ld">Arrays &amp; patterns</div>
+      </div>
+      <div class="lvl-card" data-lv="champion" onclick="pickLevel(this,'champion')">
+        <span class="le">🏆</span>
+        <div class="ln">Champion</div>
+        <div class="ld">Mixed challenges</div>
+      </div>
+    </div>
+
+    <button class="btn btn-p btn-full" onclick="goTo(1)" style="padding:16px;font-size:1.05rem;">Start Adventure ✦</button>
+
+    <div class="row center gap-2" style="flex-wrap:wrap;">
+      <span style="font-size:.72rem;color:var(--dim);background:var(--surface);border-radius:100px;padding:4px 11px;">✅ Grades 2–5</span>
+      <span style="font-size:.72rem;color:var(--dim);background:var(--surface);border-radius:100px;padding:4px 11px;">🎮 Gamified</span>
+      <span style="font-size:.72rem;color:var(--dim);background:var(--surface);border-radius:100px;padding:4px 11px;">💡 Visual Learning</span>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 1: DISCOVER DIVISION (slider) ══ -->
+  <div class="screen" id="s1">
+    <div class="p-steps" id="ps1"></div>
+    <div class="lc">
+      <div class="lc-lbl">Discovery · Step 1 of 5</div>
+      <div class="lc-title">🍪 Cookie Time!</div>
+      <div class="lc-body">You have <strong>12 cookies</strong>. Move the slider to share them equally among different numbers of friends. Watch what happens!</div>
+    </div>
+
+    <div class="vis" id="cookieVis" style="flex-direction:column;gap:14px;min-height:130px;">
+      <div id="cookieRow" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:320px;"></div>
+    </div>
+
+    <div class="sl-wrap">
+      <div class="sl-lbl">
+        <span>Friends: <strong id="friendsV" style="color:var(--accent)">3</strong></span>
+        <span style="font-size:.72rem;color:var(--dim)">Try 1, 2, 3, 4, 6</span>
+      </div>
+      <input type="range" id="friendsSl" min="1" max="6" value="3" oninput="slideCookies(this.value)">
+    </div>
+
+    <div class="eq" id="cookieEq">12 ÷ <span class="ea" id="eqD">3</span> = <span class="er" id="eqR">4</span></div>
+
+    <div class="fb hint show">
+      <div class="fb-ttl">💡 Notice something?</div>
+      Total ÷ number of friends = cookies per friend. You just discovered division!
+    </div>
+
+    <button class="btn btn-p btn-full" onclick="goTo(2)">Continue →</button>
+  </div>
+
+  <!-- ══ SCREEN 2: EQUAL SHARING (tap to place) ══ -->
+  <div class="screen" id="s2">
+    <div class="p-steps" id="ps2"></div>
+    <div class="lc">
+      <div class="lc-lbl">Equal Sharing · Step 2 of 5</div>
+      <div class="lc-title">🍎 Share the Apples!</div>
+      <div class="lc-body">There are <strong>15 apples</strong> to share equally among <strong>5 friends</strong>. Tap each apple to place it on the next plate!</div>
+    </div>
+
+    <div class="vis" style="min-height:90px;"><div id="appleRow" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;"></div></div>
+    <div class="plates-row" id="platesRow"></div>
+
+    <div class="eq" id="shareEq" style="display:none;">15 ÷ 5 = <span class="er">3</span> 🎉</div>
+    <div class="fb" id="shareFb"></div>
+    <button class="btn btn-p btn-full" id="shareCont" onclick="goTo(3)" style="display:none;">Continue →</button>
+  </div>
+
+  <!-- ══ SCREEN 3: EQUAL GROUPING (tap to group) ══ -->
+  <div class="screen" id="s3">
+    <div class="p-steps" id="ps3"></div>
+    <div class="lc">
+      <div class="lc-lbl">Equal Grouping · Step 3 of 5</div>
+      <div class="lc-title">⭐ Group the Stars!</div>
+      <div class="lc-body">Tap the stars to group them by <strong>4</strong>. When a group of 4 is complete, a new one starts. How many full groups fit in 20?</div>
+    </div>
+
+    <div class="vis" style="flex-direction:column;gap:12px;min-height:190px;">
+      <div id="groupBoard" class="gb"></div>
+      <div id="groupBadges" class="row center gap-2" style="flex-wrap:wrap;"></div>
+    </div>
+
+    <div class="eq" id="groupEq" style="display:none;">20 ÷ 4 = <span class="er">5</span> groups 🌟</div>
+    <div class="fb hint show" id="groupHint">
+      <div class="fb-ttl">💡 Different question!</div>
+      Instead of "how many in each group?" we're asking "how many groups?"
+    </div>
+    <button class="btn btn-p btn-full" id="groupCont" onclick="goTo(4)" style="display:none;">Continue →</button>
+  </div>
+
+  <!-- ══ SCREEN 4: ARRAYS ══ -->
+  <div class="screen" id="s4">
+    <div class="p-steps" id="ps4"></div>
+    <div class="lc">
+      <div class="lc-lbl">Arrays · Step 4 of 5</div>
+      <div class="lc-title">🔲 Division Arrays</div>
+      <div class="lc-body">Division = equal rows in a rectangle! Adjust total &amp; rows. Rows × Columns = Total. Watch the equation update live!</div>
+    </div>
+
+    <div class="vis" style="flex-direction:column;gap:12px;min-height:200px;">
+      <div id="arrGrid" class="arr-grid"></div>
+    </div>
+
+    <div class="row col gap-3">
+      <div class="sl-wrap">
+        <div class="sl-lbl"><span>Total squares: <strong id="arrT" style="color:var(--teal)">24</strong></span></div>
+        <input type="range" id="arrTS" min="4" max="36" value="24" oninput="updArr()">
+      </div>
+      <div class="sl-wrap">
+        <div class="sl-lbl"><span>Number of rows: <strong id="arrR" style="color:var(--accent)">4</strong></span></div>
+        <input type="range" id="arrRS" min="1" max="9" value="4" oninput="updArr()">
+      </div>
+    </div>
+
+    <div class="eq" id="arrEq">24 ÷ 4 = <span class="er" id="arrRes">6</span> per row</div>
+    <div class="fb bad" id="arrWarn" style="display:none;"><div class="fb-ttl">⚠️ Doesn't divide evenly!</div>Try adjusting to get a whole number result.</div>
+
+    <button class="btn btn-p btn-full" onclick="goTo(5)">Continue →</button>
+  </div>
+
+  <!-- ══ SCREEN 5: QUIZ ══ -->
+  <div class="screen" id="s5">
+    <div class="p-steps" id="ps5"></div>
+    <div class="row between" style="align-items:center;">
+      <div class="small">Challenge Mode 🎯</div>
+      <div class="small" id="qProg" style="color:var(--accent)">Problem 1 / 6</div>
+    </div>
+
+    <div class="dots" id="qDots"></div>
+
+    <div class="lc" style="text-align:center;">
+      <div id="qVis" style="font-size:1.7rem;margin-bottom:10px;min-height:44px;line-height:1.4;word-break:break-all;"></div>
+      <div class="q-q" id="qQ"></div>
+      <div class="choices" id="qChoices"></div>
+    </div>
+
+    <div class="fb" id="qFb"></div>
+
+    <div class="row between" style="align-items:center;">
+      <button class="hint-btn" id="hintB" onclick="doHint()">💡 Hint</button>
+      <button class="btn btn-p" id="nextB" onclick="nextQ()" style="display:none;">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 6: RESULTS ══ -->
+  <div class="screen" id="s6">
+    <div class="res-hero">
+      <div id="resEmo" style="font-size:3.5rem;margin-bottom:10px;">🎉</div>
+      <div class="res-score" id="resScore">0</div>
+      <div class="res-lbl">Total Points Earned</div>
+    </div>
+
+    <div class="stats-g">
+      <div class="st-box"><div class="st-v" id="stC" style="color:var(--success)">0</div><div class="st-l">Correct</div></div>
+      <div class="st-box"><div class="st-v" id="stS" style="color:var(--warning)">0</div><div class="st-l">Best Streak</div></div>
+      <div class="st-box"><div class="st-v" id="stA" style="color:var(--accent)">0%</div><div class="st-l">Accuracy</div></div>
+    </div>
+
+    <div>
+      <div class="sec-lbl">Badges Earned</div>
+      <div class="badges" id="badgeGrid"></div>
+    </div>
+
+    <div class="row col gap-2">
+      <button class="btn btn-p btn-full" onclick="restart()">Play Again 🔄</button>
+      <button class="btn btn-o btn-full" onclick="location.href='index.html'">← Back to Hub</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────
+var G = { level:'intro', score:0, streak:0, best:0, correct:0, total:0, screen:0, hintLv:0, qIdx:0, answered:false };
+var earned = new Set();
+
+var BADGES = [
+  {id:'first',  icon:'🌟', name:'First Step',    desc:'Complete your first problem'},
+  {id:'streak', icon:'🔥', name:'Hot Streak',    desc:'3 correct in a row'},
+  {id:'cookie', icon:'🍪', name:'Cookie Chef',   desc:'Complete the sharing lesson'},
+  {id:'star',   icon:'⭐', name:'Star Power',    desc:'Complete the grouping lesson'},
+  {id:'array',  icon:'🔲', name:'Array Pro',     desc:'Explore the array lesson'},
+  {id:'master', icon:'🏆', name:'Math Master',   desc:'Finish the full challenge'},
+  {id:'perfect',icon:'💯', name:'Perfect!',      desc:'100% on the quiz'},
+  {id:'speedy', icon:'⚡', name:'Quick Thinker', desc:'Answer in under 5 seconds'}
+];
+
+// ─── STARS ───────────────────────────────────────────
+(function(){
+  var w = document.getElementById('stars');
+  for(var i=0;i<55;i++){
+    var s=document.createElement('div'); s.className='star';
+    s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%';
+    s.style.setProperty('--d',(2+Math.random()*3)+'s');
+    s.style.setProperty('--dl',(Math.random()*4)+'s');
+    w.appendChild(s);
+  }
+})();
+
+// ─── NAVIGATION ──────────────────────────────────────
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('s'+n).classList.add('active');
+  G.screen=n;
+  document.getElementById('pBar').style.width=(n/6*100)+'%';
+  buildSteps(n);
+  window.scrollTo(0,0);
+  if(n===1) initCookies();
+  if(n===2) initShare();
+  if(n===3) initGroup();
+  if(n===4){initArr(); badge('array');}
+  if(n===5) initQuiz();
+  if(n===6) showResults();
+}
+
+function buildSteps(screen){
+  if(screen<1||screen>5) return;
+  var id='ps'+screen;
+  var el=document.getElementById(id);
+  if(!el) return;
+  el.innerHTML='';
+  for(var i=1;i<=5;i++){
+    var d=document.createElement('div');
+    d.className='ps'+(i<screen?' done':i===screen?' now':'');
+    el.appendChild(d);
+  }
+}
+
+function pickLevel(el,lv){
+  document.querySelectorAll('.lvl-card').forEach(function(c){c.classList.remove('sel');});
+  el.classList.add('sel'); G.level=lv;
+}
+
+// ─── SCREEN 1: COOKIE SLIDER ─────────────────────────
+function initCookies(){ slideCookies(3); }
+
+function slideCookies(v){
+  v=parseInt(v);
+  var map=[1,2,3,4,6,12];
+  var f=map[v-1]||v;
+  document.getElementById('friendsV').textContent=f;
+  var total=12, per=total/f;
+  document.getElementById('eqD').textContent=f;
+  document.getElementById('eqR').textContent=Number.isInteger(per)?per:per.toFixed(1);
+  var row=document.getElementById('cookieRow'); row.innerHTML='';
+  var colors=['#6366f1','#ec4899','#14b8a6','#f59e0b','#22c55e','#f472b6','#818cf8','#fb923c','#2dd4bf','#fbbf24','#4ade80','#f9a8d4'];
+  for(var i=0;i<12;i++){
+    var d=document.createElement('div'); d.className='c-item';
+    var pi=Number.isInteger(per)?Math.floor(i/per):i;
+    d.style.background=Number.isInteger(per)?'rgba('+hRgb(colors[pi%colors.length])+',0.22)':'var(--surface)';
+    d.textContent='🍪'; row.appendChild(d);
+  }
+}
+function hRgb(h){var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return r+','+g+','+b;}
+
+// ─── SCREEN 2: EQUAL SHARING ─────────────────────────
+var sState={placed:null,perPlate:3,next:0,tot:0};
+
+function initShare(){
+  sState={placed:new Array(5).fill(0),perPlate:3,next:0,tot:0};
+  var ar=document.getElementById('appleRow'); ar.innerHTML='';
+  for(var i=0;i<15;i++){
+    (function(idx){
+      var d=document.createElement('div'); d.className='c-item'; d.id='ap'+idx; d.textContent='🍎';
+      d.onclick=function(){placeApple(idx);}; ar.appendChild(d);
+    })(i);
+  }
+  var pr=document.getElementById('platesRow'); pr.innerHTML='';
+  for(var j=0;j<5;j++){
+    (function(pi){
+      var p=document.createElement('div'); p.className='plate'; p.id='pl'+pi;
+      p.setAttribute('aria-label','Plate '+(pi+1));
+      p.innerHTML='<div class="plate-cnt" style="display:none" id="pc'+pi+'">0</div>';
+      pr.appendChild(p);
+    })(j);
+  }
+  document.getElementById('shareEq').style.display='none';
+  document.getElementById('shareFb').className='fb';
+  document.getElementById('shareCont').style.display='none';
+}
+
+function placeApple(idx){
+  var el=document.getElementById('ap'+idx);
+  if(el.classList.contains('placed')) return;
+  el.classList.add('placed');
+  var pi=sState.next;
+  var plate=document.getElementById('pl'+pi);
+  var mini=document.createElement('span'); mini.textContent='🍎'; mini.style.fontSize='.65rem'; plate.appendChild(mini);
+  sState.placed[pi]++; sState.tot++;
+  var cnt=document.getElementById('pc'+pi); cnt.textContent=sState.placed[pi]; cnt.style.display='flex';
+  if(sState.placed[pi]>=sState.perPlate){ plate.classList.add('full'); sState.next++; }
+  if(sState.tot>=15){
+    pts(15); badge('first'); badge('cookie');
+    document.getElementById('shareEq').style.display='block';
+    document.getElementById('shareCont').style.display='flex';
+    var fb=document.getElementById('shareFb'); fb.className='fb ok show';
+    fb.innerHTML='<div class="fb-ttl">✅ Perfect sharing!</div>15 ÷ 5 = 3 each. Everyone is equal!';
+    confetti(18);
+  }
+}
+
+// ─── SCREEN 3: EQUAL GROUPING ────────────────────────
+var gState={assign:null,curGrp:0,curCnt:0};
+
+function initGroup(){
+  gState={assign:new Array(20).fill(-1),curGrp:0,curCnt:0};
+  var b=document.getElementById('groupBoard'); b.innerHTML='';
+  for(var i=0;i<20;i++){
+    (function(idx){
+      var d=document.createElement('div'); d.className='gi'; d.id='st'+idx; d.textContent='⭐';
+      d.setAttribute('aria-label','Star '+(idx+1));
+      d.onclick=function(){tapStar(idx);}; b.appendChild(d);
+    })(i);
+  }
+  document.getElementById('groupBadges').innerHTML='';
+  document.getElementById('groupEq').style.display='none';
+  document.getElementById('groupCont').style.display='none';
+  document.getElementById('groupHint').style.display='block';
+}
+
+function tapStar(idx){
+  if(gState.assign[idx]!==-1) return;
+  gState.assign[idx]=gState.curGrp; gState.curCnt++;
+  var el=document.getElementById('st'+idx);
+  el.className='gi g'+gState.curGrp; el.style.cursor='default';
+  if(gState.curCnt>=4){
+    gState.curGrp++; gState.curCnt=0; updGroupBadges();
+    if(gState.curGrp>=5){
+      pts(15); badge('star');
+      document.getElementById('groupEq').style.display='block';
+      document.getElementById('groupCont').style.display='flex';
+      document.getElementById('groupHint').style.display='none';
+      confetti(22);
+    }
+  } else { updGroupBadges(); }
+}
+
+function updGroupBadges(){
+  var bg=document.getElementById('groupBadges'); bg.innerHTML='';
+  var cols=['#6366f1','#ec4899','#14b8a6','#f59e0b','#22c55e','#f472b6'];
+  for(var g=0;g<gState.curGrp;g++){
+    var c=document.createElement('div');
+    c.style.cssText='padding:5px 13px;border-radius:100px;font-size:.76rem;font-weight:800;border:1.5px solid '+cols[g%6]+';color:'+cols[g%6]+';background:'+cols[g%6]+'22;';
+    c.textContent='Group '+(g+1)+' ✓'; bg.appendChild(c);
+  }
+}
+
+// ─── SCREEN 4: ARRAY ─────────────────────────────────
+function initArr(){ updArr(); }
+
+function updArr(){
+  var total=parseInt(document.getElementById('arrTS').value);
+  var rows=parseInt(document.getElementById('arrRS').value);
+  document.getElementById('arrT').textContent=total;
+  document.getElementById('arrR').textContent=rows;
+  var cols=total/rows, whole=Number.isInteger(cols);
+  document.getElementById('arrWarn').style.display=whole?'none':'block';
+  document.getElementById('arrEq').innerHTML=total+' ÷ '+rows+' = '+(whole?'<span class="er">'+cols+'</span> per row':'<span style="color:var(--danger)">'+cols.toFixed(1)+'</span> (not whole!)');
+  var grid=document.getElementById('arrGrid'); grid.innerHTML='';
+  var c=Math.ceil(cols);
+  grid.style.gridTemplateColumns='repeat('+Math.min(c,18)+', 34px)';
+  for(var r=0;r<rows;r++){
+    for(var ci=0;ci<c;ci++){
+      var cell=document.createElement('div');
+      var idx=r*c+ci;
+      if(idx<total){ cell.className='arr-cell r'+(r%6); cell.textContent='▪'; }
+      else { cell.style.cssText='width:34px;height:34px;'; }
+      grid.appendChild(cell);
+    }
+  }
+}
+
+// ─── SCREEN 5: QUIZ ──────────────────────────────────
+var Qs=[], qStart;
+
+var POOLS={
+  intro:   [{a:6,b:2},{a:9,b:3},{a:8,b:4},{a:10,b:5},{a:12,b:3},{a:15,b:5}],
+  explorer:[{a:16,b:4},{a:18,b:6},{a:20,b:4},{a:24,b:6},{a:21,b:7},{a:28,b:4}],
+  champion:[{a:36,b:6},{a:42,b:7},{a:48,b:8},{a:35,b:5},{a:56,b:7},{a:63,b:9}]
+};
+var EMOTES=['🍕','🍎','🌟','🎯','🍬','🐟'];
+
+function initQuiz(){
+  var pool=(POOLS[G.level]||POOLS.intro).slice().sort(function(){return Math.random()-.5;});
+  Qs=pool.map(function(p,i){
+    return {a:p.a,b:p.b,q:p.a/p.b,em:EMOTES[i%6],t:i%3};
+  });
+  G.qIdx=0; G.correct=0; G.total=Qs.length; G.streak=0; G.best=0;
+  var dots=document.getElementById('qDots'); dots.innerHTML='';
+  Qs.forEach(function(_,i){
+    var d=document.createElement('div'); d.className='dot'+(i===0?' now':''); d.id='qd'+i; dots.appendChild(d);
+  });
+  loadQ();
+}
+
+function loadQ(){
+  if(G.qIdx>=Qs.length){goTo(6);return;}
+  var p=Qs[G.qIdx]; G.answered=false; G.hintLv=0; qStart=Date.now();
+  document.getElementById('qProg').textContent='Problem '+(G.qIdx+1)+' / '+Qs.length;
+  document.getElementById('qFb').className='fb';
+  document.getElementById('nextB').style.display='none';
+  document.getElementById('hintB').disabled=false; document.getElementById('hintB').textContent='💡 Hint';
+  document.querySelectorAll('.dot').forEach(function(d,i){d.className='dot'+(i<G.qIdx?' done':i===G.qIdx?' now':'');});
+
+  // Visual emoji (capped at 12)
+  document.getElementById('qVis').textContent=p.em.repeat(Math.min(p.a,12));
+
+  var q=document.getElementById('qQ'), correct, wrong;
+  if(p.t===0){ q.textContent=p.a+' ÷ '+p.b+' = ?'; correct=p.q; wrong=wrongs(correct,1,20); }
+  else if(p.t===1){ q.innerHTML=p.a+' ÷ <span class="blank">?</span> = '+p.q; correct=p.b; wrong=wrongs(correct,1,12); }
+  else { q.innerHTML='<span class="blank">?</span> ÷ '+p.b+' = '+p.q; correct=p.a; wrong=wrongs(correct,2,80); }
+
+  var all=wrong.slice(0,3).concat([correct]).sort(function(){return Math.random()-.5;});
+  var ch=document.getElementById('qChoices'); ch.innerHTML='';
+  all.forEach(function(v){
+    var btn=document.createElement('button'); btn.className='ch'; btn.textContent=v;
+    btn.onclick=function(){checkQ(v,correct,btn);}; ch.appendChild(btn);
+  });
+}
+
+function wrongs(correct,mn,mx){
+  var s=new Set(),tries=0;
+  while(s.size<3&&tries<60){
+    var d=Math.floor(Math.random()*6)-3; if(!d) d=1;
+    var v=correct+d; if(v>=mn&&v<=mx&&v!==correct) s.add(v); tries++;
+  }
+  for(var v=mn;s.size<3&&v<=mx;v++) if(v!==correct) s.add(v);
+  return Array.from(s);
+}
+
+function checkQ(chosen,correct,btn){
+  if(G.answered) return;
+  G.answered=true;
+  var ms=(Date.now()-qStart)/1000;
+  document.querySelectorAll('.ch').forEach(function(b){
+    b.disabled=true;
+    if(parseInt(b.textContent)===correct) b.classList.add('ok');
+  });
+  var fb=document.getElementById('qFb');
+  if(chosen===correct){
+    G.correct++; G.streak++; if(G.streak>G.best) G.best=G.streak;
+    var p=10; if(G.streak>=3){p=15;badge('streak');} if(ms<5){p+=5;badge('speedy');}
+    pts(p); badge('first');
+    fb.className='fb ok show'; fb.innerHTML='<div class="fb-ttl">✅ Correct! +'+p+' pts</div>'+enc()+(G.streak>1?' 🔥 Streak: '+G.streak+'!':'');
+    confetti(8);
+  } else {
+    btn.classList.add('bad'); G.streak=0;
+    var cur=Qs[G.qIdx];
+    fb.className='fb bad show'; fb.innerHTML='<div class="fb-ttl">❌ Not quite!</div>Answer: <strong>'+correct+'</strong>. Think: '+cur.b+' × ? = '+cur.a;
+  }
+  document.getElementById('streakC').textContent='🔥 '+G.streak;
+  document.getElementById('nextB').style.display='inline-flex';
+  document.getElementById('hintB').style.display='none';
+}
+
+function enc(){var m=['Amazing!','Brilliant!','You got it!','Perfect!','Excellent!','Way to go!'];return m[Math.floor(Math.random()*m.length)];}
+
+function doHint(){
+  G.hintLv++;
+  var p=Qs[G.qIdx]; var fb=document.getElementById('qFb');
+  fb.className='fb hint show';
+  if(G.hintLv===1) fb.innerHTML='<div class="fb-ttl">💡 Hint 1</div>Think: '+p.b+' × ? = '+p.a;
+  else if(G.hintLv===2) fb.innerHTML='<div class="fb-ttl">💡 Hint 2</div>The answer is between '+(p.q-2)+' and '+(p.q+2)+'.';
+  else { fb.innerHTML='<div class="fb-ttl">💡 Final Hint</div>The answer is <strong>'+p.q+'</strong>. Try on your own next time!'; document.getElementById('hintB').disabled=true; }
+}
+
+function nextQ(){ G.qIdx++; if(G.qIdx>=Qs.length) goTo(6); else loadQ(); }
+
+// ─── SCREEN 6: RESULTS ───────────────────────────────
+function showResults(){
+  badge('master');
+  if(G.correct===G.total&&G.total>0) badge('perfect');
+  var acc=G.total>0?Math.round(G.correct/G.total*100):0;
+  document.getElementById('resScore').textContent=G.score;
+  document.getElementById('stC').textContent=G.correct;
+  document.getElementById('stS').textContent=G.best;
+  document.getElementById('stA').textContent=acc+'%';
+  document.getElementById('resEmo').textContent=acc>=90?'🏆':acc>=70?'🎉':acc>=50?'👍':'💪';
+  var grid=document.getElementById('badgeGrid'); grid.innerHTML='';
+  BADGES.forEach(function(b){
+    var el=document.createElement('div'); el.className='badge '+(earned.has(b.id)?'on':'off');
+    el.innerHTML=b.icon+' <span>'+b.name+'</span>'; el.title=b.desc; grid.appendChild(el);
+  });
+  if(acc>=90) confetti(45);
+}
+
+// ─── HELPERS ─────────────────────────────────────────
+function pts(n){ G.score+=n; document.getElementById('scoreC').textContent='⭐ '+G.score; }
+
+function badge(id){
+  if(earned.has(id)) return;
+  earned.add(id);
+  var b=BADGES.find(function(x){return x.id===id;}); if(!b) return;
+  document.getElementById('achIco').textContent=b.icon;
+  document.getElementById('achNm').textContent=b.name;
+  var pop=document.getElementById('achPop'); pop.classList.add('show');
+  setTimeout(function(){pop.classList.remove('show');},2800);
+}
+
+function confetti(n){
+  var w=document.getElementById('confWrap'); w.innerHTML='';
+  var c=['#6366f1','#a78bfa','#ec4899','#22c55e','#f59e0b','#14b8a6','#f472b6','#818cf8'];
+  for(var i=0;i<n;i++){
+    (function(i){
+      var p=document.createElement('div'); p.className='conf';
+      p.style.left=Math.random()*100+'%';
+      p.style.background=c[i%c.length];
+      p.style.setProperty('--d',(1.5+Math.random()*1.5)+'s');
+      p.style.setProperty('--dl',(Math.random()*.8)+'s');
+      p.style.borderRadius=Math.random()>.5?'50%':'2px';
+      p.style.width=(6+Math.random()*8)+'px'; p.style.height=p.style.width;
+      w.appendChild(p); setTimeout(function(){p.remove();},3200);
+    })(i);
+  }
+}
+
+function restart(){
+  G={level:'intro',score:0,streak:0,best:0,correct:0,total:0,screen:0,hintLv:0,qIdx:0,answered:false};
+  earned=new Set();
+  document.getElementById('scoreC').textContent='⭐ 0';
+  document.getElementById('streakC').textContent='🔥 0';
+  document.getElementById('pBar').style.width='0%';
+  document.querySelectorAll('.lvl-card').forEach(function(c){c.classList.remove('sel');});
+  document.querySelector('[data-lv="intro"]').classList.add('sel');
+  goTo(0);
+}
+</script>
+</body>
+</html>
