@@ -52,7 +52,7 @@ body{font-family:Georgia,serif;background:linear-gradient(135deg,#667eea,#764ba2
 .chip{background:#fff;border:2.5px solid #bdc3c7;border-radius:10px;padding:9px 20px;font-size:18px;font-family:Georgia,serif;cursor:grab;user-select:none;transition:all .15s;box-shadow:0 3px 8px rgba(0,0,0,.1)}
 .chip:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,.15);border-color:#764ba2}
 .chip.sel{border-color:#764ba2;background:#f8f4ff;box-shadow:0 0 0 3px rgba(118,75,162,.25)}
-.chip.drag{opacity:.35}.chip.gone{visibility:hidden}
+.chip.drag{opacity:.35}.chip.gone{visibility:hidden;pointer-events:none}
 
 /* DIAGRAM */
 .dwrap{background:#fff;border-radius:12px;padding:10px;box-shadow:0 2px 10px rgba(0,0,0,.07);margin-bottom:16px}
@@ -76,6 +76,31 @@ button:disabled{opacity:.35;cursor:not-allowed}
 /* FEEDBACK */
 .fb{text-align:center;min-height:22px;font-size:14px;font-style:italic;color:#7f8c8d;margin-bottom:10px}
 .fb.ok{color:#27ae60}.fb.err{color:#c0392b}.fb.hint{color:#8e44ad}
+
+/* SUBMIT BUTTON */
+#bSubmit{background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff}
+/* TUTORIAL CARD */
+.tutCard{background:#fff;border-radius:24px;padding:28px 32px;text-align:left;max-width:540px;width:92%;box-shadow:0 24px 80px rgba(0,0,0,.4);animation:popIn .35s cubic-bezier(.34,1.56,.64,1);max-height:90vh;overflow-y:auto}
+.tutCard h2{font-size:19px;color:#2c3e50;margin-bottom:12px;font-family:sans-serif;font-weight:700}
+.tutCard p{font-size:14px;line-height:1.7;color:#2c3e50;margin-bottom:10px}
+.tutCard ul{margin:6px 0 12px 18px;font-size:14px;line-height:1.9;color:#2c3e50}
+.tutExample{background:#f0f4f8;border-radius:10px;padding:14px;margin:14px 0;text-align:center}
+.tutExLabel{font-family:sans-serif;font-size:12px;color:#7f8c8d;margin-bottom:8px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
+.tutCard .startBtn{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:14px;padding:12px 28px;border-radius:10px;border:none;cursor:pointer;margin-top:6px;width:100%;font-weight:700;letter-spacing:.3px;transition:filter .15s}
+.tutCard .startBtn:hover{filter:brightness(1.1)}
+/* CORRECTION POPUP */
+.corrCard{background:#fff;border-radius:24px;padding:30px 32px;text-align:center;max-width:480px;width:92%;box-shadow:0 24px 80px rgba(0,0,0,.45);animation:popIn .35s cubic-bezier(.34,1.56,.64,1);max-height:90vh;overflow-y:auto}
+.corrEmoji{font-size:52px;display:block;margin-bottom:8px;animation:bob 1s ease-in-out infinite alternate}
+.corrCard h2{font-size:20px;font-weight:700;color:#2c3e50;font-family:sans-serif;margin-bottom:4px}
+.corrSub{font-size:13px;color:#7f8c8d;margin-bottom:16px}
+.corrList{text-align:left;margin-bottom:18px;display:flex;flex-direction:column;gap:10px}
+.corrRow{border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.corrWrong{background:#fdecea;padding:10px 14px;font-family:sans-serif;font-size:14px;color:#c0392b;border-left:4px solid #e74c3c}
+.corrRight{background:#eafaf1;padding:10px 14px;font-family:sans-serif;font-size:14px;color:#1e8449;border-left:4px solid #27ae60}
+.corrReason{background:#f5f0ff;padding:9px 14px;font-family:sans-serif;font-size:13px;color:#5b2d8e;border-left:4px solid #764ba2;line-height:1.55}
+.corrWrong b,.corrRight b{font-size:15px}
+.corrCard .corrBtn{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:15px;padding:13px 28px;border-radius:10px;border:none;cursor:pointer;font-weight:700;width:100%;transition:filter .15s;letter-spacing:.3px}
+.corrCard .corrBtn:hover{filter:brightness(1.1)}
 
 /* PROGRESS */
 .prow{display:flex;justify-content:space-between;align-items:center;font-family:sans-serif;font-size:12px;color:#bdc3c7}
@@ -154,10 +179,11 @@ button:disabled{opacity:.35;cursor:not-allowed}
 
   <!-- CONTROLS -->
   <div class="controls">
+    <button id="bReset"  onclick="doReset()"   aria-label="Reset current sentence">↺ Reset</button>
     <button id="bHint"  onclick="doHint()"  aria-label="Get a hint">💡 Hint</button>
     <button id="bShow"  onclick="doShowMe()" aria-label="Show the correct diagram">▶ Show Me</button>
-    <button id="bReset" onclick="doReset()"  aria-label="Reset current sentence">↺ Reset</button>
-    <button id="bNext"  onclick="doNext()"   aria-label="Next sentence" disabled>Next →</button>
+    <button id="bSubmit" onclick="doSubmit()" aria-label="Submit your answers" disabled>✓ Submit</button>
+    <button id="bNext"   onclick="doNext()"   aria-label="Next sentence" disabled>Next →</button>
   </div>
 
   <div class="fb" id="fb" role="status" aria-live="polite"></div>
@@ -169,6 +195,20 @@ button:disabled{opacity:.35;cursor:not-allowed}
   </div>
 </div>
 
+<!-- TUTORIAL OVERLAY (content injected by showTutorial(n)) -->
+<div class="overlay" id="tutOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="tutTitle">
+  <div class="tutCard">
+    <h2 id="tutTitle"></h2>
+    <div id="tutBody"></div>
+    <div class="tutExample">
+      <div class="tutExLabel" id="tutExLabel"></div>
+      <div id="tutExSvg"></div>
+    </div>
+    <p id="tutNote" style="font-size:13px;color:#7f8c8d;font-style:italic"></p>
+    <button class="startBtn" onclick="closeTutorial()">Got it! Let's Practice →</button>
+  </div>
+</div>
+
 <!-- ACHIEVEMENT -->
 <div class="overlay" id="achOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="aName">
   <div class="acard">
@@ -176,6 +216,17 @@ button:disabled{opacity:.35;cursor:not-allowed}
     <div class="aname" id="aName"></div>
     <div class="adesc" id="aDesc"></div>
     <button onclick="document.getElementById('achOverlay').hidden=true" aria-label="Close achievement">Keep Going!</button>
+  </div>
+</div>
+
+<!-- CORRECTION POPUP -->
+<div class="overlay" id="corrPopup" hidden role="dialog" aria-modal="true" aria-labelledby="corrTitle">
+  <div class="corrCard">
+    <span class="corrEmoji" id="corrEmoji" aria-hidden="true">🔍</span>
+    <h2 id="corrTitle">Almost There!</h2>
+    <p class="corrSub" id="corrSub">Here's what needed fixing:</p>
+    <div class="corrList" id="corrList"></div>
+    <button class="corrBtn" onclick="showCorrectDiagram()">Show me the correct answer →</button>
   </div>
 </div>
 
@@ -1041,17 +1092,50 @@ const CFG = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════
+// ROLE REASONS  — explains WHY each word belongs in its slot
+// ═══════════════════════════════════════════════════════════════════════
+const ROLE_REASONS = {
+  subject: w=>`Ask: <em>Who or what is doing something?</em> "<b>${w}</b>" is the one performing the action — it goes <b>left</b> of the vertical divider.`,
+  verb:    w=>`Ask: <em>What are they doing?</em> "<b>${w}</b>" is the action — it goes <b>right</b> of the divider.`,
+  subj:    w=>`Ask: <em>Who or what?</em> "<b>${w}</b>" performs the action — it belongs on the <b>subject side</b> of the main line.`,
+  adj:     w=>`Adjectives describe <b>nouns</b>. "<b>${w}</b>" tells us <em>what kind</em> of subject — so it hangs on a diagonal <b>below the noun</b>.`,
+  adv:     w=>`Adverbs describe <b>verbs</b>. "<b>${w}</b>" tells us <em>how</em> the action happens — so it hangs on a diagonal <b>below the verb</b>.`,
+  prep:    w=>`"<b>${w}</b>" is a preposition that starts the phrase — it sits <b>on the slanted diagonal</b> line below.`,
+  obj:     w=>`"<b>${w}</b>" is the object of the preposition (answers <em>what / whom</em>) — it sits on the <b>horizontal stub</b> at the bottom of the diagonal.`,
+  s1:      w=>`Compound subjects share the same verb. "<b>${w}</b>" is the first subject — it goes on the <b>upper parallel line</b>.`,
+  s2:      w=>`Compound subjects share the same verb. "<b>${w}</b>" is the second subject — it goes on the <b>lower parallel line</b>.`,
+  conj:    w=>`"<b>${w}</b>" is a coordinating conjunction (FANBOYS). It <b>connects equal parts</b> and sits on the <b>dashed vertical bridge</b> between them.`,
+  v1:      w=>`Compound verbs share the same subject. "<b>${w}</b>" is the first action — it goes on the <b>upper parallel line</b>.`,
+  v2:      w=>`Compound verbs share the same subject. "<b>${w}</b>" is the second action — it goes on the <b>lower parallel line</b>.`,
+  intj:    w=>`Interjections are <b>not grammatically connected</b> to the sentence. "<b>${w}</b>" floats on its own short baseline <b>above and apart from</b> the main line.`,
+  dobj:    w=>`Ask: <em>verb what / whom?</em> "<b>${w}</b>" receives the action — it follows the verb on the main line after a <b>short vertical tick</b> (not crossing below).`,
+  iobj:    w=>`Ask: <em>to whom / for whom?</em> "<b>${w}</b>" is the indirect object — it hangs <b>below the verb</b> on a diagonal-then-horizontal stub.`,
+  lverb:   w=>`"<b>${w}</b>" is a <b>linking verb</b> — it connects the subject to its description and goes in the <b>middle</b> of the main line.`,
+  pred:    w=>`"<b>${w}</b>" renames or describes the subject (predicate noun/adjective) — it goes <b>after the back-slanting line (\\)</b> that leans back toward the subject.`,
+  msubj:   w=>`"<b>${w}</b>" is the <b>main clause subject</b> — it goes on the upper baseline, <b>left</b> of the divider.`,
+  mverb:   w=>`"<b>${w}</b>" is the <b>main clause verb</b> — it goes on the upper baseline, <b>right</b> of the divider.`,
+  rpron:   w=>`"<b>${w}</b>" is the relative pronoun that opens the adjective clause — it sits on the <b>lower (clause) baseline</b>, directly below the noun it modifies.`,
+  cverb:   w=>`"<b>${w}</b>" is the <b>clause verb</b> — it goes on the lower (clause) baseline, right of its divider.`,
+  csubj:   w=>`"<b>${w}</b>" is the noun clause subject — it goes on the <b>floating mini-baseline</b> above the main line (the pedestal).`,
+  sconj:   w=>`"<b>${w}</b>" is the subordinating conjunction — it is written <b>on the dashed diagonal line</b> itself, connecting the two clause baselines.`,
+  dsubj:   w=>`"<b>${w}</b>" is the adverb clause subject — it goes on the <b>lower (dependent clause) baseline</b>.`,
+  dverb:   w=>`"<b>${w}</b>" is the adverb clause verb — it goes on the <b>lower (dependent clause) baseline</b>, right of its divider.`,
+  ger:     w=>`"<b>${w}</b>" is a gerund (a verb acting as a noun) — as the subject it rides the <b>mini-baseline at the top of the pedestal</b>, above the main line.`,
+};
+
+// ═══════════════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════════════
 const S = {
   lv:1, idx:0, score:0, streak:0, done:0,
   slots:[], placed:{},
+  tentative:{}, chipZone:{},  // free-placement: tentative[zoneIdx]=chipRole, chipZone[chipRole]=zoneIdx
   hintThis:false, noHints:true, hintTotal:0,
   selected:null, busy:false,
   badges:new Set(), levelDone:new Set(),
-  history:{},   // per-level sentence index history for rotation
+  history:{},
   filterDiff: new Set(['easy','medium','hard']),
-  filtIdx: 0,   // index within the currently-filtered sentence list
+  filtIdx: 0,
 };
 
 // Returns filtered sentence list for current level
@@ -1090,6 +1174,7 @@ function switchLevel(n){
   });
   document.getElementById('donePill').querySelector('span').id='don';
   loadSentence();
+  if(TUTORIALS[n]) showTutorial(n);
 }
 
 function loadSentence(){
@@ -1107,7 +1192,7 @@ function loadSentence(){
   const sent = filtered[S.filtIdx];
   const cfg  = CFG[S.lv];
 
-  S.placed={}; S.hintThis=false; S.selected=null; S.busy=false;
+  S.placed={}; S.tentative={}; S.chipZone={}; S.hintThis=false; S.selected=null; S.busy=false;
 
   // instruction
   document.getElementById('instr').innerHTML = cfg.instr;
@@ -1137,7 +1222,7 @@ function loadSentence(){
     z.setAttribute('role','button');
     z.setAttribute('aria-label',`Drop zone: ${sl.desc}`);
     z.addEventListener('click',  ()=>zoneClick(i));
-    z.addEventListener('dragover', e=>{e.preventDefault(); if(!S.placed[sl.role]) hlZone(sl.hlId,true,z);});
+    z.addEventListener('dragover', e=>{e.preventDefault(); hlZone(sl.hlId,true,z);});
     z.addEventListener('dragleave',()=>hlZone(sl.hlId,false,z));
     z.addEventListener('drop',   e=>{ e.preventDefault(); hlZone(sl.hlId,false,z); dropOnZone(e,i); });
     dinner.appendChild(z);
@@ -1167,6 +1252,7 @@ function loadSentence(){
   // UI reset
   fb('','');
   document.getElementById('bNext').disabled=true;
+  document.getElementById('bSubmit').disabled=true;
   const _filt = getFiltered();
   document.getElementById('cnum').textContent = S.filtIdx+1;
   document.getElementById('ctot').textContent = _filt.length;
@@ -1187,35 +1273,85 @@ function buildDots(){
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// INTERACTION
+// INTERACTION  (free-placement — place any word in any box, submit to check)
 // ═══════════════════════════════════════════════════════════════════════
 function chipClick(role){
-  if(S.placed[role]) return;
+  if(S.chipZone[role]!==undefined) return; // already placed (hidden chip)
   if(S.selected===role){
     S.selected=null;
     document.getElementById('chip-'+role)?.classList.remove('sel');
+    fb('','');
   } else {
     S.slots.forEach(sl=>document.getElementById('chip-'+sl.role)?.classList.remove('sel'));
     S.selected=role;
     document.getElementById('chip-'+role)?.classList.add('sel');
-    fb('Now click the correct part of the diagram.','hint');
+    fb('Now click a diagram box to place this word.','hint');
   }
 }
 
 function zoneClick(i){
-  if(!S.selected) return;
-  const sl=S.slots[i];
-  if(S.selected===sl.role) place(S.selected);
-  else { shakeZone(i); fb(`Hmm — that word goes somewhere else. Try the <b>${S.slots.find(s=>s.role===S.selected)?.desc}</b> spot.`,'err'); }
+  if(S.busy) return;
+  if(S.selected){
+    placeTentative(S.selected, i);
+  } else {
+    // No chip selected — click a filled zone to return its chip to the bank
+    if(S.tentative[i]!==undefined) { returnChipFromZone(i); fb('Word returned to the bank.','hint'); }
+  }
 }
 
 function dropOnZone(e,i){
   const role=e.dataTransfer.getData('text/plain')||S.selected;
-  if(!role) return;
-  const sl=S.slots[i];
-  S.selected=role;
-  if(role===sl.role) place(role);
-  else { shakeZone(i); fb('Not quite — that word belongs elsewhere.','err'); }
+  if(!role||S.busy) return;
+  placeTentative(role, i);
+}
+
+function placeTentative(chipRole, zoneIdx){
+  const existingRole=S.tentative[zoneIdx];
+  if(existingRole===chipRole) return;
+  if(existingRole!==undefined) returnChipFromZone(zoneIdx); // swap out current occupant
+
+  // Remove chip from its previous zone if already placed elsewhere
+  if(S.chipZone[chipRole]!==undefined){
+    const oldZone=S.chipZone[chipRole];
+    const oldEl=document.getElementById(S.slots[oldZone].svgId);
+    if(oldEl){oldEl.textContent='';oldEl.setAttribute('opacity','0');}
+    delete S.tentative[oldZone];
+    delete S.chipZone[chipRole];
+  }
+
+  S.tentative[zoneIdx]=chipRole;
+  S.chipZone[chipRole]=zoneIdx;
+
+  // Show word in SVG in grey (tentative) — correct colour applied on Submit
+  const sl=S.slots[zoneIdx];
+  const chipSl=S.slots.find(s=>s.role===chipRole);
+  const el=document.getElementById(sl.svgId);
+  if(el){el.textContent=chipSl?chipSl.word:'';el.setAttribute('fill','#7f8c8d');el.setAttribute('opacity','1');}
+
+  document.getElementById('chip-'+chipRole)?.classList.add('gone');
+  S.selected=null;
+  S.slots.forEach(s=>document.getElementById('chip-'+s.role)?.classList.remove('sel'));
+  clearHls();
+  checkSubmitEnabled();
+
+  const remaining=S.slots.filter((_,i)=>S.tentative[i]===undefined).length;
+  fb(remaining>0?`${remaining} word${remaining>1?'s':''} left — keep placing, then click <b>✓ Submit</b>!`
+    :'All words placed! Click <b>✓ Submit</b> to check your answers.','hint');
+}
+
+function returnChipFromZone(zoneIdx){
+  const chipRole=S.tentative[zoneIdx];
+  if(chipRole===undefined) return;
+  delete S.tentative[zoneIdx];
+  delete S.chipZone[chipRole];
+  const el=document.getElementById(S.slots[zoneIdx].svgId);
+  if(el){el.textContent='';el.setAttribute('opacity','0');}
+  document.getElementById('chip-'+chipRole)?.classList.remove('gone');
+  checkSubmitEnabled();
+}
+
+function checkSubmitEnabled(){
+  document.getElementById('bSubmit').disabled=!S.slots.every((_,i)=>S.tentative[i]!==undefined);
 }
 
 function hlZone(hlId,on,zEl){
@@ -1344,8 +1480,8 @@ function doNext(){
 function doHint(){
   S.hintThis=true; S.noHints=false; S.hintTotal++;
   document.getElementById('htally').textContent='Hints: '+S.hintTotal;
-  const unplaced=S.slots.filter(sl=>!S.placed[sl.role]);
-  if(!unplaced.length){ fb('All words are placed!','ok'); return; }
+  const unplaced=S.slots.filter((_,i)=>S.tentative[i]===undefined);
+  if(!unplaced.length){ fb('All words placed! Click <b>✓ Submit</b> to check.','ok'); return; }
   // Show grammatical tip first (for medium/hard sentences), then highlight zone
   const filt=getFiltered();
   const sent=filt[S.filtIdx%Math.max(1,filt.length)];
@@ -1367,6 +1503,8 @@ function doHint(){
 function doShowMe(){
   if(S.busy) return;
   S.busy=true; S.hintThis=true; S.noHints=false;
+  // Clear tentative placements so we can show the correct answer cleanly
+  S.tentative={}; S.chipZone={};
   document.querySelectorAll('.chip').forEach(c=>c.classList.add('gone'));
   fb('Watch the diagram build…','hint');
   const unplaced=S.slots.filter(sl=>!S.placed[sl.role]);
@@ -1374,7 +1512,7 @@ function doShowMe(){
     setTimeout(()=>{
       S.placed[sl.role]=true;
       const el=document.getElementById(sl.svgId);
-      if(el){ el.textContent=sl.word; fadeIn(sl.svgId,400); }
+      if(el){ el.textContent=sl.word; el.setAttribute('fill',sl.fill); fadeIn(sl.svgId,400); }
       fb(`"${sl.word}" → ${sl.desc}`,'hint');
       if(i===unplaced.length-1) setTimeout(()=>{ S.busy=false; completeSentence(); },500);
     }, 400+(i*900));
@@ -1383,12 +1521,649 @@ function doShowMe(){
 }
 
 function doReset(){
-  S.slots.forEach(sl=>{ S.placed[sl.role]=false; });
+  S.placed={}; S.tentative={}; S.chipZone={};
+  S.slots.forEach(sl=>{S.placed[sl.role]=false;});
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('gone','sel','drag'));
   S.selected=null; S.busy=false;
   S.slots.forEach(sl=>{ const e=document.getElementById(sl.svgId); if(e){e.textContent='';e.setAttribute('opacity',0);} });
   fb('','');
   document.getElementById('bNext').disabled=true;
+  document.getElementById('bSubmit').disabled=true;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SUBMIT — check all placements at once
+// ═══════════════════════════════════════════════════════════════════════
+function doSubmit(){
+  if(S.busy) return;
+  const total=S.slots.length;
+  let correct=0;
+  const mistakes=[];
+
+  // Colour each placed word: correct fill or red
+  S.slots.forEach((sl,i)=>{
+    const placedRole=S.tentative[i];
+    const el=document.getElementById(sl.svgId);
+    if(!el) return;
+    if(placedRole===sl.role){
+      correct++;
+      el.setAttribute('fill',sl.fill);
+    } else {
+      el.setAttribute('fill','#e74c3c');
+      const placedWord=(S.slots.find(s=>s.role===placedRole)||{word:'?'}).word;
+      const reason=(ROLE_REASONS[sl.role]||((w)=>''))(sl.word);
+      mistakes.push({zoneName:sl.desc, placedWord, correctWord:sl.word, reason});
+    }
+  });
+
+  document.getElementById('bSubmit').disabled=true;
+
+  if(correct===total){
+    S.slots.forEach(sl=>{S.placed[sl.role]=true;});
+    fb('🎉 All correct — great diagram!','ok');
+    completeSentence();
+  } else {
+    S.busy=true;
+    S.streak=0; updateBar();
+    fb('','');
+
+    // Build correction popup content
+    const allWrong=(correct===0);
+    document.getElementById('corrEmoji').textContent=allWrong?'😬':'🌟';
+    document.getElementById('corrTitle').textContent=
+      allWrong?'Not quite — let\'s review!':correct+' of '+total+' correct — almost there!';
+    document.getElementById('corrSub').textContent=
+      'Here\'s what needed fixing:';
+    document.getElementById('corrList').innerHTML=mistakes.map(m=>
+      `<div class="corrRow">
+         <div class="corrWrong">❌ <b>${capFirst(m.zoneName)}</b> box — you placed: "<b>${m.placedWord}</b>"</div>
+         <div class="corrRight">✅ That box should have: "<b>${m.correctWord}</b>"</div>
+         ${m.reason?`<div class="corrReason">💡 ${m.reason}</div>`:''}
+       </div>`
+    ).join('');
+
+    // Brief flash of red on diagram, then popup appears
+    setTimeout(()=>{ document.getElementById('corrPopup').hidden=false; }, 350);
+  }
+}
+
+function showCorrectDiagram(){
+  document.getElementById('corrPopup').hidden=true;
+  S.slots.forEach(sl=>{
+    const el=document.getElementById(sl.svgId);
+    if(el){el.textContent=sl.word;el.setAttribute('fill',sl.fill);el.setAttribute('opacity','1');}
+    S.placed[sl.role]=true;
+  });
+  fb('Here\'s the correct diagram — study it, then click ↺ Reset to try again or Next → to continue.','hint');
+  document.getElementById('bNext').disabled=false;
+  S.busy=false;
+}
+
+function capFirst(s){ return s?s.charAt(0).toUpperCase()+s.slice(1):s; }
+
+// ═══════════════════════════════════════════════════════════════════════
+// TUTORIALS  — one entry per level; add more as levels are unlocked
+// ═══════════════════════════════════════════════════════════════════════
+const TUTORIALS = {
+  1: {
+    title: '📐 Level 1: The Main Line',
+    body: `<p>Every sentence diagram starts with a <b>horizontal baseline</b> split by a <b>vertical divider</b>.</p>
+      <ul>
+        <li><span class="sw">Subject</span> — <em>who or what</em> the sentence is about — goes <b>LEFT</b> of the divider.</li>
+        <li><span class="vw">Verb</span> — the action or state — goes <b>RIGHT</b> of the divider.</li>
+      </ul>
+      <p>Ask: <em>"Who or what is doing something?"</em> → <b class="sw">subject</b><br>
+      <em>"What are they doing?"</em> → <b class="vw">verb</b></p>`,
+    exLabel: 'Example — "Birds sing."',
+    exSvg: `<svg viewBox="0 0 360 122" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:360px;display:block;margin:0 auto">
+      <text x="95" y="22" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#7f8c8d" font-style="italic">subject</text>
+      <text x="265" y="22" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#7f8c8d" font-style="italic">verb / predicate</text>
+      <rect x="18" y="30" width="152" height="50" rx="6" fill="rgba(41,128,185,.08)" stroke="rgba(41,128,185,.35)" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <rect x="180" y="30" width="162" height="50" rx="6" fill="rgba(192,57,43,.08)" stroke="rgba(192,57,43,.35)" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <line x1="18" y1="74" x2="342" y2="74" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="180" y1="46" x2="180" y2="82" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="95" y="66" text-anchor="middle" font-family="Georgia,serif" font-size="23" fill="#2980b9">Birds</text>
+      <text x="261" y="66" text-anchor="middle" font-family="Georgia,serif" font-size="23" fill="#c0392b">sing</text>
+      <circle cx="18" cy="104" r="4" fill="#2980b9"/>
+      <text x="28" y="108" font-family="sans-serif" font-size="11" fill="#7f8c8d">subject (left of divider)</text>
+      <circle cx="196" cy="104" r="4" fill="#c0392b"/>
+      <text x="206" y="108" font-family="sans-serif" font-size="11" fill="#7f8c8d">verb (right of divider)</text>
+    </svg>`,
+    note: 'Drop each word into any diagram box, then click <b>✓ Submit</b> to check. Placed words show in grey until you submit!'
+  },
+
+  2: {
+    title: '📎 Level 2: Modifiers — Adjectives & Adverbs',
+    body: `<p>Modifiers describe other words and <b>hang on a diagonal line</b> below the word they modify:</p>
+      <ul>
+        <li><span class="aw">Adjective</span> — describes a <b>noun (subject)</b>. Hangs diagonally <b>below the subject</b>.<br>
+            Ask: <em>"What kind of [noun]?"</em> or <em>"Which one?"</em></li>
+        <li><span class="aw">Adverb</span> — describes a <b>verb</b>. Hangs diagonally <b>below the verb</b>.<br>
+            Ask: <em>"How / when / where did the verb happen?"</em></li>
+      </ul>
+      <p>The subject and verb still go on the <b>main line</b> — modifiers hang beneath them on short diagonal stubs.</p>`,
+    exLabel: 'Example — "Tiny birds sang sweetly."',
+    exSvg: `<svg viewBox="0 0 400 178" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:400px;display:block;margin:0 auto">
+      <text x="100" y="18" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#7f8c8d" font-style="italic">subject</text>
+      <text x="295" y="18" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#7f8c8d" font-style="italic">verb</text>
+      <rect x="20" y="26" width="160" height="46" rx="5" fill="rgba(41,128,185,.07)" stroke="rgba(41,128,185,.3)" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <rect x="200" y="26" width="180" height="46" rx="5" fill="rgba(192,57,43,.07)" stroke="rgba(192,57,43,.3)" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <line x1="20" y1="72" x2="380" y2="72" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="200" y1="44" x2="200" y2="80" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="100" y="64" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#2980b9">birds</text>
+      <text x="290" y="64" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#c0392b">sang</text>
+      <line x1="100" y1="72" x2="74" y2="112" stroke="#2c3e50" stroke-width="1.8"/>
+      <line x1="54" y1="112" x2="96" y2="112" stroke="#2c3e50" stroke-width="1.8"/>
+      <text x="75" y="106" text-anchor="middle" font-family="Georgia,serif" font-size="17" fill="#8e44ad">Tiny</text>
+      <text x="75" y="128" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#8e44ad" font-style="italic">adjective (below noun)</text>
+      <line x1="290" y1="72" x2="260" y2="112" stroke="#2c3e50" stroke-width="1.8"/>
+      <line x1="240" y1="112" x2="282" y2="112" stroke="#2c3e50" stroke-width="1.8"/>
+      <text x="261" y="106" text-anchor="middle" font-family="Georgia,serif" font-size="17" fill="#8e44ad">sweetly</text>
+      <text x="261" y="128" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#8e44ad" font-style="italic">adverb (below verb)</text>
+      <circle cx="20" cy="158" r="4" fill="#2980b9"/>
+      <text x="30" y="162" font-family="sans-serif" font-size="11" fill="#7f8c8d">subject</text>
+      <circle cx="90" cy="158" r="4" fill="#c0392b"/>
+      <text x="100" y="162" font-family="sans-serif" font-size="11" fill="#7f8c8d">verb</text>
+      <circle cx="162" cy="158" r="4" fill="#8e44ad"/>
+      <text x="172" y="162" font-family="sans-serif" font-size="11" fill="#7f8c8d">modifier hangs diagonally below</text>
+    </svg>`,
+    note: 'Drop each word into its diagram box, then click <b>✓ Submit</b> to check. Modifiers go on the diagonal stubs!'
+  },
+
+  3: {
+    title: '🔗 Level 3: Prepositional Phrases',
+    body: `<p>A <b>prepositional phrase</b> = a <span class="pw">preposition</span> + its <span class="ow">object</span>. It tells <em>where, when, how,</em> or <em>about what</em>.</p>
+      <p>It hangs <b>below the word it modifies</b> (usually the verb) on a special two-part structure:</p>
+      <ul>
+        <li><span class="pw">Preposition</span> (<em>in, on, at, to, from, with, of, over…</em>) — written <b>on the slanted diagonal line</b>.</li>
+        <li><span class="ow">Object of the preposition</span> — the noun after the preposition — sits on the <b>horizontal stub</b> at the bottom.</li>
+      </ul>
+      <p>Quick test: <em>"Cats sit ___?"</em> → <em>"on mats"</em> — "on" starts the phrase, "mats" is what you sit on.</p>`,
+    exLabel: 'Example — "Cats sit on mats."',
+    exSvg: `<svg viewBox="0 0 420 188" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px;display:block;margin:0 auto">
+      <text x="100" y="18" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#7f8c8d" font-style="italic">subject</text>
+      <text x="290" y="18" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#7f8c8d" font-style="italic">verb</text>
+      <rect x="18" y="26" width="164" height="46" rx="5" fill="rgba(41,128,185,.07)" stroke="rgba(41,128,185,.3)" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <rect x="200" y="26" width="200" height="46" rx="5" fill="rgba(192,57,43,.07)" stroke="rgba(192,57,43,.3)" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <line x1="18" y1="72" x2="400" y2="72" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="200" y1="44" x2="200" y2="80" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="100" y="64" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#2980b9">Cats</text>
+      <text x="290" y="64" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#c0392b">sit</text>
+      <line x1="290" y1="72" x2="254" y2="126" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+      <line x1="234" y1="126" x2="390" y2="126" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+      <text x="272" y="100" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#d35400">on</text>
+      <text x="226" y="96" font-family="sans-serif" font-size="10" fill="#d35400" font-style="italic">prep ↗</text>
+      <text x="312" y="120" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#16a085">mats</text>
+      <text x="354" y="142" font-family="sans-serif" font-size="10" fill="#16a085" font-style="italic">object ↖</text>
+      <circle cx="18" cy="166" r="4" fill="#2980b9"/>
+      <text x="28" y="170" font-family="sans-serif" font-size="11" fill="#7f8c8d">subject</text>
+      <circle cx="86" cy="166" r="4" fill="#c0392b"/>
+      <text x="96" y="170" font-family="sans-serif" font-size="11" fill="#7f8c8d">verb</text>
+      <circle cx="152" cy="166" r="4" fill="#d35400"/>
+      <text x="162" y="170" font-family="sans-serif" font-size="11" fill="#7f8c8d">prep (on the diagonal)</text>
+      <circle cx="302" cy="166" r="4" fill="#16a085"/>
+      <text x="312" y="170" font-family="sans-serif" font-size="11" fill="#7f8c8d">object (on the stub)</text>
+    </svg>`,
+    note: 'Place all four words in the diagram, then click <b>✓ Submit</b> to check. Remember: prep goes on the diagonal, object goes on the stub!'
+  },
+  4: {
+    title: '🔀 Level 4: Coordinating Conjunctions',
+    body: `<p>Coordinating conjunctions — <b>FANBOYS</b> (<em>For, And, Nor, But, Or, Yet, So</em>) — join two equal parts of a sentence.</p>
+      <p>The joined parts each get their own <b>parallel baseline</b>, connected by a <b>dashed vertical bridge</b>. The conjunction rides on that bridge.</p>
+      <ul style="text-align:left;display:inline-block;margin:6px 0">
+        <li><b>Compound subject</b>: two subjects share one verb<br>
+          Each subject gets its own horizontal line. The lines converge with diagonals to a fork, then the verb continues on the main line.<br>
+          <em style="color:#7f8c8d">Example: "Dogs and cats play."</em></li>
+        <li style="margin-top:6px"><b>Compound verb</b>: one subject performs two actions<br>
+          The subject stays on top; both verbs get parallel lines forking from the subject.<br>
+          <em style="color:#7f8c8d">Example: "Birds sing and fly."</em></li>
+      </ul>
+      <p>Spot the FANBOYS word — it always lives on the <b>dashed vertical line</b> between the two parallel parts.</p>`,
+    exLabel: 'Example — "Dogs and cats play."  (compound subject)',
+    exSvg: `<svg viewBox="0 0 400 195" width="100%" style="max-width:400px;display:block;margin:0 auto">
+      <!-- upper baseline: Dogs -->
+      <line x1="30" y1="68" x2="170" y2="68" stroke="#2c3e50" stroke-width="2"/>
+      <!-- lower baseline: cats -->
+      <line x1="30" y1="128" x2="170" y2="128" stroke="#2c3e50" stroke-width="2"/>
+      <!-- upper diagonal to fork -->
+      <line x1="170" y1="68" x2="200" y2="88" stroke="#2c3e50" stroke-width="2"/>
+      <!-- lower diagonal to fork -->
+      <line x1="170" y1="128" x2="200" y2="108" stroke="#2c3e50" stroke-width="2"/>
+      <!-- main line after fork -->
+      <line x1="200" y1="98" x2="370" y2="98" stroke="#2c3e50" stroke-width="2"/>
+      <!-- verb divider (short vertical tick, not crossing below) -->
+      <line x1="282" y1="84" x2="282" y2="112" stroke="#2c3e50" stroke-width="2"/>
+      <!-- dashed vertical bridge (conjunction) -->
+      <line x1="170" y1="68" x2="170" y2="128" stroke="#7f8c8d" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <!-- "Dogs" label -->
+      <text x="96" y="58" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#2980b9">Dogs</text>
+      <text x="20" y="53" font-family="sans-serif" font-size="10" fill="#2980b9" font-style="italic">subj 1 ↓</text>
+      <!-- "cats" label -->
+      <text x="96" y="148" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#8e44ad">cats</text>
+      <text x="20" y="152" font-family="sans-serif" font-size="10" fill="#8e44ad" font-style="italic">subj 2 ↑</text>
+      <!-- "and" label on dashed bridge -->
+      <text x="178" y="102" font-family="Georgia,serif" font-size="16" fill="#c0392b">and</text>
+      <text x="115" y="116" font-family="sans-serif" font-size="10" fill="#c0392b" font-style="italic">conj →</text>
+      <!-- "play" label -->
+      <text x="322" y="88" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#27ae60">play</text>
+      <text x="346" y="78" font-family="sans-serif" font-size="10" fill="#27ae60" font-style="italic">verb ↙</text>
+      <!-- legend -->
+      <circle cx="18" cy="174" r="4" fill="#2980b9"/>
+      <text x="28" y="178" font-family="sans-serif" font-size="11" fill="#7f8c8d">subject 1</text>
+      <circle cx="96" cy="174" r="4" fill="#8e44ad"/>
+      <text x="106" y="178" font-family="sans-serif" font-size="11" fill="#7f8c8d">subject 2</text>
+      <circle cx="178" cy="174" r="4" fill="#c0392b"/>
+      <text x="188" y="178" font-family="sans-serif" font-size="11" fill="#7f8c8d">conjunction</text>
+      <circle cx="278" cy="174" r="4" fill="#27ae60"/>
+      <text x="288" y="178" font-family="sans-serif" font-size="11" fill="#7f8c8d">verb</text>
+    </svg>`,
+    note: 'Place each word in its diagram box, then click <b>✓ Submit</b> to check. The FANBOYS conjunction always goes on the dashed vertical bridge!'
+  },
+  5: {
+    title: '💥 Level 5: Interjections',
+    body: `<p>An <b>interjection</b> is a word that expresses sudden emotion — <em>Wow!, Oh!, Hey!, Ouch!, Bravo!</em></p>
+      <p>Here's the key rule: <b>interjections are grammatically disconnected</b> from the rest of the sentence. They have <em>no subject, no verb, no modifier role</em> — they just pop out on their own.</p>
+      <p>In a Reed-Kellogg diagram, the interjection gets its own <b>short floating baseline</b> sitting <b>above and to the left</b> of the main line — with <b>no connecting lines at all</b>.</p>
+      <ul style="text-align:left;display:inline-block;margin:6px 0">
+        <li>Main line: subject | verb (exactly like Level 1)</li>
+        <li>Interjection: tiny baseline above — completely isolated</li>
+        <li>No diagonals, no dashes, no bridge — just floating free</li>
+      </ul>
+      <p>If you see a word followed by a comma or exclamation mark <em>before</em> the real sentence starts, it's almost certainly an interjection.</p>`,
+    exLabel: 'Example — "Wow, birds sing!"',
+    exSvg: `<svg viewBox="0 0 420 210" width="100%" style="max-width:420px;display:block;margin:0 auto">
+      <!-- interjection short baseline -->
+      <line x1="50" y1="72" x2="200" y2="72" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+      <!-- main baseline -->
+      <line x1="50" y1="148" x2="390" y2="148" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- verb divider -->
+      <line x1="218" y1="120" x2="218" y2="158" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- "no connection" indicator — dotted gap with X -->
+      <line x1="125" y1="85" x2="125" y2="130" stroke="#bdc3c7" stroke-width="1" stroke-dasharray="3,3"/>
+      <text x="132" y="112" font-family="sans-serif" font-size="10" fill="#bdc3c7">✕ no</text>
+      <text x="128" y="123" font-family="sans-serif" font-size="10" fill="#bdc3c7">connection</text>
+      <!-- "Wow" label -->
+      <text x="118" y="62" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#f39c12">Wow</text>
+      <text x="46" y="56" font-family="sans-serif" font-size="10" fill="#f39c12" font-style="italic">interjection ↓</text>
+      <!-- "birds" label -->
+      <text x="128" y="138" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#2980b9">birds</text>
+      <text x="46" y="168" font-family="sans-serif" font-size="10" fill="#2980b9" font-style="italic">subject ↑</text>
+      <!-- "sing" label -->
+      <text x="304" y="138" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#c0392b">sing</text>
+      <text x="342" y="168" font-family="sans-serif" font-size="10" fill="#c0392b" font-style="italic">verb ↑</text>
+      <!-- legend -->
+      <circle cx="36" cy="186" r="4" fill="#f39c12"/>
+      <text x="46" y="190" font-family="sans-serif" font-size="11" fill="#7f8c8d">interjection (floating)</text>
+      <circle cx="190" cy="186" r="4" fill="#2980b9"/>
+      <text x="200" y="190" font-family="sans-serif" font-size="11" fill="#7f8c8d">subject</text>
+      <circle cx="258" cy="186" r="4" fill="#c0392b"/>
+      <text x="268" y="190" font-family="sans-serif" font-size="11" fill="#7f8c8d">verb</text>
+    </svg>`,
+    note: 'Place each word in its diagram box, then click <b>✓ Submit</b> to check. Remember: the interjection floats alone — no lines connect it to the main diagram!'
+  },
+  6: {
+    title: '🎯 Level 6: Direct Objects',
+    body: `<p>A <b>direct object</b> receives the action of the verb. Ask <em>"verb what?"</em> or <em>"verb whom?"</em> to find it.</p>
+      <p>On the diagram, the direct object follows the verb on the <b>same main line</b>, separated by a special divider — a short vertical tick that <b>sits on the baseline</b> and does <b>not</b> cross below it.</p>
+      <ul style="text-align:left;display:inline-block;margin:6px 0">
+        <li><b>Subject divider</b>: a full vertical line that <em>crosses through</em> the baseline (goes above and below)</li>
+        <li><b>Direct-object divider</b>: a short tick that <em>stops at</em> the baseline — it never dips below</li>
+      </ul>
+      <p>That small difference is the whole trick — same main line, but the DO divider doesn't cross through.</p>
+      <p><em>Test yourself:</em> "Dogs chase <u>cats</u>." → chase <em>what</em>? → cats = direct object ✓</p>`,
+    exLabel: 'Example — "Dogs chase cats."',
+    exSvg: `<svg viewBox="0 0 440 195" width="100%" style="max-width:440px;display:block;margin:0 auto">
+      <!-- main baseline -->
+      <line x1="40" y1="118" x2="410" y2="118" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- subject divider: crosses THROUGH baseline -->
+      <line x1="168" y1="90" x2="168" y2="130" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- DO divider: short tick, stops AT baseline (does NOT cross below) -->
+      <line x1="300" y1="92" x2="300" y2="118" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- callout arrow for subject divider -->
+      <text x="36" y="148" font-family="sans-serif" font-size="10" fill="#7f8c8d" font-style="italic">crosses ↕</text>
+      <!-- callout arrow for DO divider -->
+      <text x="272" y="148" font-family="sans-serif" font-size="10" fill="#7f8c8d" font-style="italic">stops here ↑</text>
+      <!-- "Dogs" label -->
+      <text x="102" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#2980b9">Dogs</text>
+      <text x="40" y="90" font-family="sans-serif" font-size="10" fill="#2980b9" font-style="italic">subject ↓</text>
+      <!-- "chase" label -->
+      <text x="232" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#c0392b">chase</text>
+      <text x="172" y="90" font-family="sans-serif" font-size="10" fill="#c0392b" font-style="italic">verb ↓</text>
+      <!-- "cats" label -->
+      <text x="354" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#16a085">cats</text>
+      <text x="304" y="90" font-family="sans-serif" font-size="10" fill="#16a085" font-style="italic">direct object ↓</text>
+      <!-- legend -->
+      <circle cx="36" cy="172" r="4" fill="#2980b9"/>
+      <text x="46" y="176" font-family="sans-serif" font-size="11" fill="#7f8c8d">subject</text>
+      <circle cx="110" cy="172" r="4" fill="#c0392b"/>
+      <text x="120" y="176" font-family="sans-serif" font-size="11" fill="#7f8c8d">verb</text>
+      <circle cx="178" cy="172" r="4" fill="#16a085"/>
+      <text x="188" y="176" font-family="sans-serif" font-size="11" fill="#7f8c8d">direct object</text>
+      <!-- divider key -->
+      <line x1="318" y1="167" x2="318" y2="179" stroke="#2c3e50" stroke-width="2"/>
+      <text x="326" y="176" font-family="sans-serif" font-size="11" fill="#7f8c8d">= tick stops at line (DO divider)</text>
+    </svg>`,
+    note: 'Place all three words, then click <b>✓ Submit</b> to check. Ask "<em>verb what?</em>" to find the direct object — it follows the verb after the short tick!'
+  },
+  7: {
+    title: '📬 Level 7: Indirect Objects',
+    body: `<p>An <b>indirect object</b> tells <em>to whom</em> or <em>for whom</em> the action is done.</p>
+      <p>Use a two-step test to sort the objects:</p>
+      <ol style="text-align:left;display:inline-block;margin:6px 0">
+        <li>Ask <em>"verb what/whom?"</em> → that answer is the <b>direct object</b> (stays on the main line)</li>
+        <li>Ask <em>"verb to whom / for whom?"</em> → that answer is the <b>indirect object</b> (hangs below)</li>
+      </ol>
+      <p>On the diagram, the indirect object <b>hangs below the verb</b> on a diagonal line, then sits on a short horizontal stub — just like a prepositional phrase, but no preposition is written.</p>
+      <p><em>Example:</em> "She gave <u>him</u> gifts." → gave <em>what</em>? = gifts (DO) → gave <em>to whom</em>? = him (IO, hangs below)</p>`,
+    exLabel: 'Example — "She gave him gifts."',
+    exSvg: `<svg viewBox="0 0 460 230" width="100%" style="max-width:460px;display:block;margin:0 auto">
+      <!-- main baseline -->
+      <line x1="40" y1="108" x2="420" y2="108" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- subject divider: crosses THROUGH baseline -->
+      <line x1="148" y1="80" x2="148" y2="118" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- DO divider: short tick, stops AT baseline -->
+      <line x1="312" y1="82" x2="312" y2="108" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- IO diagonal from under verb down to stub -->
+      <line x1="224" y1="108" x2="200" y2="170" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+      <!-- IO horizontal stub -->
+      <line x1="180" y1="170" x2="310" y2="170" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+      <!-- "She" label -->
+      <text x="92" y="98" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#2980b9">She</text>
+      <text x="40" y="78" font-family="sans-serif" font-size="10" fill="#2980b9" font-style="italic">subject ↓</text>
+      <!-- "gave" label -->
+      <text x="228" y="98" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#c0392b">gave</text>
+      <text x="152" y="78" font-family="sans-serif" font-size="10" fill="#c0392b" font-style="italic">verb ↓</text>
+      <!-- "gifts" label -->
+      <text x="364" y="98" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#16a085">gifts</text>
+      <text x="316" y="78" font-family="sans-serif" font-size="10" fill="#16a085" font-style="italic">direct object ↓</text>
+      <!-- "him" label on stub -->
+      <text x="244" y="161" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#d35400">him</text>
+      <text x="310" y="188" font-family="sans-serif" font-size="10" fill="#d35400" font-style="italic">← indirect object (on stub)</text>
+      <!-- diagonal label -->
+      <text x="170" y="138" font-family="sans-serif" font-size="10" fill="#7f8c8d" font-style="italic">hangs below verb ↘</text>
+      <!-- legend -->
+      <circle cx="36" cy="208" r="4" fill="#2980b9"/>
+      <text x="46" y="212" font-family="sans-serif" font-size="11" fill="#7f8c8d">subject</text>
+      <circle cx="106" cy="208" r="4" fill="#c0392b"/>
+      <text x="116" y="212" font-family="sans-serif" font-size="11" fill="#7f8c8d">verb</text>
+      <circle cx="168" cy="208" r="4" fill="#16a085"/>
+      <text x="178" y="212" font-family="sans-serif" font-size="11" fill="#7f8c8d">direct object</text>
+      <circle cx="262" cy="208" r="4" fill="#d35400"/>
+      <text x="272" y="212" font-family="sans-serif" font-size="11" fill="#7f8c8d">indirect object</text>
+    </svg>`,
+    note: 'Place all four words, then click <b>✓ Submit</b> to check. Two-step test: "<em>verb what?</em>" = direct object · "<em>verb to whom?</em>" = indirect object (hangs below)!'
+  },
+  8: {
+    title: '🔗 Level 8: Linking Verbs',
+    body: `<p>A <b>linking verb</b> doesn't show action — it <em>connects</em> the subject to a word that renames or describes it.</p>
+      <p>Common linking verbs: <em>is, are, was, were, seem, feel, look, taste, smell, appear, become.</em></p>
+      <p>The word after the linking verb is a <b>predicate noun</b> (renames the subject) or <b>predicate adjective</b> (describes the subject). Together they're called the <b>predicate complement</b>.</p>
+      <p>On the diagram, everything stays on the <b>same main line</b>, but the divider after the linking verb is a <b>back-slanting line (\\)</b> that leans back toward the subject — it points to the subject to remind you the predicate is connected to it.</p>
+      <ul style="text-align:left;display:inline-block;margin:6px 0">
+        <li>Subject divider: vertical line that crosses through the baseline</li>
+        <li>Linking-verb divider: <b>back-slanting (\\)</b> — leans toward subject</li>
+      </ul>
+      <p><em>Test:</em> "Roses <u>are</u> red." → are = linking verb · red = predicate adjective (describes Roses)</p>`,
+    exLabel: 'Example — "Roses are red."',
+    exSvg: `<svg viewBox="0 0 440 185" width="100%" style="max-width:440px;display:block;margin:0 auto">
+      <!-- main baseline -->
+      <line x1="40" y1="118" x2="410" y2="118" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- subject divider: full vertical through baseline -->
+      <line x1="158" y1="88" x2="158" y2="128" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- back-slanting divider after linking verb (leans left / toward subject) -->
+      <line x1="316" y1="92" x2="296" y2="118" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- "Roses" label -->
+      <text x="97" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#2980b9">Roses</text>
+      <text x="40" y="80" font-family="sans-serif" font-size="10" fill="#2980b9" font-style="italic">subject ↓</text>
+      <!-- "are" label -->
+      <text x="226" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#c0392b">are</text>
+      <text x="162" y="80" font-family="sans-serif" font-size="10" fill="#c0392b" font-style="italic">linking verb ↓</text>
+      <!-- "red" label -->
+      <text x="358" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#8e44ad">red</text>
+      <text x="300" y="80" font-family="sans-serif" font-size="10" fill="#8e44ad" font-style="italic">predicate adj ↓</text>
+      <!-- callout: back-slant leans toward subject -->
+      <text x="200" y="145" font-family="sans-serif" font-size="10" fill="#7f8c8d" font-style="italic">\ leans back toward subject</text>
+      <!-- legend -->
+      <circle cx="36" cy="168" r="4" fill="#2980b9"/>
+      <text x="46" y="172" font-family="sans-serif" font-size="11" fill="#7f8c8d">subject</text>
+      <circle cx="110" cy="168" r="4" fill="#c0392b"/>
+      <text x="120" y="172" font-family="sans-serif" font-size="11" fill="#7f8c8d">linking verb</text>
+      <circle cx="208" cy="168" r="4" fill="#8e44ad"/>
+      <text x="218" y="172" font-family="sans-serif" font-size="11" fill="#7f8c8d">predicate noun / adjective</text>
+      <!-- back-slant key in legend -->
+      <line x1="388" y1="160" x2="372" y2="176" stroke="#2c3e50" stroke-width="2"/>
+      <text x="394" y="172" font-family="sans-serif" font-size="10" fill="#7f8c8d">\\</text>
+    </svg>`,
+    note: 'Place all three words, then click <b>✓ Submit</b> to check. Spot the linking verb — the back-slanting divider (\\) always follows it and leans back toward the subject!'
+  },
+  9: {
+    title: '🔍 Level 9: Adjective Clauses',
+    body: `<p>An <b>adjective clause</b> is a group of words (with its own subject and verb) that describes a noun in the main sentence.</p>
+      <p>It's introduced by a <b>relative pronoun</b>: <em>who, which,</em> or <em>that</em>. That pronoun does double duty — it connects the clause to the noun it modifies AND acts as the subject (or object) inside the clause.</p>
+      <p>On the diagram:</p>
+      <ul style="text-align:left;display:inline-block;margin:6px 0">
+        <li>The main clause keeps its normal baseline on top</li>
+        <li>The adjective clause gets its <b>own baseline below</b></li>
+        <li>A <b>dashed vertical line</b> drops from the <em>modified noun</em> (on the main baseline) straight down to the <em>relative pronoun</em> (on the clause baseline)</li>
+        <li>The two baselines are <b>not connected by a solid line</b> — only the dashed drop</li>
+      </ul>
+      <p><em>Test:</em> "The boy <u>who ran</u> won." → "who ran" describes <em>boy</em> → dashed line drops from <em>boy</em> to <em>who</em></p>`,
+    exLabel: 'Example — "The boy who ran won."',
+    exSvg: `<svg viewBox="0 0 460 245" width="100%" style="max-width:460px;display:block;margin:0 auto">
+      <!-- main baseline -->
+      <line x1="40" y1="88" x2="420" y2="88" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- main subject divider (crosses through) -->
+      <line x1="178" y1="60" x2="178" y2="98" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- clause baseline -->
+      <line x1="40" y1="170" x2="360" y2="170" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- clause verb divider (crosses through) -->
+      <line x1="200" y1="142" x2="200" y2="180" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- dashed drop from "boy" (main baseline) down to "who" (clause baseline) -->
+      <line x1="108" y1="90" x2="108" y2="168" stroke="#7f8c8d" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <!-- "boy" label (main subject — directly above "who") -->
+      <text x="108" y="78" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#2980b9">boy</text>
+      <text x="40" y="60" font-family="sans-serif" font-size="10" fill="#2980b9" font-style="italic">main subj ↓</text>
+      <!-- "won" label (main verb) -->
+      <text x="296" y="78" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#c0392b">won</text>
+      <text x="182" y="60" font-family="sans-serif" font-size="10" fill="#c0392b" font-style="italic">main verb ↓</text>
+      <!-- dashed drop label -->
+      <text x="116" y="132" font-family="sans-serif" font-size="10" fill="#7f8c8d" font-style="italic">dashed drop ↓</text>
+      <!-- "who" label (relative pronoun, clause baseline) -->
+      <text x="108" y="160" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#16a085">who</text>
+      <text x="40" y="188" font-family="sans-serif" font-size="10" fill="#16a085" font-style="italic">rel. pronoun ↑</text>
+      <!-- "ran" label (clause verb) -->
+      <text x="276" y="160" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#8e44ad">ran</text>
+      <text x="204" y="188" font-family="sans-serif" font-size="10" fill="#8e44ad" font-style="italic">clause verb ↑</text>
+      <!-- "adjective clause" brace label -->
+      <text x="40" y="210" font-family="sans-serif" font-size="10" fill="#7f8c8d" font-style="italic">↑ adjective clause (its own baseline below)</text>
+      <!-- legend -->
+      <circle cx="36" cy="230" r="4" fill="#2980b9"/>
+      <text x="46" y="234" font-family="sans-serif" font-size="11" fill="#7f8c8d">main subject</text>
+      <circle cx="126" cy="230" r="4" fill="#c0392b"/>
+      <text x="136" y="234" font-family="sans-serif" font-size="11" fill="#7f8c8d">main verb</text>
+      <circle cx="210" cy="230" r="4" fill="#16a085"/>
+      <text x="220" y="234" font-family="sans-serif" font-size="11" fill="#7f8c8d">rel. pronoun</text>
+      <circle cx="300" cy="230" r="4" fill="#8e44ad"/>
+      <text x="310" y="234" font-family="sans-serif" font-size="11" fill="#7f8c8d">clause verb</text>
+    </svg>`,
+    note: 'Place all four words, then click <b>✓ Submit</b> to check. Find the relative pronoun (<em>who / which / that</em>) — it lives on the lower baseline directly below the noun it describes!'
+  },
+  10: {
+    title: '🏛️ Level 10: Noun Clauses',
+    body: `<p>A <b>noun clause</b> is a whole clause (subject + verb) doing the job of a noun. Here it acts as the <b>direct object</b> of the main verb.</p>
+      <p>It's often introduced by <em>"that"</em> — as in <em>"I know <u>that she won</u>."</em> The entire underlined part is what is known.</p>
+      <p>On the diagram, the noun clause gets its own <b>mini-baseline above</b> the main line, sitting on a vertical <b>pedestal</b>:</p>
+      <ul style="text-align:left;display:inline-block;margin:6px 0">
+        <li>Main clause baseline is on the <b>bottom</b></li>
+        <li>Noun clause baseline floats <b>above</b>, connected by a vertical pedestal rising from where the direct object would sit</li>
+        <li>The word <em>"that"</em> is written <b>on the pedestal</b> itself</li>
+        <li>The clause baseline has its own subject | verb structure</li>
+      </ul>
+      <p>Think of the pedestal as an elevator lifting the clause up to noun position. The clause <em>is</em> the object — it just needs extra room.</p>`,
+    exLabel: 'Example — "I know that she won."',
+    exSvg: `<svg viewBox="0 0 460 230" width="100%" style="max-width:460px;display:block;margin:0 auto">
+      <!-- clause baseline (above, on pedestal) -->
+      <line x1="230" y1="68" x2="430" y2="68" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- clause verb divider -->
+      <line x1="340" y1="42" x2="340" y2="78" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- pedestal (vertical, rising from main line up to clause baseline) -->
+      <line x1="310" y1="70" x2="310" y2="148" stroke="#2c3e50" stroke-width="2.2" stroke-linecap="round"/>
+      <!-- "that" written on the pedestal -->
+      <text x="316" y="114" font-family="Georgia,serif" font-size="13" fill="#7f8c8d" font-style="italic">that</text>
+      <!-- main baseline -->
+      <line x1="40" y1="148" x2="420" y2="148" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- main subject divider (crosses through) -->
+      <line x1="120" y1="120" x2="120" y2="158" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- DO divider / pedestal base (short tick, stops at baseline) -->
+      <line x1="310" y1="122" x2="310" y2="148" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- "I" label -->
+      <text x="78" y="138" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#2980b9">I</text>
+      <text x="40" y="115" font-family="sans-serif" font-size="10" fill="#2980b9" font-style="italic">subject ↓</text>
+      <!-- "know" label -->
+      <text x="212" y="138" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#c0392b">know</text>
+      <text x="124" y="115" font-family="sans-serif" font-size="10" fill="#c0392b" font-style="italic">verb ↓</text>
+      <!-- pedestal label -->
+      <text x="234" y="148" font-family="sans-serif" font-size="10" fill="#7f8c8d" font-style="italic">pedestal ↑</text>
+      <!-- "she" label (clause subject) -->
+      <text x="282" y="57" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#16a085">she</text>
+      <text x="230" y="44" font-family="sans-serif" font-size="10" fill="#16a085" font-style="italic">clause subj ↓</text>
+      <!-- "won" label (clause verb) -->
+      <text x="386" y="57" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#8e44ad">won</text>
+      <text x="344" y="44" font-family="sans-serif" font-size="10" fill="#8e44ad" font-style="italic">clause verb ↓</text>
+      <!-- "noun clause" label -->
+      <text x="230" y="88" font-family="sans-serif" font-size="10" fill="#7f8c8d" font-style="italic">↑ noun clause (direct object)</text>
+      <!-- legend -->
+      <circle cx="36" cy="208" r="4" fill="#2980b9"/>
+      <text x="46" y="212" font-family="sans-serif" font-size="11" fill="#7f8c8d">main subject</text>
+      <circle cx="126" cy="208" r="4" fill="#c0392b"/>
+      <text x="136" y="212" font-family="sans-serif" font-size="11" fill="#7f8c8d">main verb</text>
+      <circle cx="208" cy="208" r="4" fill="#16a085"/>
+      <text x="218" y="212" font-family="sans-serif" font-size="11" fill="#7f8c8d">clause subject</text>
+      <circle cx="308" cy="208" r="4" fill="#8e44ad"/>
+      <text x="318" y="212" font-family="sans-serif" font-size="11" fill="#7f8c8d">clause verb</text>
+    </svg>`,
+    note: 'Place all four words, then click <b>✓ Submit</b> to check. The clause floats <b>above</b> the main line on a pedestal — the word "that" rides on the pedestal itself!'
+  },
+  11: {
+    title: '⏩ Level 11: Adverb Clauses',
+    body: `<p>An <b>adverb clause</b> modifies the main verb — it tells <em>when, why, how,</em> or <em>under what condition</em> the action happens.</p>
+      <p>It's introduced by a <b>subordinating conjunction</b>: <em>because, when, after, while, until, since, although, if…</em></p>
+      <p>On the diagram:</p>
+      <ul style="text-align:left;display:inline-block;margin:6px 0">
+        <li>Main clause stays on the top baseline</li>
+        <li>Adverb clause gets its <b>own baseline below</b></li>
+        <li>A <b>dashed diagonal line</b> connects the <em>main verb</em> down to the <em>clause subject</em></li>
+        <li>The <b>subordinating conjunction</b> is written <em>on the dashed diagonal</em> itself — not on either baseline</li>
+      </ul>
+      <p>Compare with Level 9: adjective clauses use a <em>vertical</em> dashed drop. Adverb clauses use a <em>diagonal</em> dashed line — and the conjunction word rides it.</p>
+      <p><em>Test:</em> "She smiled <u>because she won</u>." → "because she won" tells <em>why</em> she smiled → adverb clause modifying "smiled"</p>`,
+    exLabel: 'Example — "She smiled because she won."',
+    exSvg: `<svg viewBox="0 0 460 250" width="100%" style="max-width:460px;display:block;margin:0 auto">
+      <!-- main baseline -->
+      <line x1="40" y1="75" x2="420" y2="75" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- main subject divider (crosses through) -->
+      <line x1="130" y1="47" x2="130" y2="85" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- clause baseline -->
+      <line x1="40" y1="182" x2="380" y2="182" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- clause verb divider (crosses through) -->
+      <line x1="190" y1="154" x2="190" y2="192" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- dashed diagonal: from main verb down to clause subject -->
+      <line x1="268" y1="77" x2="80" y2="180" stroke="#7f8c8d" stroke-width="1.8" stroke-dasharray="5,4"/>
+      <!-- "She" label (main subject) -->
+      <text x="83" y="65" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#2980b9">She</text>
+      <text x="40" y="46" font-family="sans-serif" font-size="10" fill="#2980b9" font-style="italic">main subj ↓</text>
+      <!-- "smiled" label (main verb) -->
+      <text x="268" y="65" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#c0392b">smiled</text>
+      <text x="134" y="46" font-family="sans-serif" font-size="10" fill="#c0392b" font-style="italic">main verb ↓</text>
+      <!-- "because" label ON the dashed diagonal -->
+      <text x="196" y="122" text-anchor="middle" font-family="Georgia,serif" font-size="15" fill="#27ae60">because</text>
+      <text x="270" y="140" font-family="sans-serif" font-size="10" fill="#27ae60" font-style="italic">← sub. conj. on the diagonal</text>
+      <!-- "she" label (clause subject) -->
+      <text x="112" y="172" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#16a085">she</text>
+      <text x="40" y="200" font-family="sans-serif" font-size="10" fill="#16a085" font-style="italic">clause subj ↑</text>
+      <!-- "won" label (clause verb) -->
+      <text x="284" y="172" text-anchor="middle" font-family="Georgia,serif" font-size="21" fill="#8e44ad">won</text>
+      <text x="194" y="200" font-family="sans-serif" font-size="10" fill="#8e44ad" font-style="italic">clause verb ↑</text>
+      <!-- "adverb clause" label -->
+      <text x="40" y="216" font-family="sans-serif" font-size="10" fill="#7f8c8d" font-style="italic">↑ adverb clause (below, with diagonal connector)</text>
+      <!-- legend -->
+      <circle cx="36" cy="234" r="4" fill="#2980b9"/>
+      <text x="46" y="238" font-family="sans-serif" font-size="11" fill="#7f8c8d">main subject</text>
+      <circle cx="126" cy="234" r="4" fill="#c0392b"/>
+      <text x="136" y="238" font-family="sans-serif" font-size="11" fill="#7f8c8d">main verb</text>
+      <circle cx="208" cy="234" r="4" fill="#27ae60"/>
+      <text x="218" y="238" font-family="sans-serif" font-size="11" fill="#7f8c8d">sub. conj.</text>
+      <circle cx="286" cy="234" r="4" fill="#16a085"/>
+      <text x="296" y="238" font-family="sans-serif" font-size="11" fill="#7f8c8d">clause subj</text>
+      <circle cx="362" cy="234" r="4" fill="#8e44ad"/>
+      <text x="372" y="238" font-family="sans-serif" font-size="11" fill="#7f8c8d">clause verb</text>
+    </svg>`,
+    note: 'Place all five words, then click <b>✓ Submit</b> to check. Spot the subordinating conjunction — it rides the <b>dashed diagonal</b> between the two baselines!'
+  },
+  12: {
+    title: '🏄 Level 12: Verbals — Gerunds',
+    body: `<p>A <b>gerund</b> is a verb wearing a noun's hat. It ends in <b>-ing</b> and acts as a noun — here it's the <b>subject</b> of the sentence.</p>
+      <p>Examples: <em>Swimming</em> is fun. <em>Running</em> is healthy. <em>Singing</em> feels joyful.</p>
+      <p>Because a gerund is a verb-turned-noun, it gets a special diagram position — a <b>pedestal</b>:</p>
+      <ul style="text-align:left;display:inline-block;margin:6px 0">
+        <li>A short <b>mini-baseline</b> floats above the main line</li>
+        <li>A <b>vertical pedestal line</b> drops from the mini-baseline down to the subject slot on the main line</li>
+        <li>The gerund word sits <b>on the mini-baseline</b> at the top</li>
+      </ul>
+      <p>The rest of the sentence stays on the main baseline. Because gerunds often pair with linking verbs, you'll see the <b>back-slanting (\\) divider</b> from Level 8 after the verb.</p>
+      <p><em>Tip:</em> if a word ends in <em>-ing</em> and answers "what is the subject?", it's a gerund on a pedestal — not a regular verb.</p>`,
+    exLabel: 'Example — "Swimming is fun."',
+    exSvg: `<svg viewBox="0 0 420 215" width="100%" style="max-width:420px;display:block;margin:0 auto">
+      <!-- gerund mini-baseline (above) -->
+      <line x1="50" y1="72" x2="210" y2="72" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+      <!-- pedestal: drops from mini-baseline down to main line -->
+      <line x1="128" y1="74" x2="128" y2="140" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+      <!-- main baseline -->
+      <line x1="50" y1="142" x2="390" y2="142" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- subject divider (crosses through main baseline) -->
+      <line x1="230" y1="114" x2="230" y2="152" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- back-slanting divider after linking verb -->
+      <line x1="338" y1="112" x2="318" y2="142" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- "Swimming" label on mini-baseline -->
+      <text x="128" y="62" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#d35400">Swimming</text>
+      <text x="50" y="46" font-family="sans-serif" font-size="10" fill="#d35400" font-style="italic">gerund ↓</text>
+      <!-- pedestal label -->
+      <text x="136" y="112" font-family="sans-serif" font-size="10" fill="#7f8c8d" font-style="italic">pedestal</text>
+      <!-- "is" label on main baseline -->
+      <text x="278" y="132" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#c0392b">is</text>
+      <text x="234" y="112" font-family="sans-serif" font-size="10" fill="#c0392b" font-style="italic">linking verb ↓</text>
+      <!-- "fun" label on main baseline -->
+      <text x="358" y="132" text-anchor="middle" font-family="Georgia,serif" font-size="19" fill="#8e44ad">fun</text>
+      <text x="322" y="112" font-family="sans-serif" font-size="10" fill="#8e44ad" font-style="italic">pred. adj ↓</text>
+      <!-- backslant label -->
+      <text x="188" y="158" font-family="sans-serif" font-size="10" fill="#7f8c8d" font-style="italic">\ back-slant (from Level 8) ↑</text>
+      <!-- legend -->
+      <circle cx="36" cy="188" r="4" fill="#d35400"/>
+      <text x="46" y="192" font-family="sans-serif" font-size="11" fill="#7f8c8d">gerund (pedestal)</text>
+      <circle cx="152" cy="188" r="4" fill="#c0392b"/>
+      <text x="162" y="192" font-family="sans-serif" font-size="11" fill="#7f8c8d">linking verb</text>
+      <circle cx="244" cy="188" r="4" fill="#8e44ad"/>
+      <text x="254" y="192" font-family="sans-serif" font-size="11" fill="#7f8c8d">pred. adjective</text>
+      <!-- back-slash key -->
+      <line x1="380" y1="181" x2="364" y2="197" stroke="#2c3e50" stroke-width="2"/>
+      <text x="386" y="194" font-family="sans-serif" font-size="10" fill="#7f8c8d">\\</text>
+    </svg>`,
+    note: 'Place all three words, then click <b>✓ Submit</b> to check. The <em>-ing</em> word is the gerund — it floats on the <b>mini-baseline above</b>, connected to the main line by the pedestal!'
+  },
+};
+
+function showTutorial(n){
+  const T=TUTORIALS[n];
+  if(!T) return;
+  document.getElementById('tutTitle').textContent=T.title;
+  document.getElementById('tutBody').innerHTML=T.body;
+  document.getElementById('tutExLabel').textContent=T.exLabel;
+  document.getElementById('tutExSvg').innerHTML=T.exSvg;
+  document.getElementById('tutNote').innerHTML=T.note;
+  document.getElementById('tutOverlay').hidden=false;
+}
+function closeTutorial(){
+  document.getElementById('tutOverlay').hidden=true;
 }
 
 // ═══════════════════════════════════════════════════════════════════════
